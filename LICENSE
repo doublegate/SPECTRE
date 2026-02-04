@@ -1,0 +1,73 @@
+SPECTRE - Unified Offensive Security Platform
+Copyright (c) 2026 doublegate
+
+This project is a multi-license project. Different components are licensed
+under different terms as follows:
+
+================================================================================
+SPECTRE Core Components (MIT License)
+================================================================================
+
+The following components are licensed under the MIT License:
+- spectre-cli
+- spectre-core
+- spectre-tui
+- spectre-gui
+- spectre-mcp
+- All documentation and templates
+
+MIT License
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+================================================================================
+Integrated Component Licenses
+================================================================================
+
+SPECTRE integrates the following external components, each with their own
+licenses:
+
+1. WRAITH-Protocol (MIT License)
+   Repository: https://github.com/doublegate/WRAITH-Protocol
+   License: MIT
+
+2. ProRT-IP (GPLv3 License)
+   Repository: https://github.com/doublegate/ProRT-IP
+   License: GNU General Public License v3.0
+
+3. CyberChef-MCP (Apache License 2.0)
+   Repository: https://github.com/doublegate/CyberChef-MCP
+   License: Apache License 2.0
+
+When using SPECTRE with these integrated components, you must comply with
+their respective licenses. The combined work may be subject to the most
+restrictive license terms (GPLv3) when ProRT-IP components are included.
+
+================================================================================
+Disclaimer
+================================================================================
+
+SPECTRE is designed for authorized security testing only. Users must ensure
+they have proper authorization before using this software on any network or
+system. Unauthorized use may violate laws including but not limited to the
+Computer Fraud and Abuse Act (CFAA), Computer Misuse Act (CMA), and similar
+legislation in other jurisdictions.
+
+The authors and contributors are not responsible for any misuse of this
+software or any damage caused by its use.
