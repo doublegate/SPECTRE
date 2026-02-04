@@ -112,11 +112,48 @@ docs/
 │   ├── WRAITH-INTEGRATION.md
 │   ├── PRTIP-INTEGRATION.md
 │   └── CYBERCHEF-INTEGRATION.md
-└── briefings/          # Mission briefing templates
-    ├── OPORD-template.md
-    ├── SITREP.md
-    ├── CONOP-template.md
-    └── AAR-template.md
+├── briefings/          # Mission briefing templates
+│   ├── OPORD-template.md
+│   ├── SITREP.md
+│   ├── CONOP-template.md
+│   └── AAR-template.md
+├── development/        # Developer documentation
+│   ├── SETUP.md           # Development environment setup
+│   ├── ARCHITECTURE.md    # Internal architecture details
+│   ├── TESTING.md         # Testing strategy and practices
+│   └── DEBUGGING.md       # Debugging techniques
+├── api/                # API specifications
+│   ├── REST-API.md        # REST API for GUI backend
+│   ├── MCP-PROTOCOL.md    # MCP protocol details
+│   └── PLUGIN-API.md      # Lua plugin development
+├── security/           # Security documentation
+│   ├── THREAT-MODEL.md    # Threat model and mitigations
+│   ├── ENCRYPTION.md      # Cryptographic implementations
+│   └── OPERATIONAL-SECURITY.md  # OpSec best practices
+├── deployment/         # Deployment guides
+│   ├── INSTALLATION.md    # Platform installation
+│   ├── CONFIGURATION.md   # Configuration reference
+│   └── DOCKER.md          # Docker deployment
+├── tutorials/          # Step-by-step tutorials
+│   ├── FIRST-SCAN.md      # Getting started with scanning
+│   ├── SECURE-CHANNEL.md  # Encrypted communications
+│   ├── DATA-ANALYSIS.md   # CyberChef workflows
+│   └── CAMPAIGN-PLANNING.md  # Campaign orchestration
+└── reference/          # Reference materials
+    ├── GLOSSARY.md        # Security terminology
+    ├── FAQ.md             # Frequently asked questions
+    └── TROUBLESHOOTING.md # Common issues and solutions
+
+to-dos/                 # Sprint planning and roadmap
+├── README.md           # Planning overview
+├── ROADMAP.md          # Product roadmap
+├── PHASE-1-FOUNDATION.md   # Operation BLACKOUT (v0.1.x)
+├── PHASE-2-INTEGRATION.md  # Operation NIGHTFALL (v0.2.x)
+├── PHASE-3-TUI.md          # Operation PHANTOM (v0.3.x)
+├── PHASE-4-ADVANCED.md     # Operation SPECTER (v0.4.x)
+├── PHASE-5-GUI.md          # Operation SHADOW (v0.5.x)
+├── PHASE-6-MCP.md          # Operation WRAITH (v0.6.x)
+└── PHASE-7-RELEASE.md      # Operation GENESIS (v1.0.0)
 ```
 
 ---
@@ -163,6 +200,27 @@ This project uses military operational formatting for campaign documentation:
 | `CLAUDE.md` | AI assistant guidance (this file) |
 | `Cargo.toml` | Workspace manifest |
 | `configs/spectre.toml` | Main configuration file |
+| `CONTRIBUTING.md` | Contribution guidelines |
+| `SECURITY.md` | Security policy and vulnerability reporting |
+| `to-dos/ROADMAP.md` | Product roadmap and timeline |
+
+---
+
+## Sprint Planning
+
+Development is organized into 7 phases (56 sprints total):
+
+| Phase | Codename | Version | Focus |
+|-------|----------|---------|-------|
+| 1 | Operation BLACKOUT | v0.1.x | Foundation - CLI skeleton, component integration |
+| 2 | Operation NIGHTFALL | v0.2.x | Data pipeline, scan-to-analysis automation |
+| 3 | Operation PHANTOM | v0.3.x | TUI dashboard (60 FPS), real-time visualization |
+| 4 | Operation SPECTER | v0.4.x | Advanced features, workflows, plugins |
+| 5 | Operation SHADOW | v0.5.x | GUI application (Tauri 2.0) |
+| 6 | Operation WRAITH | v0.6.x | MCP server implementation |
+| 7 | Operation GENESIS | v1.0.0 | Production release |
+
+See `to-dos/` directory for detailed sprint planning.
 
 ---
 

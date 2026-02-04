@@ -1,0 +1,49 @@
+# Rust formatting configuration for SPECTRE
+# See: https://rust-lang.github.io/rustfmt/
+
+edition = "2021"
+
+# Line width
+max_width = 100
+use_small_heuristics = "Default"
+
+# Imports
+imports_granularity = "Module"
+group_imports = "StdExternalCrate"
+reorder_imports = true
+reorder_modules = true
+
+# Comments
+wrap_comments = true
+comment_width = 80
+normalize_comments = true
+normalize_doc_attributes = true
+
+# Formatting
+newline_style = "Unix"
+hard_tabs = false
+tab_spaces = 4
+indent_style = "Block"
+
+# Functions
+fn_params_layout = "Tall"
+fn_single_line = false
+
+# Structs and enums
+struct_lit_single_line = true
+enum_discrim_align_threshold = 20
+
+# Control flow
+control_brace_style = "AlwaysSameLine"
+force_multiline_blocks = false
+
+# Match
+match_block_trailing_comma = true
+match_arm_blocks = true
+
+# Misc
+trailing_comma = "Vertical"
+trailing_semicolon = true
+use_field_init_shorthand = true
+use_try_shorthand = true
+format_strings = false

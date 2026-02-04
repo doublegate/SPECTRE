@@ -15,6 +15,93 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - WRAITH library integration
 - CyberChef MCP bridge
 
+## [0.1.1] - 2026-02-04
+
+### Added
+
+#### GitHub Repository Infrastructure
+- **GitHub Issue Templates**
+  - `bug_report.md` - Structured bug reporting with environment details
+  - `feature_request.md` - Feature proposal with use case requirements
+  - `config.yml` - Issue template chooser with external links
+
+- **Pull Request Template** - Comprehensive PR checklist with security review
+
+- **GitHub Workflows (CI/CD)**
+  - `ci.yml` - Multi-platform CI (Linux, macOS, Windows) with format, lint, test, docs, audit, MSRV, and coverage jobs
+  - `release.yml` - Automated release workflow with cross-compilation for 6 platform targets (x86_64/aarch64 for Linux, macOS, Windows)
+
+- **Repository Management**
+  - `CODEOWNERS` - Code ownership for review assignment
+  - `FUNDING.yml` - GitHub Sponsors configuration
+  - `dependabot.yml` - Automated dependency updates for Rust, npm, Docker, GitHub Actions
+
+- **Community Files**
+  - `CONTRIBUTING.md` - Comprehensive contribution guidelines with development workflow
+  - `SECURITY.md` - Security policy with vulnerability reporting procedures
+
+#### Project Configuration
+- **Cargo Workspace** (`Cargo.toml`)
+  - Workspace configuration with 5 crates
+  - Shared workspace dependencies
+  - Optimized release profiles (LTO, codegen-units)
+  - MSRV 1.88
+
+- **Code Quality Tools**
+  - `rustfmt.toml` - Rust formatting configuration
+  - `clippy.toml` - Clippy linting configuration
+  - `.editorconfig` - Cross-editor formatting standards
+
+#### Documentation (45+ files)
+
+- **Development Documentation** (`docs/development/`)
+  - `SETUP.md` - Development environment setup guide
+  - `ARCHITECTURE.md` - Internal architecture with component diagrams
+  - `TESTING.md` - Testing strategy and best practices
+  - `DEBUGGING.md` - Debugging techniques and tools
+
+- **API Documentation** (`docs/api/`)
+  - `REST-API.md` - REST API specification for GUI backend
+  - `MCP-PROTOCOL.md` - MCP protocol implementation details
+  - `PLUGIN-API.md` - Lua plugin development guide
+
+- **Security Documentation** (`docs/security/`)
+  - `THREAT-MODEL.md` - Comprehensive threat model with mitigations
+  - `ENCRYPTION.md` - Cryptographic implementations and protocols
+  - `OPERATIONAL-SECURITY.md` - OpSec best practices
+
+- **Deployment Documentation** (`docs/deployment/`)
+  - `INSTALLATION.md` - Installation guide for all platforms
+  - `CONFIGURATION.md` - Configuration reference with examples
+  - `DOCKER.md` - Docker deployment and orchestration
+
+- **Tutorial Documentation** (`docs/tutorials/`)
+  - `FIRST-SCAN.md` - Getting started with network scanning
+  - `SECURE-CHANNEL.md` - Setting up encrypted communications
+  - `DATA-ANALYSIS.md` - Data analysis workflows with CyberChef
+  - `CAMPAIGN-PLANNING.md` - Campaign orchestration guide
+
+- **Reference Documentation** (`docs/reference/`)
+  - `GLOSSARY.md` - Security terminology and acronyms
+  - `FAQ.md` - Frequently asked questions
+  - `TROUBLESHOOTING.md` - Common issues and solutions
+
+#### Sprint Planning (`to-dos/`)
+- `README.md` - Sprint planning overview and status
+- `ROADMAP.md` - Product roadmap with timeline
+- **7 Phase Planning Documents:**
+  - `PHASE-1-FOUNDATION.md` - Operation BLACKOUT (v0.1.x) - 8 sprints
+  - `PHASE-2-INTEGRATION.md` - Operation NIGHTFALL (v0.2.x) - 8 sprints
+  - `PHASE-3-TUI.md` - Operation PHANTOM (v0.3.x) - 8 sprints
+  - `PHASE-4-ADVANCED.md` - Operation SPECTER (v0.4.x) - 8 sprints
+  - `PHASE-5-GUI.md` - Operation SHADOW (v0.5.x) - 8 sprints
+  - `PHASE-6-MCP.md` - Operation WRAITH (v0.6.x) - 8 sprints
+  - `PHASE-7-RELEASE.md` - Operation GENESIS (v1.0.0) - 8 sprints
+
+### Changed
+- Updated CLAUDE.md with complete documentation structure
+- Enhanced .gitignore with comprehensive coverage
+
 ## [0.1.0] - 2026-02-04
 
 ### Added
@@ -113,5 +200,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/doublegate/SPECTRE/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/doublegate/SPECTRE/compare/v0.1.1...HEAD
+[0.1.1]: https://github.com/doublegate/SPECTRE/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/doublegate/SPECTRE/releases/tag/v0.1.0

@@ -1,0 +1,34 @@
+# CODEOWNERS for SPECTRE
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for everything
+* @doublegate
+
+# Core library
+/crates/spectre-core/ @doublegate
+
+# CLI interface
+/crates/spectre-cli/ @doublegate
+
+# TUI dashboard
+/crates/spectre-tui/ @doublegate
+
+# GUI application
+/crates/spectre-gui/ @doublegate
+
+# MCP server
+/crates/spectre-mcp/ @doublegate
+
+# Documentation
+/docs/ @doublegate
+*.md @doublegate
+
+# CI/CD
+/.github/ @doublegate
+
+# Configuration
+/configs/ @doublegate
+Cargo.toml @doublegate
+
+# Security-sensitive files
+SECURITY.md @doublegate

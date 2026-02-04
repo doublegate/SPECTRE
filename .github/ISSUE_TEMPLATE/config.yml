@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security Vulnerability
+    url: https://github.com/doublegate/SPECTRE/security/policy
+    about: Report security vulnerabilities privately via our security policy
+  - name: Questions & Discussions
+    url: https://github.com/doublegate/SPECTRE/discussions
+    about: Ask questions and discuss SPECTRE in GitHub Discussions
+  - name: Documentation
+    url: https://github.com/doublegate/SPECTRE/tree/main/docs
+    about: Check the documentation before opening an issue

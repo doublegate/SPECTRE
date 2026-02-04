@@ -1,0 +1,60 @@
+version: 2
+updates:
+  # Rust dependencies (Cargo)
+  - package-ecosystem: "cargo"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "build(deps)"
+    labels:
+      - "dependencies"
+      - "rust"
+    reviewers:
+      - "doublegate"
+    groups:
+      rust-minor:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "ci(deps)"
+    labels:
+      - "dependencies"
+      - "ci"
+    reviewers:
+      - "doublegate"
+
+  # npm dependencies (for GUI if using Node.js)
+  # Uncomment when GUI is implemented
+  # - package-ecosystem: "npm"
+  #   directory: "/crates/spectre-gui"
+  #   schedule:
+  #     interval: "weekly"
+  #     day: "monday"
+  #     time: "09:00"
+  #     timezone: "America/New_York"
+  #   open-pull-requests-limit: 10
+  #   commit-message:
+  #     prefix: "build(deps)"
+  #   labels:
+  #     - "dependencies"
+  #     - "javascript"
+  #   reviewers:
+  #     - "doublegate"
