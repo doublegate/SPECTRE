@@ -1,0 +1,264 @@
+//! Error types for SPECTRE
+//!
+//! This module defines the error types used throughout the SPECTRE system.
+
+use thiserror::Error;
+
+/// Result type alias using SpectreError
+pub type Result<T> = std::result::Result<T, SpectreError>;
+
+/// Main error type for SPECTRE operations
+#[derive(Error, Debug)]
+pub enum SpectreError {
+    /// Configuration error
+    #[error("Configuration error: {0}")]
+    Config(#[from] ConfigError),
+
+    /// Scan error
+    #[error("Scan error: {0}")]
+    Scan(#[from] ScanError),
+
+    /// Chef/CyberChef error
+    #[error("Chef error: {0}")]
+    Chef(#[from] ChefError),
+
+    /// Communications error
+    #[error("Communications error: {0}")]
+    Comms(#[from] CommsError),
+
+    /// IO error
+    #[error("IO error: {0}")]
+    Io(#[from] std::io::Error),
+
+    /// Serialization error
+    #[error("Serialization error: {0}")]
+    Serialization(String),
+
+    /// Invalid input error
+    #[error("Invalid input: {0}")]
+    InvalidInput(String),
+
+    /// Operation not supported
+    #[error("Operation not supported: {0}")]
+    NotSupported(String),
+
+    /// External tool error
+    #[error("External tool error: {0}")]
+    ExternalTool(String),
+
+    /// Internal error
+    #[error("Internal error: {0}")]
+    Internal(String),
+}
+
+/// Configuration-related errors
+#[derive(Error, Debug)]
+pub enum ConfigError {
+    /// Config file not found
+    #[error("Configuration file not found: {path}")]
+    NotFound {
+        /// Path that was searched
+        path: String,
+    },
+
+    /// Config parse error
+    #[error("Failed to parse configuration: {message}")]
+    ParseError {
+        /// Parse error message
+        message: String,
+        /// Source of the error
+        #[source]
+        source: Option<Box<dyn std::error::Error + Send + Sync>>,
+    },
+
+    /// Invalid configuration value
+    #[error("Invalid configuration value for '{key}': {message}")]
+    InvalidValue {
+        /// Configuration key
+        key: String,
+        /// Error message
+        message: String,
+    },
+
+    /// Missing required configuration
+    #[error("Missing required configuration: {key}")]
+    MissingRequired {
+        /// Configuration key
+        key: String,
+    },
+
+    /// Environment variable error
+    #[error("Environment variable error: {0}")]
+    EnvVar(String),
+}
+
+/// Scan-related errors
+#[derive(Error, Debug)]
+pub enum ScanError {
+    /// Invalid target specification
+    #[error("Invalid target: {0}")]
+    InvalidTarget(String),
+
+    /// Invalid port specification
+    #[error("Invalid port specification: {0}")]
+    InvalidPort(String),
+
+    /// Permission denied (e.g., raw sockets)
+    #[error("Permission denied: {0}")]
+    PermissionDenied(String),
+
+    /// Network error during scan
+    #[error("Network error: {0}")]
+    NetworkError(String),
+
+    /// Scan timeout
+    #[error("Scan timeout after {seconds} seconds")]
+    Timeout {
+        /// Timeout duration
+        seconds: u64,
+    },
+
+    /// Scanner not available
+    #[error("Scanner not available: {0}")]
+    NotAvailable(String),
+
+    /// Script error
+    #[error("Script error: {0}")]
+    ScriptError(String),
+}
+
+/// CyberChef-related errors
+#[derive(Error, Debug)]
+pub enum ChefError {
+    /// MCP connection error
+    #[error("MCP connection error: {0}")]
+    ConnectionError(String),
+
+    /// Docker error
+    #[error("Docker error: {0}")]
+    DockerError(String),
+
+    /// Invalid operation
+    #[error("Invalid operation: {0}")]
+    InvalidOperation(String),
+
+    /// Operation execution error
+    #[error("Operation failed: {operation}: {message}")]
+    OperationFailed {
+        /// Operation name
+        operation: String,
+        /// Error message
+        message: String,
+    },
+
+    /// Recipe error
+    #[error("Recipe error: {0}")]
+    RecipeError(String),
+
+    /// Input error
+    #[error("Invalid input: {0}")]
+    InvalidInput(String),
+}
+
+/// Communications-related errors
+#[derive(Error, Debug)]
+pub enum CommsError {
+    /// Identity not found
+    #[error("Identity not found: {0}")]
+    IdentityNotFound(String),
+
+    /// Peer not found
+    #[error("Peer not found: {0}")]
+    PeerNotFound(String),
+
+    /// Key error
+    #[error("Key error: {0}")]
+    KeyError(String),
+
+    /// Encryption error
+    #[error("Encryption error: {0}")]
+    EncryptionError(String),
+
+    /// Decryption error
+    #[error("Decryption error: {0}")]
+    DecryptionError(String),
+
+    /// Connection error
+    #[error("Connection error: {0}")]
+    ConnectionError(String),
+
+    /// Authentication failed
+    #[error("Authentication failed: {0}")]
+    AuthenticationFailed(String),
+
+    /// Timeout
+    #[error("Operation timed out")]
+    Timeout,
+
+    /// Message too large
+    #[error("Message too large: {size} bytes (max: {max})")]
+    MessageTooLarge {
+        /// Actual size
+        size: usize,
+        /// Maximum allowed
+        max: usize,
+    },
+}
+
+impl From<toml::de::Error> for SpectreError {
+    fn from(err: toml::de::Error) -> Self {
+        Self::Config(ConfigError::ParseError {
+            message: err.to_string(),
+            source: Some(Box::new(err)),
+        })
+    }
+}
+
+impl From<serde_json::Error> for SpectreError {
+    fn from(err: serde_json::Error) -> Self {
+        Self::Serialization(err.to_string())
+    }
+}
+
+impl From<toml::ser::Error> for SpectreError {
+    fn from(err: toml::ser::Error) -> Self {
+        Self::Serialization(err.to_string())
+    }
+}
+
+impl From<base64::DecodeError> for SpectreError {
+    fn from(err: base64::DecodeError) -> Self {
+        Self::Comms(CommsError::KeyError(err.to_string()))
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_error_display() {
+        let err = SpectreError::InvalidInput("test".to_string());
+        assert_eq!(err.to_string(), "Invalid input: test");
+    }
+
+    #[test]
+    fn test_config_error() {
+        let err = ConfigError::NotFound {
+            path: "/etc/spectre.toml".to_string(),
+        };
+        assert!(err.to_string().contains("/etc/spectre.toml"));
+    }
+
+    #[test]
+    fn test_scan_error() {
+        let err = ScanError::InvalidTarget("bad target".to_string());
+        assert!(err.to_string().contains("bad target"));
+    }
+
+    #[test]
+    fn test_comms_error_timeout() {
+        let err = CommsError::Timeout;
+        assert_eq!(err.to_string(), "Operation timed out");
+    }
+}

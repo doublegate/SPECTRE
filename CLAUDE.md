@@ -14,7 +14,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | **CyberChef-MCP** | Data analysis (463 operations via MCP) | TypeScript/Docker | v1.8.0 | 563 |
 | **WRAITH-Protocol** | Secure communications (10+ Gbps E2EE) | Rust | v2.3.7 | 2,957 |
 
-**Current Phase:** Operation BLACKOUT (v0.1.0) - Foundation/CLI skeleton
+**Current Phase:** Operation BLACKOUT (v0.1.x) - Foundation/CLI skeleton **COMPLETE**
+
+**SPECTRE Tests:** 86 (34 CLI + 51 core + 1 doc-test) | **Code:** ~7,600 lines Rust (32 files)
 
 **Repository:** [github.com/doublegate/SPECTRE](https://github.com/doublegate/SPECTRE)
 
@@ -86,11 +88,22 @@ Target Network → ProRT-IP (Recon) → CyberChef (Analysis) → WRAITH (Exfil/C
 
 ```
 crates/
-├── spectre-cli/        # Unified CLI orchestrator
-├── spectre-core/       # Core orchestration library
-├── spectre-tui/        # TUI dashboard (ratatui)
-├── spectre-gui/        # GUI application (Tauri 2.0)
-└── spectre-mcp/        # MCP server implementation
+├── spectre-cli/        # Unified CLI orchestrator (14 files, 34 tests)
+│   └── src/
+│       ├── main.rs         # Entry point, CLI parsing with clap 4
+│       ├── commands/       # scan, chef, send, receive, identity, peer, status, config, completions
+│       └── output/         # table (comfy-table) and json (serde_json) formatters
+├── spectre-core/       # Core orchestration library (15 files, 52 tests)
+│   └── src/
+│       ├── config/         # TOML config with file discovery and env var support
+│       ├── scan/           # Scanner trait, port/target parsing, 8 scan types
+│       ├── chef/           # Chef trait, MCP client, Docker management (bollard)
+│       ├── comms/          # Identity generation/storage, peer management
+│       ├── error.rs        # SpectreError enum (thiserror)
+│       └── logging.rs      # tracing-subscriber with env-filter
+├── spectre-tui/        # TUI dashboard (planned - Phase 3)
+├── spectre-gui/        # GUI application (planned - Phase 5)
+└── spectre-mcp/        # MCP server (planned - Phase 6)
 ```
 
 ---
@@ -212,7 +225,7 @@ Development is organized into 7 phases (56 sprints total):
 
 | Phase | Codename | Version | Focus |
 |-------|----------|---------|-------|
-| 1 | Operation BLACKOUT | v0.1.x | Foundation - CLI skeleton, component integration |
+| 1 | Operation BLACKOUT | v0.1.x | Foundation - CLI skeleton, component integration **COMPLETE** |
 | 2 | Operation NIGHTFALL | v0.2.x | Data pipeline, scan-to-analysis automation |
 | 3 | Operation PHANTOM | v0.3.x | TUI dashboard (60 FPS), real-time visualization |
 | 4 | Operation SPECTER | v0.4.x | Advanced features, workflows, plugins |
@@ -221,6 +234,41 @@ Development is organized into 7 phases (56 sprints total):
 | 7 | Operation GENESIS | v1.0.0 | Production release |
 
 See `to-dos/` directory for detailed sprint planning.
+
+---
+
+## CLI Commands Reference
+
+```bash
+# Core commands
+spectre scan [flags] <targets>    # Network scanning (ProRT-IP interface)
+spectre chef [operation] [flags]  # Data analysis (CyberChef-MCP interface)
+spectre send [flags]              # Secure send (WRAITH interface)
+spectre receive [flags]           # Secure receive (WRAITH interface)
+spectre identity <subcommand>     # Cryptographic identity management
+spectre peer <subcommand>         # Trusted peer management
+spectre status                    # Component health checks
+spectre config <subcommand>       # Configuration management
+spectre completions <shell>       # Shell completion generation
+
+# Key scan flags (Nmap-compatible)
+-S / --syn       # SYN scan (stealth)
+-T / --connect   # TCP Connect scan
+-U / --udp       # UDP scan
+-A / --ack       # ACK scan
+-F / --fin       # FIN scan
+-X / --xmas      # Xmas scan
+-N / --null       # Null scan
+-p / --ports     # Port specification
+-t / --timing    # Timing template (T0-T5)
+-o / --output    # Output format (table, json, csv, yaml)
+
+# Global flags
+-v               # Verbose (-v info, -vv debug, -vvv trace)
+-q               # Quiet mode
+--log-file       # Log to file
+--config         # Override config file path
+```
 
 ---
 

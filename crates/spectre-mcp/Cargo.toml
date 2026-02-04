@@ -1,0 +1,20 @@
+[package]
+name = "spectre-mcp"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+description = "SPECTRE MCP server implementation"
+keywords = ["mcp", "security", "ai"]
+categories = ["network-programming"]
+
+[dependencies]
+spectre-core = { path = "../spectre-core" }
+tokio = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }

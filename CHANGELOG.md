@@ -8,12 +8,103 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- CLI skeleton with subcommand routing
-- Component version detection and health checks
-- Unified configuration management (TOML)
-- ProRT-IP library integration
-- WRAITH library integration
-- CyberChef MCP bridge
+- Data pipeline between components (JSON/Protobuf) — Phase 2
+- Scan-to-analysis automation workflows — Phase 2
+- TUI dashboard with real-time visualization — Phase 3
+
+## [0.1.2] - 2026-02-04
+
+### Added
+
+#### Phase 1 Complete: Operation BLACKOUT — CLI Foundation
+
+**spectre-cli crate** (14 source files, 34 tests):
+- Unified CLI with clap 4 derive-based argument parsing
+- 9 subcommands: `scan`, `chef`, `send`, `receive`, `identity`, `peer`, `status`, `config`, `completions`
+- `scan` command with Nmap-compatible flags: `-S` (SYN), `-T` (Connect), `-U` (UDP), `-A` (ACK), `-F` (FIN), `-X` (Xmas), `-N` (Null), `--scan-type window`
+- Port specification parsing: individual ports, ranges, comma-separated, named sets (`common`, `top100`, `all`)
+- Target parsing: IPv4, IPv6, CIDR notation, hostname, IP ranges
+- Timing templates T0-T5 (paranoid through insane)
+- `chef` command with operation execution, recipe support, Docker health checks, and setup subcommand
+- `send`/`receive` commands with WRAITH peer addressing and encryption options
+- `identity` subcommands: `init` (key generation), `show` (display), `list`, `delete`, `export`
+- `peer` subcommands: `add`, `remove`, `list`, `show`, `verify`, `import`
+- `status` command with component health checks (ProRT-IP, CyberChef, WRAITH, Config)
+- `config` subcommands: `init` (create default), `show` (display effective config), `check` (validate), `edit`, `reset`
+- `completions` command generating shell completions for bash, zsh, fish, PowerShell, elvish
+- Global flags: `--verbose` (-v, -vv, -vvv), `--quiet`, `--log-file`, `--config`
+- Output formatting: table (comfy-table) and JSON (serde_json) formatters
+
+**spectre-core crate** (15 source files, 51 tests, 1 doc-test):
+- **Configuration system** (`config/`):
+  - `SpectreConfig` struct with nested sections: general, scan, chef, comms, output
+  - Multi-source config file discovery: system (`/etc/spectre/`), user (`~/.config/spectre/`), project (`./spectre.toml`)
+  - Config merging with precedence: CLI args > env vars > project > user > system
+  - Environment variable support (`SPECTRE_*` prefix)
+  - TOML serialization/deserialization with serde
+  - `config init` generates annotated default config file
+  - `config show` displays effective merged configuration
+  - `config check` validates configuration correctness
+  - Platform-aware directory resolution via `directories` crate
+
+- **Scanning interface** (`scan/`):
+  - `Scanner` async trait for pluggable scan engine implementations
+  - `StubScanner` implementation for development/testing (to be replaced with real ProRT-IP)
+  - 8 scan types: SYN, Connect, UDP, ACK, FIN, Xmas, Null, Window
+  - Rich type system: `ScanType`, `ScanResult`, `HostResult`, `PortResult`, `PortState`, `ServiceInfo`
+  - Port parser supporting ranges (`1-1000`), lists (`22,80,443`), named sets, and mixed specifications
+  - Target parser with IPv4, IPv6, CIDR, hostname, and range notation support
+  - Timing templates (T0-T5) mapped to rate limits and timeout values
+
+- **CyberChef integration** (`chef/`):
+  - `Chef` async trait for pluggable analysis backends
+  - `StubChef` implementation for development/testing
+  - `McpClient` for future MCP protocol communication
+  - `DockerManager` using bollard crate for container lifecycle management
+  - Container operations: start, stop, health check, status, auto-start
+  - Recipe execution support (JSON format with chained operations)
+
+- **WRAITH comms interface** (`comms/`):
+  - `Identity` struct with keypair generation, display name, creation timestamp
+  - SHA-256 based identity fingerprint generation
+  - Identity persistence to disk (JSON serialization in data directory)
+  - Identity listing and lookup by name or fingerprint prefix
+  - `Peer` struct with trust verification status
+  - Peer management: add, remove, list, verify, import
+  - Peer persistence with JSON storage
+
+- **Error handling** (`error.rs`):
+  - `SpectreError` enum with thiserror derive covering: Config, Scan, Chef, Comms, Io, Parse, Docker, Timeout
+  - Contextual error messages with source chaining
+  - Display implementations for user-friendly output
+
+- **Structured logging** (`logging.rs`):
+  - tracing-subscriber initialization with env-filter
+  - RUST_LOG environment variable support
+  - Optional file-based log output via tracing-appender
+  - Verbosity level mapping: 0=warn, 1=info, 2=debug, 3=trace
+
+**Configuration file** (`configs/spectre.toml`):
+- Annotated default configuration with all sections documented
+- Sections: general, scan, chef, comms, output
+- Inline documentation of all configuration options and defaults
+
+**Workspace dependencies updated** (`Cargo.toml`):
+- Added: clap_complete, serde_yaml, toml_edit, tracing-appender, ipnetwork, sha2, base64, hex, urlencoding, chrono, directories, bollard, colored, comfy-table, indicatif, tempfile
+- Updated: clap (added color, suggestions features), tracing-subscriber (added json feature)
+- Removed unused: pcap, pnet, chacha20poly1305, x25519-dalek, mcp-sdk
+
+### Changed
+- Cleaned `rustfmt.toml` to stable-channel-only options (removed 15 nightly-only settings)
+- Updated Cargo.toml workspace dependencies to match actual implementation needs
+
+### Technical Details
+- 32 Rust source files, ~7,600 lines of code
+- 86 tests total: 34 (spectre-cli) + 51 (spectre-core) + 1 (doc-test)
+- Zero clippy warnings with `-D warnings`
+- All formatting passes `cargo fmt --all --check`
+- Async runtime: tokio (full features)
+- Minimum supported Rust version: 1.88
 
 ## [0.1.1] - 2026-02-04
 
@@ -200,6 +291,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/doublegate/SPECTRE/compare/v0.1.1...HEAD
+[Unreleased]: https://github.com/doublegate/SPECTRE/compare/v0.1.2...HEAD
+[0.1.2]: https://github.com/doublegate/SPECTRE/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/doublegate/SPECTRE/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/doublegate/SPECTRE/releases/tag/v0.1.0

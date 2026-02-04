@@ -1,0 +1,54 @@
+[package]
+name = "spectre-cli"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+description = "SPECTRE unified offensive security toolkit CLI"
+keywords = ["cli", "security", "scanning", "encryption", "red-team"]
+categories = ["command-line-utilities"]
+
+[[bin]]
+name = "spectre"
+path = "src/main.rs"
+
+[dependencies]
+# Core library
+spectre-core = { path = "../spectre-core" }
+
+# Async runtime
+tokio = { workspace = true }
+
+# CLI
+clap = { workspace = true }
+clap_complete = { workspace = true }
+
+# Error handling
+anyhow = { workspace = true }
+
+# Logging
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+
+# Output formatting
+colored = { workspace = true }
+comfy-table = { workspace = true }
+indicatif = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_yaml = { workspace = true }
+toml_edit = { workspace = true }
+
+# Encoding
+base64 = { workspace = true }
+hex = { workspace = true }
+
+[dev-dependencies]
+assert_cmd = "2.0"
+predicates = "3.1"
+tempfile = "3.14"

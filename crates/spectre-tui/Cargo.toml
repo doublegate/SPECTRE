@@ -1,0 +1,20 @@
+[package]
+name = "spectre-tui"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+description = "SPECTRE TUI dashboard"
+keywords = ["tui", "security", "dashboard"]
+categories = ["command-line-utilities"]
+
+[dependencies]
+spectre-core = { path = "../spectre-core" }
+tokio = { workspace = true }
+ratatui = { workspace = true }
+crossterm = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }

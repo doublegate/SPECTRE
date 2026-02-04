@@ -48,12 +48,13 @@ Modern offensive security requires seamless tool integration. SPECTRE eliminates
 
 | Metric | Value |
 |--------|-------|
-| **Combined Tests** | 6,077 (WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 563) |
-| **Combined Lines** | ~180,000 (Rust) + ~40,000 (TypeScript/JavaScript) |
+| **Combined Tests** | 6,163 (SPECTRE: 86 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 563) |
+| **SPECTRE Codebase** | ~7,600 lines Rust (32 source files across 5 crates) |
+| **Component Code** | ~180,000 (Rust) + ~40,000 (TypeScript/JavaScript) |
 | **Languages** | Rust 2024, TypeScript, JavaScript |
 | **Network Throughput** | 10+ Gbps (WRAITH), 10M+ pps (ProRT-IP) |
 | **Data Operations** | 463 via CyberChef MCP |
-| **Interface Modes** | CLI, TUI, GUI, MCP Server |
+| **Interface Modes** | CLI (implemented), TUI, GUI, MCP Server |
 | **Platforms** | Linux, Windows, macOS, Docker |
 
 ---
@@ -306,7 +307,8 @@ SPECTRE follows a modular microservices architecture where each component operat
 
 | Layer | Purpose | Technology | Status |
 |-------|---------|------------|--------|
-| **CLI Orchestrator** | Unified command interface | Rust (clap) | Planned |
+| **CLI Orchestrator** | Unified command interface | Rust (clap 4) | **Implemented** |
+| **Core Library** | Configuration, scanning, comms, analysis | Rust (tokio, serde, tracing) | **Implemented** |
 | **TUI Framework** | Real-time dashboard | Rust (ratatui), ProRT-IP TUI | Planned |
 | **GUI Application** | Visual campaign planning | Tauri 2.0, React, TypeScript | Planned |
 | **MCP Server** | AI-assisted operations | Rust, MCP Protocol | Planned |
@@ -562,15 +564,17 @@ SPECTRE releases follow an operational codename convention:
 | v0.5.0 | **Operation SHADOW** | Visual campaign planning, collaboration | GUI MVP |
 | v1.0.0 | **Operation GENESIS** | Production release — full platform capability | All 4 Interfaces |
 
-### Phase 1: Foundation — Operation BLACKOUT (Current)
+### Phase 1: Foundation — Operation BLACKOUT (Complete)
 
-- [ ] SPECTRE CLI skeleton with subcommand routing
-- [ ] Component version detection and health checks
-- [ ] Unified configuration management (TOML)
-- [ ] Basic workflow automation
-- [ ] ProRT-IP library integration
-- [ ] WRAITH library integration
-- [ ] CyberChef MCP bridge
+- [x] SPECTRE CLI skeleton with subcommand routing (9 commands, Nmap-compatible flags)
+- [x] Component version detection and health checks (`spectre status`)
+- [x] Unified configuration management (TOML with file discovery and env var support)
+- [x] Structured logging with tracing (RUST_LOG, file output, JSON format)
+- [x] ProRT-IP scanning interface (Scanner trait, port/target parsing, 8 scan types)
+- [x] WRAITH comms interface (identity management, peer management, send/receive)
+- [x] CyberChef MCP bridge (Docker container management, recipe execution)
+- [x] Shell completion generation (bash, zsh, fish, PowerShell)
+- [x] 86 unit tests passing, zero clippy warnings
 
 ### Phase 2: Integration — Operation NIGHTFALL
 
@@ -619,60 +623,84 @@ SPECTRE releases follow an operational codename convention:
 ```text
 SPECTRE/
 ├── Cargo.toml              # Workspace manifest
+├── Cargo.lock              # Dependency lock file
 ├── README.md               # This file
+├── CHANGELOG.md            # Version history
 ├── CLAUDE.md               # AI assistant guidance
+├── CONTRIBUTING.md         # Contribution guidelines
+├── SECURITY.md             # Security policy
 ├── LICENSE                 # License file
+├── rustfmt.toml            # Rust formatting config
+├── clippy.toml             # Rust linting config
+├── .editorconfig           # Editor standards
 │
 ├── crates/
 │   ├── spectre-cli/        # Unified CLI orchestrator
+│   │   ├── Cargo.toml
 │   │   └── src/
-│   │       ├── main.rs
-│   │       ├── commands/   # Subcommand implementations
-│   │       ├── config/     # Configuration management
-│   │       └── pipeline/   # Data pipeline logic
+│   │       ├── main.rs         # Entry point, CLI parsing
+│   │       ├── commands/       # Subcommand implementations
+│   │       │   ├── scan.rs         # Network scanning (ProRT-IP)
+│   │       │   ├── chef.rs         # Data analysis (CyberChef-MCP)
+│   │       │   ├── send.rs         # Secure send (WRAITH)
+│   │       │   ├── receive.rs      # Secure receive (WRAITH)
+│   │       │   ├── identity.rs     # Identity management
+│   │       │   ├── peer.rs         # Peer management
+│   │       │   ├── status.rs       # Component health checks
+│   │       │   ├── config.rs       # Configuration management
+│   │       │   └── completions.rs  # Shell completion generation
+│   │       └── output/         # Output formatting
+│   │           ├── table.rs        # Table output (comfy-table)
+│   │           └── json.rs         # JSON output (serde_json)
 │   ├── spectre-core/       # Core orchestration library
-│   ├── spectre-tui/        # TUI dashboard (ratatui)
-│   ├── spectre-gui/        # GUI application (Tauri 2.0)
-│   └── spectre-mcp/        # MCP server implementation
+│   │   ├── Cargo.toml
+│   │   └── src/
+│   │       ├── lib.rs          # Library root
+│   │       ├── error.rs        # Error types (SpectreError)
+│   │       ├── logging.rs      # Tracing setup
+│   │       ├── config/         # Configuration system
+│   │       │   ├── mod.rs          # Config structs (serde)
+│   │       │   └── loader.rs       # File discovery, merging
+│   │       ├── scan/           # Scanning interface
+│   │       │   ├── mod.rs          # Module exports
+│   │       │   ├── traits.rs       # Scanner trait
+│   │       │   ├── types.rs        # ScanType, ScanResult, etc.
+│   │       │   └── parser.rs       # Port/target parsing
+│   │       ├── chef/           # CyberChef integration
+│   │       │   ├── mod.rs          # Chef trait
+│   │       │   ├── mcp.rs          # MCP client adapter
+│   │       │   └── docker.rs       # Container management
+│   │       └── comms/          # WRAITH integration
+│   │           ├── mod.rs          # Module exports
+│   │           ├── identity.rs     # Identity generation/storage
+│   │           └── peer.rs         # Peer management
+│   ├── spectre-tui/        # TUI dashboard (planned)
+│   ├── spectre-gui/        # GUI application (planned)
+│   └── spectre-mcp/        # MCP server (planned)
+│
+├── configs/
+│   └── spectre.toml        # Default configuration
 │
 ├── docs/
 │   ├── architecture/       # System design documentation
-│   │   ├── SYSTEM-DESIGN.md
-│   │   ├── INTEGRATION-SPEC.md
-│   │   └── INTERFACE-MODES.md
 │   ├── user-guide/         # Usage documentation
-│   │   ├── QUICK-START.md
-│   │   ├── CLI-REFERENCE.md
-│   │   ├── TUI-GUIDE.md
-│   │   └── MCP-TOOLS.md
 │   ├── integration/        # Component integration guides
-│   │   ├── WRAITH-INTEGRATION.md
-│   │   ├── PRTIP-INTEGRATION.md
-│   │   └── CYBERCHEF-INTEGRATION.md
-│   └── briefings/          # Mission briefing templates
-│       ├── SITREP.md
-│       ├── OPORD-template.md
-│       ├── CONOP-template.md
-│       └── AAR-template.md
+│   ├── briefings/          # Mission briefing templates
+│   ├── development/        # Developer documentation
+│   ├── api/                # API specifications
+│   ├── security/           # Security documentation
+│   ├── deployment/         # Deployment guides
+│   ├── tutorials/          # Step-by-step tutorials
+│   └── reference/          # Reference materials
 │
-├── configs/                # Default configurations
-│   ├── spectre.toml        # Main configuration
-│   ├── campaigns/          # Campaign templates
-│   └── recipes/            # CyberChef recipe library
+├── to-dos/                 # Sprint planning (7 phases)
 │
-├── templates/              # Workflow templates
-│   ├── campaigns/          # Campaign definition templates
-│   └── roe/                # Rules of engagement templates
+├── .github/
+│   ├── workflows/          # CI/CD (ci.yml, release.yml)
+│   ├── ISSUE_TEMPLATE/     # Bug report, feature request
+│   └── PULL_REQUEST_TEMPLATE.md
 │
-├── scripts/                # Build and deployment scripts
-│   ├── install.sh
-│   ├── build-all.sh
-│   └── setup-dev.sh
-│
-└── tests/                  # Integration tests
-    ├── cli/
-    ├── pipeline/
-    └── e2e/
+└── tests/                  # Integration tests (planned)
 ```
 
 ---
@@ -722,7 +750,9 @@ Post-campaign analysis — see [AAR-template.md](docs/briefings/AAR-template.md)
 
 ## Contributing
 
-We welcome contributions! See component repositories for specific guidelines:
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+
+**Component-specific guidelines:**
 
 - [WRAITH-Protocol CONTRIBUTING.md](https://github.com/doublegate/WRAITH-Protocol/blob/main/CONTRIBUTING.md)
 - [ProRT-IP CONTRIBUTING.md](https://github.com/doublegate/ProRT-IP/blob/main/CONTRIBUTING.md)
@@ -734,6 +764,7 @@ We welcome contributions! See component repositories for specific guidelines:
 - TypeScript/JavaScript: ESLint, Prettier
 - Commit messages: [Conventional Commits](https://www.conventionalcommits.org/)
 - All PRs require tests and documentation
+- See [SECURITY.md](SECURITY.md) for vulnerability reporting
 
 ---
 

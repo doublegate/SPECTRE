@@ -1,0 +1,111 @@
+# SPECTRE Configuration File
+# https://github.com/doublegate/SPECTRE
+#
+# This is the default configuration file for SPECTRE.
+# Configuration is loaded from multiple sources with the following precedence:
+#   1. CLI arguments (highest priority)
+#   2. Environment variables (SPECTRE_*)
+#   3. Project configuration (./spectre.toml)
+#   4. User configuration (~/.config/spectre/spectre.toml)
+#   5. System configuration (/etc/spectre/spectre.toml)
+
+[general]
+# Verbosity level (0=warn, 1=info, 2=debug, 3=trace)
+verbosity = 0
+
+# Enable colored output
+color = true
+
+# Data directory for storing state (default: platform-specific)
+# data_dir = "~/.local/share/spectre"
+
+# Temp directory for temporary files
+# temp_dir = "/tmp/spectre"
+
+
+[scan]
+# Default ports to scan
+# Options: "common", "top100", "all", or port specification (e.g., "22,80,443" or "1-1000")
+default_ports = "common"
+
+# Default timing template (0-5)
+# 0 = paranoid (very slow, IDS evasion)
+# 1 = sneaky (slow, IDS evasion)
+# 2 = polite (less bandwidth)
+# 3 = normal (default)
+# 4 = aggressive (fast)
+# 5 = insane (very fast, may miss ports)
+default_timing = 3
+
+# Maximum packets per second (0 = unlimited)
+max_rate = 0
+
+# Network interface to use (default: auto-detect)
+# interface = "eth0"
+
+# Enable service detection by default
+service_detection = false
+
+# Enable OS detection by default
+os_detection = false
+
+# Resolve DNS names
+resolve_dns = true
+
+# Custom Lua script directory for ProRT-IP
+# script_dir = "~/.config/spectre/scripts"
+
+
+[chef]
+# CyberChef-MCP server endpoint
+mcp_endpoint = "http://localhost:3001"
+
+# Docker image for CyberChef-MCP container
+docker_image = "doublegate/cyberchef-mcp:latest"
+
+# Container name for CyberChef-MCP
+container_name = "spectre-cyberchef"
+
+# Auto-start container if not running
+auto_start = true
+
+# Recipe directory for saved recipes
+# recipe_dir = "~/.config/spectre/recipes"
+
+# Connection timeout in seconds
+timeout = 30
+
+
+[comms]
+# Default relay server URL for WRAITH communications
+# relay_url = "wss://relay.example.com"
+
+# Identity storage directory
+# identity_dir = "~/.local/share/spectre/identities"
+
+# Peer storage directory
+# peer_dir = "~/.local/share/spectre/peers"
+
+# Default message expiration in seconds (0 = no expiration)
+default_expiration = 0
+
+# Enable compression by default
+compress = false
+
+# Connection timeout in seconds
+timeout = 30
+
+
+[output]
+# Default output format
+# Options: "table", "json", "csv", "yaml"
+format = "table"
+
+# Default output directory for saved results
+# output_dir = "~/spectre-output"
+
+# Include timestamps in output
+timestamps = true
+
+# Pretty print JSON output
+pretty_json = true

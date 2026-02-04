@@ -1,0 +1,57 @@
+[package]
+name = "spectre-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+description = "SPECTRE core orchestration library"
+keywords = ["security", "scanning", "encryption", "orchestration"]
+categories = ["network-programming"]
+
+[dependencies]
+# Async runtime
+tokio = { workspace = true }
+async-trait = { workspace = true }
+futures = { workspace = true }
+
+# Serialization
+serde = { workspace = true }
+serde_json = { workspace = true }
+serde_yaml = { workspace = true }
+toml = { workspace = true }
+toml_edit = { workspace = true }
+
+# Error handling
+thiserror = { workspace = true }
+anyhow = { workspace = true }
+
+# Logging
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true, features = ["env-filter", "json"] }
+tracing-appender = { workspace = true }
+
+# Configuration
+directories = { workspace = true }
+
+# Docker API (for CyberChef-MCP)
+bollard = { workspace = true }
+
+# Networking utilities
+ipnetwork = { workspace = true }
+
+# Date/time
+chrono = { workspace = true }
+
+# Crypto utilities
+sha2 = { workspace = true }
+rand = { workspace = true }
+base64 = { workspace = true }
+hex = { workspace = true }
+urlencoding = { workspace = true }
+
+[dev-dependencies]
+tempfile = "3.14"
+tokio-test = "0.4"
