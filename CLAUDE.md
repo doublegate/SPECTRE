@@ -14,9 +14,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | **CyberChef-MCP** | Data analysis (463 operations via MCP) | TypeScript/Docker | v1.8.0 | 563 |
 | **WRAITH-Protocol** | Secure communications (10+ Gbps E2EE) | Rust | v2.3.7 | 2,957 |
 
-**Current Phase:** Operation BLACKOUT (v0.1.x) - Foundation/CLI skeleton **COMPLETE**
+**Phase 1:** Operation BLACKOUT (v0.1.x) - Foundation/CLI skeleton **COMPLETE**
+**Phase 2:** Operation NIGHTFALL (v0.2.x) - Core Orchestration **COMPLETE**
 
-**SPECTRE Tests:** 86 (34 CLI + 51 core + 1 doc-test) | **Code:** ~7,600 lines Rust (32 files)
+**SPECTRE Tests:** 270 (43 CLI + 224 core + 3 doc-tests) | **Code:** ~14,500 lines Rust (58 files)
 
 **Repository:** [github.com/doublegate/SPECTRE](https://github.com/doublegate/SPECTRE)
 
@@ -88,18 +89,25 @@ Target Network → ProRT-IP (Recon) → CyberChef (Analysis) → WRAITH (Exfil/C
 
 ```
 crates/
-├── spectre-cli/        # Unified CLI orchestrator (14 files, 34 tests)
+├── spectre-cli/        # Unified CLI orchestrator (17 files, 43 tests)
 │   └── src/
 │       ├── main.rs         # Entry point, CLI parsing with clap 4
-│       ├── commands/       # scan, chef, send, receive, identity, peer, status, config, completions
+│       ├── commands/       # 12 subcommands: scan, chef, send, receive, identity, peer,
+│       │                   # status, config, completions, campaign, pipeline, plugin
 │       └── output/         # table (comfy-table) and json (serde_json) formatters
-├── spectre-core/       # Core orchestration library (15 files, 52 tests)
+├── spectre-core/       # Core orchestration library (38 files, 224 tests)
 │   └── src/
 │       ├── config/         # TOML config with file discovery and env var support
 │       ├── scan/           # Scanner trait, port/target parsing, 8 scan types
 │       ├── chef/           # Chef trait, MCP client, Docker management (bollard)
 │       ├── comms/          # Identity generation/storage, peer management
-│       ├── error.rs        # SpectreError enum (thiserror)
+│       ├── target/         # Priority queue, scope enforcer, CIDR expansion, DNS (40 tests)
+│       ├── job/            # State machine, concurrency control, events (35 tests)
+│       ├── results/        # Finding model, JSON/XML/greppable output, stats (23 tests)
+│       ├── pipeline/       # Composable stages, builder API, metrics (17 tests)
+│       ├── campaign/       # SQLite persistence, phases, artifacts (28 tests)
+│       ├── plugin/         # Lua 5.4 sandbox, manifest, permissions (30 tests)
+│       ├── error.rs        # SpectreError enum (13 variants, thiserror)
 │       └── logging.rs      # tracing-subscriber with env-filter
 ├── spectre-tui/        # TUI dashboard (planned - Phase 3)
 ├── spectre-gui/        # GUI application (planned - Phase 5)
@@ -226,7 +234,7 @@ Development is organized into 7 phases (56 sprints total):
 | Phase | Codename | Version | Focus |
 |-------|----------|---------|-------|
 | 1 | Operation BLACKOUT | v0.1.x | Foundation - CLI skeleton, component integration **COMPLETE** |
-| 2 | Operation NIGHTFALL | v0.2.x | Data pipeline, scan-to-analysis automation |
+| 2 | Operation NIGHTFALL | v0.2.x | Core orchestration - target, job, results, pipeline, campaign, plugins **COMPLETE** |
 | 3 | Operation PHANTOM | v0.3.x | TUI dashboard (60 FPS), real-time visualization |
 | 4 | Operation SPECTER | v0.4.x | Advanced features, workflows, plugins |
 | 5 | Operation SHADOW | v0.5.x | GUI application (Tauri 2.0) |
@@ -240,7 +248,7 @@ See `to-dos/` directory for detailed sprint planning.
 ## CLI Commands Reference
 
 ```bash
-# Core commands
+# Core commands (Phase 1)
 spectre scan [flags] <targets>    # Network scanning (ProRT-IP interface)
 spectre chef [operation] [flags]  # Data analysis (CyberChef-MCP interface)
 spectre send [flags]              # Secure send (WRAITH interface)
@@ -250,6 +258,21 @@ spectre peer <subcommand>         # Trusted peer management
 spectre status                    # Component health checks
 spectre config <subcommand>       # Configuration management
 spectre completions <shell>       # Shell completion generation
+
+# Orchestration commands (Phase 2)
+spectre campaign create <name>    # Create a new campaign
+spectre campaign status <name>    # Show campaign status
+spectre campaign list             # List all campaigns
+spectre campaign advance <name>   # Advance campaign to next phase
+spectre campaign export <name>    # Export campaign data
+spectre campaign import <file>    # Import campaign from file
+spectre campaign archive <name>   # Archive completed campaign
+spectre pipeline run <name>       # Execute a data pipeline
+spectre pipeline list             # List available pipelines
+spectre pipeline show <name>      # Show pipeline details
+spectre plugin list               # List available plugins
+spectre plugin info <name>        # Show plugin information
+spectre plugin run <name>         # Execute a plugin
 
 # Key scan flags (Nmap-compatible)
 -S / --syn       # SYN scan (stealth)

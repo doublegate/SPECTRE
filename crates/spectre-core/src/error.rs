@@ -49,6 +49,26 @@ pub enum SpectreError {
     /// Internal error
     #[error("Internal error: {0}")]
     Internal(String),
+
+    /// Job error
+    #[error("Job error: {0}")]
+    Job(#[from] JobError),
+
+    /// Pipeline error
+    #[error("Pipeline error: {0}")]
+    Pipeline(#[from] PipelineError),
+
+    /// Campaign error
+    #[error("Campaign error: {0}")]
+    Campaign(#[from] CampaignError),
+
+    /// Plugin error
+    #[error("Plugin error: {0}")]
+    Plugin(#[from] PluginError),
+
+    /// Target error
+    #[error("Target error: {0}")]
+    Target(#[from] TargetError),
 }
 
 /// Configuration-related errors
@@ -203,6 +223,133 @@ pub enum CommsError {
         /// Maximum allowed
         max: usize,
     },
+}
+
+/// Target management errors
+#[derive(Error, Debug)]
+pub enum TargetError {
+    /// Invalid CIDR specification
+    #[error("Invalid CIDR: {0}")]
+    InvalidCidr(String),
+
+    /// Target out of scope
+    #[error("Target out of scope: {0}")]
+    OutOfScope(String),
+
+    /// DNS resolution failure
+    #[error("DNS resolution failed for {host}: {message}")]
+    DnsResolution {
+        /// Hostname that failed resolution
+        host: String,
+        /// Error message
+        message: String,
+    },
+
+    /// Target file parse error
+    #[error("Failed to parse target file: {0}")]
+    FileParseError(String),
+}
+
+/// Job orchestration errors
+#[derive(Error, Debug)]
+pub enum JobError {
+    /// Job not found
+    #[error("Job not found: {0}")]
+    NotFound(String),
+
+    /// Invalid state transition
+    #[error("Invalid state transition from {from} to {to}")]
+    InvalidTransition {
+        /// Current state
+        from: String,
+        /// Requested state
+        to: String,
+    },
+
+    /// Job cancelled
+    #[error("Job cancelled: {0}")]
+    Cancelled(String),
+
+    /// Rate limit exceeded
+    #[error("Rate limit exceeded")]
+    RateLimitExceeded,
+
+    /// Manager shutdown
+    #[error("Job manager is shutting down")]
+    ManagerShutdown,
+}
+
+/// Pipeline errors
+#[derive(Error, Debug)]
+pub enum PipelineError {
+    /// Stage execution error
+    #[error("Stage '{stage}' failed: {message}")]
+    StageError {
+        /// Stage name
+        stage: String,
+        /// Error message
+        message: String,
+    },
+
+    /// Pipeline configuration error
+    #[error("Pipeline configuration error: {0}")]
+    ConfigError(String),
+
+    /// No stages configured
+    #[error("Pipeline has no stages configured")]
+    NoStages,
+}
+
+/// Campaign management errors
+#[derive(Error, Debug)]
+pub enum CampaignError {
+    /// Campaign not found
+    #[error("Campaign not found: {0}")]
+    NotFound(String),
+
+    /// Database error
+    #[error("Database error: {0}")]
+    DatabaseError(String),
+
+    /// Invalid campaign state
+    #[error("Invalid campaign state: {0}")]
+    InvalidState(String),
+
+    /// Artifact error
+    #[error("Artifact error: {0}")]
+    ArtifactError(String),
+
+    /// Export/import error
+    #[error("Export/import error: {0}")]
+    ExportError(String),
+}
+
+/// Plugin system errors
+#[derive(Error, Debug)]
+pub enum PluginError {
+    /// Plugin not found
+    #[error("Plugin not found: {0}")]
+    NotFound(String),
+
+    /// Lua runtime error
+    #[error("Lua runtime error: {0}")]
+    RuntimeError(String),
+
+    /// Plugin sandbox violation
+    #[error("Sandbox violation: {0}")]
+    SandboxViolation(String),
+
+    /// Invalid plugin manifest
+    #[error("Invalid plugin manifest: {0}")]
+    InvalidManifest(String),
+
+    /// Permission denied
+    #[error("Plugin permission denied: {0}")]
+    PermissionDenied(String),
+
+    /// Resource limit exceeded
+    #[error("Resource limit exceeded: {0}")]
+    ResourceLimit(String),
 }
 
 impl From<toml::de::Error> for SpectreError {

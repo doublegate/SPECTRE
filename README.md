@@ -13,7 +13,7 @@ A unified offensive security toolkit combining wire-speed secure communications,
   <a href="https://github.com/doublegate/SPECTRE"><img src="https://img.shields.io/github/stars/doublegate/SPECTRE?style=flat-square" alt="GitHub Stars"></a>
   <a href="https://github.com/doublegate/SPECTRE/fork"><img src="https://img.shields.io/github/forks/doublegate/SPECTRE?style=flat-square" alt="GitHub Forks"></a>
   <a href="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml"><img src="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
-  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.1.0-blue.svg" alt="Version"></a>
+  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.2.0-blue.svg" alt="Version"></a>
   <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.88%2B-orange.svg" alt="Rust"></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-22%2B-green.svg" alt="Node.js"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT%2FGPLv3%2FApache--2.0-green.svg" alt="License"></a>
@@ -48,8 +48,8 @@ Modern offensive security requires seamless tool integration. SPECTRE eliminates
 
 | Metric | Value |
 |--------|-------|
-| **Combined Tests** | 6,163 (SPECTRE: 86 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 563) |
-| **SPECTRE Codebase** | ~7,600 lines Rust (32 source files across 5 crates) |
+| **Combined Tests** | 6,347 (SPECTRE: 270 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 563) |
+| **SPECTRE Codebase** | ~14,500 lines Rust (58 source files across 5 crates) |
 | **Component Code** | ~180,000 (Rust) + ~40,000 (TypeScript/JavaScript) |
 | **Languages** | Rust 2024, TypeScript, JavaScript |
 | **Network Throughput** | 10+ Gbps (WRAITH), 10M+ pps (ProRT-IP) |
@@ -307,13 +307,17 @@ SPECTRE follows a modular microservices architecture where each component operat
 
 | Layer | Purpose | Technology | Status |
 |-------|---------|------------|--------|
-| **CLI Orchestrator** | Unified command interface | Rust (clap 4) | **Implemented** |
-| **Core Library** | Configuration, scanning, comms, analysis | Rust (tokio, serde, tracing) | **Implemented** |
+| **CLI Orchestrator** | Unified command interface (12 subcommands) | Rust (clap 4) | **Implemented** |
+| **Core Library** | Config, scanning, comms, analysis, orchestration | Rust (tokio, serde, tracing) | **Implemented** |
+| **Target Management** | Priority queue, scope enforcement, async DNS | Rust (ipnetwork, tokio) | **Implemented** |
+| **Job Orchestration** | State machine, concurrency control, events | Rust (tokio, broadcast channels) | **Implemented** |
+| **Results Aggregation** | Findings, JSON/XML/greppable output, stats | Rust (serde, quick-xml) | **Implemented** |
+| **Data Pipeline** | Composable stages, builder API, metrics | Rust (async-trait, tokio) | **Implemented** |
+| **Campaign Management** | SQLite persistence, phases, artifacts | Rust (rusqlite, sha2) | **Implemented** |
+| **Plugin System** | Lua 5.4 sandbox, manifest, permissions | Rust (mlua) | **Implemented** |
 | **TUI Framework** | Real-time dashboard | Rust (ratatui), ProRT-IP TUI | Planned |
 | **GUI Application** | Visual campaign planning | Tauri 2.0, React, TypeScript | Planned |
 | **MCP Server** | AI-assisted operations | Rust, MCP Protocol | Planned |
-| **Data Pipeline** | Inter-component data flow | JSON, Protocol Buffers | Planned |
-| **Plugin System** | Extensibility | Lua 5.4 (sandboxed) | Future |
 
 ---
 
@@ -576,13 +580,16 @@ SPECTRE releases follow an operational codename convention:
 - [x] Shell completion generation (bash, zsh, fish, PowerShell)
 - [x] 86 unit tests passing, zero clippy warnings
 
-### Phase 2: Integration — Operation NIGHTFALL
+### Phase 2: Core Orchestration — Operation NIGHTFALL (Complete)
 
-- [ ] Data pipeline between components (JSON/Protobuf)
-- [ ] Scan-to-analysis automation
-- [ ] Analysis-to-exfil workflows
-- [ ] Campaign state management
-- [ ] Output format standardization
+- [x] Target management with priority queue, scope enforcement, CIDR expansion, async DNS resolution
+- [x] Job orchestration with state machine (Created->Queued->Running->Paused->Complete/Failed/Cancelled), concurrency control, event broadcasting
+- [x] Results aggregation with Finding model, JSON/XML/greppable output, host/service grouping, statistics
+- [x] Data pipeline with composable stages (Scan->Analysis->Filter->Output), builder API, execution metrics
+- [x] Campaign management with SQLite persistence, phase state machine, artifact storage with SHA-256 hashing
+- [x] Lua 5.4 plugin system with sandboxed execution, manifest-driven loading, permission model, resource limits
+- [x] 3 new CLI commands: `campaign` (7 subcommands), `pipeline` (3 subcommands), `plugin` (3 subcommands)
+- [x] 270 unit tests passing, zero clippy warnings
 
 ### Phase 3: Orchestration — Operation PHANTOM
 
@@ -610,7 +617,6 @@ SPECTRE releases follow an operational codename convention:
 
 ### Future Enhancements
 
-- [ ] Plugin system for custom workflows (Lua 5.4)
 - [ ] Automated vulnerability correlation
 - [ ] Integration with external threat intel feeds
 - [ ] Kubernetes deployment (Helm chart)
@@ -635,11 +641,11 @@ SPECTRE/
 ├── .editorconfig           # Editor standards
 │
 ├── crates/
-│   ├── spectre-cli/        # Unified CLI orchestrator
+│   ├── spectre-cli/        # Unified CLI orchestrator (17 files, 43 tests)
 │   │   ├── Cargo.toml
 │   │   └── src/
 │   │       ├── main.rs         # Entry point, CLI parsing
-│   │       ├── commands/       # Subcommand implementations
+│   │       ├── commands/       # 12 subcommand implementations
 │   │       │   ├── scan.rs         # Network scanning (ProRT-IP)
 │   │       │   ├── chef.rs         # Data analysis (CyberChef-MCP)
 │   │       │   ├── send.rs         # Secure send (WRAITH)
@@ -648,15 +654,18 @@ SPECTRE/
 │   │       │   ├── peer.rs         # Peer management
 │   │       │   ├── status.rs       # Component health checks
 │   │       │   ├── config.rs       # Configuration management
-│   │       │   └── completions.rs  # Shell completion generation
+│   │       │   ├── completions.rs  # Shell completion generation
+│   │       │   ├── campaign.rs     # Campaign management (7 subcommands)
+│   │       │   ├── pipeline.rs     # Data pipeline execution (3 subcommands)
+│   │       │   └── plugin.rs       # Plugin management (3 subcommands)
 │   │       └── output/         # Output formatting
 │   │           ├── table.rs        # Table output (comfy-table)
 │   │           └── json.rs         # JSON output (serde_json)
-│   ├── spectre-core/       # Core orchestration library
+│   ├── spectre-core/       # Core orchestration library (38 files, 224 tests)
 │   │   ├── Cargo.toml
 │   │   └── src/
-│   │       ├── lib.rs          # Library root
-│   │       ├── error.rs        # Error types (SpectreError)
+│   │       ├── lib.rs          # Library root (12 public modules)
+│   │       ├── error.rs        # Error types (SpectreError, 10+ variants)
 │   │       ├── logging.rs      # Tracing setup
 │   │       ├── config/         # Configuration system
 │   │       │   ├── mod.rs          # Config structs (serde)
@@ -670,10 +679,39 @@ SPECTRE/
 │   │       │   ├── mod.rs          # Chef trait
 │   │       │   ├── mcp.rs          # MCP client adapter
 │   │       │   └── docker.rs       # Container management
-│   │       └── comms/          # WRAITH integration
-│   │           ├── mod.rs          # Module exports
-│   │           ├── identity.rs     # Identity generation/storage
-│   │           └── peer.rs         # Peer management
+│   │       ├── comms/          # WRAITH integration
+│   │       │   ├── mod.rs          # Module exports
+│   │       │   ├── identity.rs     # Identity generation/storage
+│   │       │   └── peer.rs         # Peer management
+│   │       ├── target/         # Target management (40 tests)
+│   │       │   ├── mod.rs          # EnhancedTarget, priority, status
+│   │       │   ├── queue.rs        # TargetQueue (BinaryHeap priority)
+│   │       │   ├── scope.rs        # ScopeEnforcer (allow/block lists)
+│   │       │   └── file.rs         # File-based target loading
+│   │       ├── job/            # Job orchestration (35 tests)
+│   │       │   ├── mod.rs          # ScanJob state machine
+│   │       │   ├── manager.rs      # JobManager with concurrency control
+│   │       │   ├── state.rs        # Job state transitions
+│   │       │   └── events.rs       # Event broadcasting (tokio channels)
+│   │       ├── results/        # Results aggregation (23 tests)
+│   │       │   ├── mod.rs          # Finding model, host grouping
+│   │       │   ├── finding.rs      # Finding struct, severity levels
+│   │       │   ├── output.rs       # JSON, XML, greppable formatters
+│   │       │   └── stats.rs        # ResultStats, port/service summaries
+│   │       ├── pipeline/       # Data pipeline (17 tests)
+│   │       │   ├── mod.rs          # Pipeline execution, metrics
+│   │       │   ├── stage.rs        # Composable pipeline stages
+│   │       │   └── builder.rs      # PipelineBuilder fluent API
+│   │       ├── campaign/       # Campaign management (28 tests)
+│   │       │   ├── mod.rs          # Campaign struct, phase tracking
+│   │       │   ├── state.rs        # CampaignPhase state machine
+│   │       │   ├── artifact.rs     # Artifact storage, SHA-256 hashing
+│   │       │   └── storage.rs      # CampaignStore (SQLite via rusqlite)
+│   │       └── plugin/         # Plugin system (30 tests)
+│   │           ├── mod.rs          # Plugin loading, execution
+│   │           ├── sandbox.rs      # Lua 5.4 sandbox (mlua)
+│   │           ├── api.rs          # spectre.* Lua API
+│   │           └── manifest.rs     # plugin.toml manifest, permissions
 │   ├── spectre-tui/        # TUI dashboard (planned)
 │   ├── spectre-gui/        # GUI application (planned)
 │   └── spectre-mcp/        # MCP server (planned)
@@ -822,6 +860,6 @@ SPECTRE builds on the shoulders of giants:
 
 **SPECTRE** — _Unified Offensive Security_
 
-**Version:** 0.1.0 | **License:** Multi-license | **Language:** Rust + TypeScript | **Status:** Early Development
+**Version:** 0.2.0 | **License:** Multi-license | **Language:** Rust + TypeScript | **Status:** Active Development
 
 **Last Updated:** 2026-02-04

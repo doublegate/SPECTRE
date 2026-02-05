@@ -10,6 +10,12 @@
 //! - [`scan`] - Network scanning interface (ProRT-IP integration)
 //! - [`chef`] - Data transformation interface (CyberChef-MCP integration)
 //! - [`comms`] - Secure communications interface (WRAITH integration)
+//! - [`target`] - Enhanced target management with priority queue and scope enforcement
+//! - [`job`] - Scan job orchestration with lifecycle state machine
+//! - [`results`] - Results aggregation, formatting, and statistics
+//! - [`pipeline`] - Composable data pipeline with typed stages
+//! - [`campaign`] - Campaign state management with SQLite persistence
+//! - [`plugin`] - Lua 5.4 plugin system with sandboxing
 //!
 //! # Example
 //!
@@ -42,12 +48,18 @@
 #![allow(clippy::uninlined_format_args)]
 #![allow(clippy::unused_async)]
 
+pub mod campaign;
 pub mod chef;
 pub mod comms;
 pub mod config;
 pub mod error;
+pub mod job;
 pub mod logging;
+pub mod pipeline;
+pub mod plugin;
+pub mod results;
 pub mod scan;
+pub mod target;
 
 /// Re-export commonly used types
 pub use error::{Result, SpectreError};

@@ -8,9 +8,100 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- Data pipeline between components (JSON/Protobuf) — Phase 2
-- Scan-to-analysis automation workflows — Phase 2
 - TUI dashboard with real-time visualization — Phase 3
+- Multi-target campaign coordination — Phase 3
+- Parallel operation scheduling — Phase 3
+
+## [0.2.0] - 2026-02-04
+
+### Added
+
+#### Phase 2 Complete: Operation NIGHTFALL — Core Orchestration
+
+**spectre-cli crate** (17 source files, 43 tests):
+- 3 new subcommands (12 total): `campaign`, `pipeline`, `plugin`
+- `campaign` command with 7 subcommands: `create`, `status`, `list`, `advance`, `export`, `import`, `archive`
+- `pipeline` command with 3 subcommands: `run`, `list`, `show`
+- `plugin` command with 3 subcommands: `list`, `info`, `run`
+
+**spectre-core crate** (38 source files, 224 tests, 3 doc-tests):
+- **Target management** (`target/`, 40 tests):
+  - `EnhancedTarget` struct with priority scoring, status tracking, metadata
+  - `TargetQueue` with BinaryHeap-based priority ordering
+  - `ScopeEnforcer` with allow/block lists, CIDR range support
+  - Target file parser supporting line-delimited, CSV, and Nmap-format inputs
+  - CIDR expansion to individual addresses
+  - Async DNS resolution with configurable concurrency
+  - Target deduplication and validation
+
+- **Job orchestration** (`job/`, 35 tests):
+  - `ScanJob` struct with full state machine: Created → Queued → Running → Paused → Complete/Failed/Cancelled
+  - `JobManager` with configurable concurrency limits
+  - `CancellationToken`-based job cancellation
+  - Event broadcasting via tokio broadcast channels
+  - Job progress tracking with percentage and ETA estimation
+  - Job persistence and recovery support
+
+- **Results aggregation** (`results/`, 23 tests):
+  - `Finding` struct with severity levels (Critical, High, Medium, Low, Info)
+  - Host-centric result grouping with service discovery
+  - JSON output format with pretty-printing
+  - Nmap-compatible XML output generation (quick-xml)
+  - Greppable output format for scripting
+  - `ResultStats` with port distribution, service summaries, OS statistics
+  - Finding deduplication and merging
+
+- **Data pipeline** (`pipeline/`, 17 tests):
+  - Composable pipeline stages: Scan → Analysis → Filter → Output
+  - `PipelineBuilder` fluent API for stage composition
+  - Async pipeline execution with stage-level error handling
+  - Pipeline execution metrics (duration per stage, total throughput)
+  - Named pipeline definitions for reuse
+  - Stage-level progress callbacks
+
+- **Campaign management** (`campaign/`, 28 tests):
+  - `Campaign` struct with multi-phase lifecycle
+  - `CampaignPhase` state machine: Planning → Recon → Analysis → Exploitation → PostExploitation → Reporting → Complete
+  - `Artifact` struct with SHA-256 hash verification
+  - `CampaignStore` with SQLite persistence (rusqlite, bundled)
+  - Campaign CRUD operations with SQL schema management
+  - Phase advancement with validation rules
+  - Campaign export/import for sharing between operators
+  - Campaign archival with metadata preservation
+
+- **Plugin system** (`plugin/`, 30 tests):
+  - Lua 5.4 sandbox via mlua (vendored, async, send, serialize)
+  - `PluginManifest` from `plugin.toml` with metadata, permissions, dependencies
+  - Sandboxed environment with restricted standard library access
+  - `spectre.*` Lua API: `spectre.log()`, `spectre.scan()`, `spectre.chef()`, `spectre.send()`
+  - Permission model: network, filesystem, exec, with configurable grants
+  - Resource limits: memory ceiling, execution timeout, output buffering
+  - Plugin discovery from configured plugin directories
+
+- **Error handling** (`error.rs`):
+  - 5 new error variants: `Target(TargetError)`, `Job(JobError)`, `Pipeline(PipelineError)`, `Campaign(CampaignError)`, `Plugin(PluginError)`
+  - Each new domain has specialized sub-error enum with thiserror derive
+
+**Workspace dependencies added** (`Cargo.toml`):
+- rusqlite (bundled): SQLite for campaign persistence
+- mlua (lua54, vendored, async, send, serialize): Lua 5.4 plugin runtime
+- uuid (v4): Unique identifiers for jobs and campaigns
+- tokio-util: Cancellation tokens for job management
+- quick-xml: Nmap-compatible XML output generation
+
+### Changed
+- Extended `SpectreError` enum from 8 to 13 variants covering all new domains
+- Updated `lib.rs` from 6 to 12 public modules
+- CLI `commands/mod.rs` updated with 3 new subcommand routes (12 total)
+
+### Technical Details
+- 58 Rust source files, ~14,500 lines of code
+- 270 tests total: 43 (spectre-cli) + 224 (spectre-core) + 3 (doc-tests)
+- Zero clippy warnings with `-D warnings`
+- All formatting passes `cargo fmt --all --check`
+- Core module test breakdown: target (40), job (35), plugin (30), campaign (28), results (23), scan (19), pipeline (17), config (11), comms (9), chef (7), error (4), logging (1)
+- Async runtime: tokio (full features)
+- Minimum supported Rust version: 1.88
 
 ## [0.1.2] - 2026-02-04
 
@@ -291,7 +382,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/doublegate/SPECTRE/compare/v0.1.2...HEAD
+[Unreleased]: https://github.com/doublegate/SPECTRE/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/doublegate/SPECTRE/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/doublegate/SPECTRE/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/doublegate/SPECTRE/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/doublegate/SPECTRE/releases/tag/v0.1.0

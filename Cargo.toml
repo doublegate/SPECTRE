@@ -53,6 +53,17 @@ tracing-appender = "0.2"
 # Networking
 ipnetwork = "0.20"
 
+# Database
+rusqlite = { version = "0.32", features = ["bundled"] }
+
+# Plugin system
+mlua = { version = "0.10", features = ["lua54", "vendored", "async", "send", "serialize"] }
+
+# Utilities
+uuid = { version = "1.0", features = ["v4"] }
+tokio-util = "0.7"
+quick-xml = "0.37"
+
 # Crypto (for WRAITH integration)
 sha2 = "0.10"
 rand = "0.8"

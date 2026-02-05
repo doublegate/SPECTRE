@@ -8,11 +8,14 @@ use anyhow::Result;
 use clap::{Parser, Subcommand};
 use clap_complete::Shell;
 
+pub mod campaign;
 pub mod chef;
 pub mod completions;
 pub mod config;
 pub mod identity;
 pub mod peer;
+pub mod pipeline;
+pub mod plugin;
 pub mod receive;
 pub mod scan;
 pub mod send;
@@ -96,6 +99,15 @@ pub enum Commands {
     #[command(visible_alias = "cfg")]
     Config(config::ConfigArgs),
 
+    /// Campaign management (create, run, track operations)
+    Campaign(campaign::CampaignArgs),
+
+    /// Data pipeline execution
+    Pipeline(pipeline::PipelineArgs),
+
+    /// Plugin management (list, run, info)
+    Plugin(plugin::PluginArgs),
+
     /// Generate shell completions
     Completions(completions::CompletionsArgs),
 }
@@ -125,6 +137,9 @@ pub async fn execute(cli: Cli) -> Result<()> {
         Commands::Peer(args) => peer::execute(args, cli.config).await,
         Commands::Status(args) => status::execute(args, cli.config).await,
         Commands::Config(args) => config::execute(args, cli.config).await,
+        Commands::Campaign(args) => campaign::execute(args, cli.config).await,
+        Commands::Pipeline(args) => pipeline::execute(args, cli.config).await,
+        Commands::Plugin(args) => plugin::execute(args, cli.config).await,
         Commands::Completions(args) => completions::execute(args),
     }
 }

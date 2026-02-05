@@ -280,6 +280,29 @@ src-tauri/icons/
 recipes/*.cache
 
 # =============================================================================
+# SQLite (Campaign Storage)
+# =============================================================================
+# Campaign databases (contain sensitive operation data)
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+!migrations/**/*.sql
+
+# =============================================================================
+# Lua Plugins
+# =============================================================================
+# Compiled Lua bytecode
+*.luac
+# Plugin runtime data
+plugins/cache/
+plugins/tmp/
+# Plugin logs
+plugins/*.log
+
+# =============================================================================
 # Sprint Planning (to-dos/)
 # =============================================================================
 # Keep planning documents, ignore personal notes
