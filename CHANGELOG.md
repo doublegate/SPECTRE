@@ -11,6 +11,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GUI application with Tauri 2.0 — Phase 5
 - MCP server implementation — Phase 6
 
+## [0.4.3] - 2026-02-04
+
+### Added
+
+#### Git Submodules — Component Repository Integration
+
+- **Three git submodules** added under `components/` directory:
+  - `components/wraith-protocol` — [WRAITH-Protocol](https://github.com/doublegate/WRAITH-Protocol) v2.3.7 (secure communications, 2,957 tests, ~141K lines Rust + ~36.6K lines TypeScript)
+  - `components/prtip` — [ProRT-IP](https://github.com/doublegate/ProRT-IP) v1.0.0 (network reconnaissance, 2,557 tests, ~39K lines Rust)
+  - `components/cyberchef-mcp` — [CyberChef-MCP](https://github.com/doublegate/CyberChef-MCP) v1.8.0 (data analysis, 563 tests, ~40K lines TypeScript)
+- **`.gitmodules`** file created with submodule path-to-URL mappings
+- New clones can use `git clone --recursive` to fetch all components automatically
+- Existing clones can initialize with `git submodule update --init --recursive`
+
+### Changed
+- README.md: Added `components/` and `.gitmodules` to project structure tree, added submodule init instructions to Quick Start
+- CLAUDE.md: Added `components/` directory to component structure documentation
+
 ## [0.4.2] - 2026-02-04
 
 ### Added
@@ -616,7 +634,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/doublegate/SPECTRE/compare/v0.4.2...HEAD
+[Unreleased]: https://github.com/doublegate/SPECTRE/compare/v0.4.3...HEAD
+[0.4.3]: https://github.com/doublegate/SPECTRE/compare/v0.4.2...v0.4.3
 [0.4.2]: https://github.com/doublegate/SPECTRE/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/doublegate/SPECTRE/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/doublegate/SPECTRE/compare/v0.3.0...v0.4.0

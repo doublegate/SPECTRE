@@ -13,7 +13,7 @@ A unified offensive security toolkit combining wire-speed secure communications,
   <a href="https://github.com/doublegate/SPECTRE"><img src="https://img.shields.io/github/stars/doublegate/SPECTRE?style=flat-square" alt="GitHub Stars"></a>
   <a href="https://github.com/doublegate/SPECTRE/fork"><img src="https://img.shields.io/github/forks/doublegate/SPECTRE?style=flat-square" alt="GitHub Forks"></a>
   <a href="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml"><img src="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
-  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.4.2-blue.svg" alt="Version"></a>
+  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.4.3-blue.svg" alt="Version"></a>
   <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.88%2B-orange.svg" alt="Rust"></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-22%2B-green.svg" alt="Node.js"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT%2FGPLv3%2FApache--2.0-green.svg" alt="License"></a>
@@ -519,6 +519,12 @@ git clone --recursive https://github.com/doublegate/SPECTRE.git
 cd SPECTRE
 ```
 
+**Or initialize submodules in an existing clone:**
+
+```bash
+git submodule update --init --recursive
+```
+
 **Build all Rust components:**
 
 ```bash
@@ -655,6 +661,7 @@ SPECTRE releases follow an operational codename convention:
 SPECTRE/
 ├── Cargo.toml              # Workspace manifest
 ├── Cargo.lock              # Dependency lock file
+├── .gitmodules             # Git submodule definitions
 ├── README.md               # This file
 ├── CHANGELOG.md            # Version history
 ├── CLAUDE.md               # AI assistant guidance
@@ -664,6 +671,11 @@ SPECTRE/
 ├── rustfmt.toml            # Rust formatting config
 ├── clippy.toml             # Rust linting config
 ├── .editorconfig           # Editor standards
+│
+├── components/             # Git submodules (standalone component repos)
+│   ├── wraith-protocol/    # WRAITH-Protocol (v2.3.7) - Secure communications
+│   ├── prtip/              # ProRT-IP WarScan (v1.0.0) - Network reconnaissance
+│   └── cyberchef-mcp/      # CyberChef-MCP (v1.8.0) - Data analysis
 │
 ├── crates/
 │   ├── spectre-cli/        # Unified CLI orchestrator (18 files, 44 tests)
@@ -925,6 +937,6 @@ SPECTRE builds on the shoulders of giants:
 
 **SPECTRE** — _Unified Offensive Security_
 
-**Version:** 0.4.2 | **License:** Multi-license | **Language:** Rust + TypeScript | **Status:** Active Development
+**Version:** 0.4.3 | **License:** Multi-license | **Language:** Rust + TypeScript | **Status:** Active Development
 
 **Last Updated:** 2026-02-04

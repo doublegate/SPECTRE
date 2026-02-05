@@ -1,0 +1,9 @@
+[submodule "components/wraith-protocol"]
+	path = components/wraith-protocol
+	url = https://github.com/doublegate/WRAITH-Protocol.git
+[submodule "components/prtip"]
+	path = components/prtip
+	url = https://github.com/doublegate/ProRT-IP.git
+[submodule "components/cyberchef-mcp"]
+	path = components/cyberchef-mcp
+	url = https://github.com/doublegate/CyberChef-MCP.git

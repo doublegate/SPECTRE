@@ -90,6 +90,11 @@ Target Network → ProRT-IP (Recon) → CyberChef (Analysis) → WRAITH (Exfil/C
 ### Component Structure
 
 ```
+components/                # Git submodules (standalone component repos)
+├── wraith-protocol/       # WRAITH-Protocol v2.3.7 - Secure communications
+├── prtip/                 # ProRT-IP v1.0.0 - Network reconnaissance
+└── cyberchef-mcp/         # CyberChef-MCP v1.8.0 - Data analysis
+
 crates/
 ├── spectre-cli/        # Unified CLI orchestrator (18 files, 44 tests)
 │   └── src/
