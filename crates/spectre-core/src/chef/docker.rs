@@ -111,27 +111,17 @@ impl DockerManager {
             // Create and start new container
             debug!("Creating new container");
 
+            // MCP uses JSON-RPC 2.0 over stdio, so we need stdin open
+            // instead of exposing network ports. The McpChefClient in
+            // mcp_adapter.rs uses `docker run -i --rm` to communicate
+            // via stdin/stdout, but this container config is used for
+            // `spectre chef setup --start` which creates a named
+            // persistent container.
             let config = ContainerConfig {
                 image: Some(self.image.clone()),
-                exposed_ports: Some(
-                    vec![("3001/tcp".to_string(), Default::default())]
-                        .into_iter()
-                        .collect(),
-                ),
-                host_config: Some(bollard::service::HostConfig {
-                    port_bindings: Some(
-                        vec![(
-                            "3001/tcp".to_string(),
-                            Some(vec![bollard::service::PortBinding {
-                                host_ip: Some("127.0.0.1".to_string()),
-                                host_port: Some("3001".to_string()),
-                            }]),
-                        )]
-                        .into_iter()
-                        .collect(),
-                    ),
-                    ..Default::default()
-                }),
+                open_stdin: Some(true),
+                attach_stdin: Some(true),
+                attach_stdout: Some(true),
                 ..Default::default()
             };
 

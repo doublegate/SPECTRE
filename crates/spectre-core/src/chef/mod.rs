@@ -2,13 +2,29 @@
 //!
 //! This module provides the interface for data transformation using CyberChef via MCP.
 //!
+//! # Architecture
+//!
+//! The chef module has a three-layer architecture:
+//!
+//! - **[`ChefClient`] trait** — the public interface for all CyberChef operations
+//! - **[`mcp_adapter::McpChefClient`]** — real MCP JSON-RPC 2.0 client over Docker stdio
+//!   (production path; spawns `docker run -i --rm <image>` and communicates via stdin/stdout)
+//! - **[`McpClient`]** — stub implementation with 6 local operations for testing without Docker
+//!
 //! # Integration Notes
 //!
-//! CyberChef-MCP runs as a Docker container exposing 463 data operations via the MCP protocol.
-//! The client connects to the container and sends operation requests.
+//! CyberChef-MCP runs as a Docker container exposing 463 data operations via the
+//! Model Context Protocol (MCP). The protocol uses JSON-RPC 2.0 over stdio: the
+//! client writes JSON requests to the container's stdin and reads responses from
+//! its stdout, one JSON object per line.
+//!
+//! The [`DockerManager`] handles container lifecycle (pull, start, stop) via the
+//! bollard Docker API, while [`mcp_adapter::McpChefClient`] handles the MCP
+//! transport and protocol.
 
 mod docker;
 mod mcp;
+pub mod mcp_adapter;
 
 use std::collections::HashMap;
 use std::path::{Path, PathBuf};
@@ -17,12 +33,29 @@ use serde::{Deserialize, Serialize};
 
 pub use docker::DockerManager;
 pub use mcp::McpClient;
+pub use mcp_adapter::McpChefClient;
 
 use crate::config::Config;
 use crate::error::ChefError;
 
-/// Create a CyberChef MCP client
+/// Create a CyberChef MCP client (production path).
+///
+/// This spawns a Docker container running CyberChef-MCP and communicates with it
+/// via the MCP protocol (JSON-RPC 2.0 over stdio). Requires Docker to be installed
+/// and the configured image to be available.
+///
+/// For testing without Docker, use [`create_stub_chef_client`] instead.
 pub async fn create_chef_client(config: &Config) -> crate::Result<Box<dyn ChefClient>> {
+    let client = McpChefClient::connect(&config.chef.docker_image, config.chef.timeout).await?;
+    Ok(Box::new(client))
+}
+
+/// Create a stub CyberChef client for testing without Docker.
+///
+/// This returns the local stub implementation that handles 6 common operations
+/// (base64, hex, URL encode/decode) without requiring a running Docker container
+/// or MCP server.
+pub async fn create_stub_chef_client(config: &Config) -> crate::Result<Box<dyn ChefClient>> {
     let client = McpClient::connect(&config.chef.mcp_endpoint, config.chef.timeout).await?;
     Ok(Box::new(client))
 }

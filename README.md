@@ -13,7 +13,7 @@ A unified offensive security toolkit combining wire-speed secure communications,
   <a href="https://github.com/doublegate/SPECTRE"><img src="https://img.shields.io/github/stars/doublegate/SPECTRE?style=flat-square" alt="GitHub Stars"></a>
   <a href="https://github.com/doublegate/SPECTRE/fork"><img src="https://img.shields.io/github/forks/doublegate/SPECTRE?style=flat-square" alt="GitHub Forks"></a>
   <a href="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml"><img src="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
-  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.4.5-blue.svg" alt="Version"></a>
+  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.4.6-blue.svg" alt="Version"></a>
   <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.88%2B-orange.svg" alt="Rust"></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-22%2B-green.svg" alt="Node.js"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT%2FGPLv3%2FApache--2.0-green.svg" alt="License"></a>
@@ -48,8 +48,8 @@ Modern offensive security requires seamless tool integration. SPECTRE eliminates
 
 | Metric                 | Value                                                                   |
 | ---------------------- | ----------------------------------------------------------------------- |
-| **Combined Tests**     | 6,970 (SPECTRE: 893 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 563) |
-| **SPECTRE Codebase**   | ~32,600 lines Rust (121 source files across 5 crates)                     |
+| **Combined Tests**     | 7,016 (SPECTRE: 939 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 563) |
+| **SPECTRE Codebase**   | ~34,000 lines Rust (122 source files across 5 crates)                     |
 | **Component Code**     | ~180,000 (Rust) + ~40,000 (TypeScript/JavaScript)                         |
 | **Languages**          | Rust 2024, TypeScript, JavaScript                                         |
 | **Network Throughput** | 10+ Gbps (WRAITH), 10M+ pps (ProRT-IP)                                   |
@@ -317,6 +317,7 @@ SPECTRE follows a modular microservices architecture where each component operat
 | **Core Library**        | Config, scanning, comms, analysis, orchestration | Rust (tokio, serde, tracing)     | **Implemented** |
 | **ProRT-IP Integration**| Real scanner via prtip_adapter (8 scan types)    | Rust (prtip-core, prtip-scanner) | **Implemented** |
 | **WRAITH Integration**  | Real E2EE comms via wraith_adapter (Noise_XX)    | Rust (wraith-core, wraith-crypto)| **Implemented** |
+| **CyberChef Integration**| Real MCP client via mcp_adapter (JSON-RPC/stdio) | Docker, JSON-RPC 2.0, tokio      | **Implemented** |
 | **Target Management**   | Priority queue, scope enforcement, async DNS     | Rust (ipnetwork, tokio)          | **Implemented** |
 | **Job Orchestration**   | State machine, concurrency control, events       | Rust (tokio, broadcast channels) | **Implemented** |
 | **Results Aggregation** | Findings, JSON/XML/greppable output, stats       | Rust (serde, quick-xml)          | **Implemented** |
@@ -603,7 +604,7 @@ SPECTRE releases follow an operational codename convention:
 - [x] Structured logging with tracing (RUST_LOG, file output, JSON format)
 - [x] ProRT-IP scanning interface (Scanner trait, port/target parsing, 8 scan types) — **real ProRT-IP integration via prtip_adapter (v0.4.4)**
 - [x] WRAITH comms interface (identity management, peer management, send/receive) — **real WRAITH integration via wraith_adapter (v0.4.5)**
-- [x] CyberChef MCP bridge (Docker container management, recipe execution)
+- [x] CyberChef MCP bridge (Docker container management, recipe execution) — **real MCP client via mcp_adapter (v0.4.6)**
 - [x] Shell completion generation (bash, zsh, fish, PowerShell)
 - [x] 86 unit tests passing, zero clippy warnings
 
@@ -702,7 +703,7 @@ SPECTRE/
 │   │       └── output/         # Output formatting
 │   │           ├── table.rs        # Table output (comfy-table)
 │   │           └── json.rs         # JSON output (serde_json)
-│   ├── spectre-core/       # Core orchestration library (83 files, 564 unit + 45 integration tests)
+│   ├── spectre-core/       # Core orchestration library (84 files, 610 unit + 45 integration tests)
 │   │   ├── Cargo.toml
 │   │   ├── src/
 │   │   │   ├── lib.rs          # Library root (18 public modules)
@@ -710,7 +711,7 @@ SPECTRE/
 │   │   │   ├── logging.rs      # Tracing setup
 │   │   │   ├── config/         # Configuration system
 │   │   │   ├── scan/           # Scanning interface (8 scan types, ProRT-IP adapter)
-│   │   │   ├── chef/           # CyberChef integration (Docker MCP)
+│   │   │   ├── chef/           # CyberChef integration (MCP adapter, Docker, stub)
 │   │   │   ├── comms/          # WRAITH integration (identity, peers, wraith_adapter)
 │   │   │   ├── target/         # Target management (priority queue, scope)
 │   │   │   ├── job/            # Job orchestration (state machine, events)
@@ -940,6 +941,6 @@ SPECTRE builds on the shoulders of giants:
 
 **SPECTRE** — _Unified Offensive Security_
 
-**Version:** 0.4.5 | **License:** Multi-license | **Language:** Rust + TypeScript | **Status:** Active Development
+**Version:** 0.4.6 | **License:** Multi-license | **Language:** Rust + TypeScript | **Status:** Active Development
 
 **Last Updated:** 2026-02-05

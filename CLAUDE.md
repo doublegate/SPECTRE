@@ -19,7 +19,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Phase 3:** Operation PHANTOM (v0.3.x) - TUI Dashboard **COMPLETE**
 **Phase 4:** Operation SPECTER (v0.4.x) - Advanced Features **COMPLETE**
 
-**SPECTRE Tests:** 893 (44 CLI + 564 core + 235 TUI + 5 doc-tests + 45 integration) | **Code:** ~32,600 lines Rust (121 files)
+**SPECTRE Tests:** 939 (44 CLI + 610 core + 235 TUI + 5 doc-tests + 45 integration) | **Code:** ~34,000 lines Rust (122 files)
 
 **Repository:** [github.com/doublegate/SPECTRE](https://github.com/doublegate/SPECTRE)
 
@@ -102,11 +102,11 @@ crates/
 │       ├── commands/       # 13 subcommands: scan, chef, send, receive, identity, peer,
 │       │                   # status, config, completions, campaign, pipeline, plugin, tui
 │       └── output/         # table (comfy-table) and json (serde_json) formatters
-├── spectre-core/       # Core orchestration library (83 files, 564 unit + 45 integration tests)
+├── spectre-core/       # Core orchestration library (84 files, 610 unit + 45 integration tests)
 │   ├── src/
 │   │   ├── config/         # TOML config with file discovery and env var support
 │   │   ├── scan/           # Scanner trait, ProRT-IP adapter, port/target parsing, 8 scan types
-│   │   ├── chef/           # Chef trait, MCP client, Docker management (bollard)
+│   │   ├── chef/           # Chef trait, MCP adapter (JSON-RPC 2.0 over stdio), Docker management (bollard)
 │   │   ├── comms/          # WRAITH adapter, identity generation/storage, peer management
 │   │   ├── target/         # Priority queue, scope enforcer, CIDR expansion, DNS
 │   │   ├── job/            # State machine, concurrency control, events

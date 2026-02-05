@@ -11,6 +11,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GUI application with Tauri 2.0 — Phase 5
 - MCP server implementation — Phase 6
 
+## [0.4.6] - 2026-02-05
+
+### Added
+
+#### CyberChef-MCP Integration — Real MCP Client over Docker Stdio
+
+- **`crates/spectre-core/src/chef/mcp_adapter.rs`** (NEW, 1,353 lines, 46 unit tests):
+  - `McpChefClient` struct implementing SPECTRE's `ChefClient` trait via real MCP JSON-RPC 2.0 protocol
+  - `McpTransport` struct managing the Docker subprocess stdio pipe: spawns `docker run -i --rm <image>` via `tokio::process::Command` with piped stdin/stdout
+  - JSON-RPC 2.0 message types: `JsonRpcRequest`, `JsonRpcResponse`, `JsonRpcError` with serde derive
+  - MCP initialization handshake: `initialize` request → server capabilities response → `notifications/initialized` notification
+  - `send_request()` / `send_notification()` for async JSON-RPC over stdin, with `AtomicU64` request ID counter
+  - Background reader task (`spawn_reader`) reading newline-delimited JSON from stdout, dispatching responses via `oneshot` channels keyed by request ID
+  - `McpChefClient::connect()` factory: spawns Docker subprocess, performs MCP handshake, caches server info
+  - `execute()` → `tools/call` with `cyberchef_<operation>` tool name, parses MCP `content[].text` response
+  - `execute_recipe()` → `tools/call` with `cyberchef_bake` tool (recipe array format)
+  - `list_operations()` → `tools/list`, maps MCP tool definitions to `OperationInfo` structs
+  - `health_check()` → verifies subprocess alive + MCP responsive via `tools/list` ping
+  - `operation_help()` → `tools/call` with `cyberchef_search` tool
+  - `spectre_op_to_mcp_tool()`: converts "From_Base64" → "cyberchef_from_base64" (lowercase + prefix)
+  - `mcp_tool_to_spectre_op()`: converts "cyberchef_from_base64" → "from_base64" (strip prefix, display form)
+  - `extract_category_from_tool()`: infers category from MCP tool description text
+  - Comprehensive doc comments with architecture diagram, protocol details, and error mapping
+  - 46 unit tests covering: JSON-RPC message construction/parsing, operation name conversion (13 cases), MCP initialization messages, tool call request/response formats, error response handling, recipe bake format, transport message framing, list response parsing
+
+- **`create_chef_client()` now returns real `McpChefClient`** backed by Docker MCP subprocess (was stub `McpClient`)
+- **`create_stub_chef_client()`** added as separate function for testing environments without Docker
+
+### Changed
+- **`chef/mod.rs`**: Added `pub mod mcp_adapter`; updated module documentation describing 3-layer architecture (ChefClient trait, MCP adapter, Stub); `create_chef_client()` now returns `McpChefClient`; added `create_stub_chef_client()` returning old `McpClient` stub; added `pub use mcp_adapter::McpChefClient`
+- **`chef/docker.rs`**: Removed TCP port 3001 binding from `start_container()` (MCP uses stdio, not HTTP); replaced with `open_stdin: true`, `attach_stdin: true`, `attach_stdout: true` in container config; updated comments explaining MCP stdio transport; removed `exposed_ports` and `port_bindings` from `ContainerConfig`
+- **Workspace `Cargo.toml`**: Version bumped to 0.4.6
+
+### Technical Details
+- 122 Rust source files across 5 crates (was 121)
+- 939 tests total: 44 CLI + 610 core unit + 235 TUI + 5 doc-tests + 45 integration (was 893)
+- Zero clippy warnings (`cargo clippy --workspace -- -D warnings`)
+- No new workspace dependencies — uses existing `serde`, `serde_json`, `tokio` (process, io, sync), `async-trait`, `tracing`
+- Key architectural decisions:
+  - **Docker subprocess over bollard attach**: Using `tokio::process::Command` to spawn `docker run -i --rm` is simpler and more reliable than bollard's exec/attach API for stdio communication
+  - **Newline-delimited JSON framing**: Each JSON-RPC message is a single line terminated by `\n`, matching the MCP stdio transport specification
+  - **Background reader task**: A spawned tokio task reads stdout lines and dispatches responses to waiting callers via oneshot channels, enabling concurrent request handling
+  - **Operation name mapping**: SPECTRE uses `From_Base64` style; CyberChef-MCP uses `cyberchef_from_base64` style; bidirectional conversion functions handle the mapping
+  - **Protocol mismatch fix**: The DockerManager was exposing port 3001/tcp but the actual MCP server uses stdio; corrected to `open_stdin`/`attach_stdin`/`attach_stdout`
+
 ## [0.4.5] - 2026-02-05
 
 ### Added
