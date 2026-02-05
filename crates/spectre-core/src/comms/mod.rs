@@ -1,20 +1,33 @@
 //! Secure communications module (WRAITH-Protocol integration)
 //!
-//! This module provides the interface for secure end-to-end encrypted communications.
+//! This module provides the interface for secure end-to-end encrypted communications
+//! using the WRAITH-Protocol library.
 //!
-//! # Integration Notes
+//! # Architecture
 //!
-//! WRAITH-Protocol is a high-performance E2EE communications library supporting:
-//! - 10+ Gbps throughput
-//! - Post-quantum cryptography options
-//! - Forward secrecy
-//! - Identity-based key management
+//! The module has three layers:
 //!
-//! When the actual WRAITH library is integrated, the stub implementations will be
-//! replaced with real cryptographic operations.
+//! 1. **Identity management** ([`identity`]): Cryptographic identity generation,
+//!    storage, and retrieval. Uses real WRAITH Ed25519/X25519 key generation.
+//!
+//! 2. **WRAITH adapter** ([`wraith_adapter`]): Bridges SPECTRE's communication
+//!    interface with the real WRAITH protocol stack (`wraith_core::Node`).
+//!    Handles type conversion, error mapping, and async operations.
+//!
+//! 3. **Stub client** ([`WRAITHClient`]): A lightweight stub for testing
+//!    environments that do not require real network operations.
+//!
+//! # Integration Details
+//!
+//! WRAITH-Protocol provides:
+//! - 10+ Gbps throughput with E2EE
+//! - Noise_XX mutual authentication
+//! - Forward secrecy via key ratcheting
+//! - Ed25519 identity + X25519 key exchange
 
 mod identity;
 mod peer;
+pub mod wraith_adapter;
 
 use std::time::Duration;
 
@@ -92,8 +105,28 @@ pub fn remove_peer(id: &str, config: &Config) -> crate::Result<()> {
     Peer::remove(id, config)
 }
 
-/// Create a WRAITH client
-pub async fn create_client(config: &Config, identity: &Identity) -> crate::Result<WRAITHClient> {
+/// Create a WRAITH client backed by a real WRAITH protocol node.
+///
+/// This returns a [`wraith_adapter::WraithNode`] that delegates to the real
+/// WRAITH protocol stack for cryptographic handshakes, encryption, and transport.
+///
+/// For testing environments, use [`create_stub_client`] instead.
+pub async fn create_client(
+    config: &Config,
+    identity: &Identity,
+) -> crate::Result<wraith_adapter::WraithNode> {
+    wraith_adapter::create_wraith_node(config, identity).await
+}
+
+/// Create a stub WRAITH client for testing environments.
+///
+/// The stub client simulates communication behavior without performing real
+/// network operations. It is useful for unit and integration tests that test
+/// SPECTRE's orchestration logic without requiring a running WRAITH node.
+pub async fn create_stub_client(
+    config: &Config,
+    identity: &Identity,
+) -> crate::Result<WRAITHClient> {
     WRAITHClient::new(config, identity).await
 }
 

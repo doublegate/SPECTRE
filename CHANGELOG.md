@@ -11,6 +11,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GUI application with Tauri 2.0 — Phase 5
 - MCP server implementation — Phase 6
 
+## [0.4.5] - 2026-02-05
+
+### Added
+
+#### WRAITH-Protocol Integration — Real Component Dependency
+
+- **`crates/spectre-core/src/comms/wraith_adapter.rs`** (NEW, 603 lines, 9 unit tests):
+  - `WraithNode` struct wrapping a real `wraith_core::Node` for E2E encrypted communications
+  - `send()` method delegating to `Node::send_data()` with peer ID conversion, timeout handling via `tokio::time::timeout`, and progress callbacks
+  - `receive()` method with timeout-based polling (WRAITH Node is push-based; pull adapter for compatibility)
+  - `check_relay_connectivity()` checking `node.is_running()` state
+  - `is_running()`, `node_id_hex()`, `inner_node()` accessors for advanced WRAITH API usage
+  - `create_wraith_node()` factory: converts SPECTRE `Identity` to WRAITH `Identity`, creates `Node::new_from_identity()` with `NodeConfig::default()`
+  - `generate_wraith_identity_keys()`: uses real `wraith_core::node::identity::Identity::generate()` and `wraith_crypto::noise::NoiseKeypair` for Ed25519 + X25519 key generation, returns base64-encoded (public, private) tuple
+  - `spectre_identity_to_wraith()`: reconstructs a `wraith_core::node::identity::Identity` from base64-encoded SPECTRE keys via `Identity::from_components()` and `NoiseKeypair::from_bytes()`
+  - `peer_to_wraith_id()`: converts SPECTRE `Peer` public key (via JSON serialization + base64 decode) to 32-byte WRAITH PeerId
+  - `map_node_error()`: maps WRAITH `NodeError` variants (Crypto, Handshake, Transport, Timeout, SessionNotFound, PeerNotFound) to SPECTRE `CommsError` variants with error table documented in module docs
+  - Comprehensive doc comments with architecture overview, error mapping table, thread safety notes, and usage example
+
+- **`Identity::generate()` now uses real WRAITH cryptographic key generation** (was random bytes):
+  - Calls `wraith_adapter::generate_wraith_identity_keys()` to produce real Ed25519 (node ID) + X25519/Noise (handshake) keypairs
+  - Public key is Ed25519 node ID (32 bytes, base64-encoded)
+  - Private key is X25519 private key for Noise handshakes (32 bytes, base64-encoded)
+  - ID derived from SHA-256 fingerprint of public key bytes (unchanged algorithm)
+
+- **`create_client()` now returns real `WraithNode`** backed by WRAITH protocol stack (was `WRAITHClient` stub)
+- **`create_stub_client()`** added as separate function for testing environments
+- **`wraith-core` and `wraith-crypto`** added as workspace path dependencies (`components/wraith-protocol/crates/`)
+
+### Changed
+- **Workspace `Cargo.toml`**: Added `"components/wraith-protocol"` to `exclude` list (prevents nested workspace resolution conflicts); added `wraith-core` and `wraith-crypto` workspace dependencies; version bumped to 0.4.5
+- **`spectre-core/Cargo.toml`**: Added `wraith-core` and `wraith-crypto` as workspace dependencies
+- **`comms/mod.rs`**: Added `pub mod wraith_adapter`; updated module documentation describing 3-layer architecture (Identity, WRAITH adapter, Stub client); `create_client()` now returns `wraith_adapter::WraithNode`; added `create_stub_client()` for test environments
+- **`comms/identity.rs`**: `Identity::generate()` now delegates to `wraith_adapter::generate_wraith_identity_keys()` for real Ed25519+X25519 keypairs instead of `rand::thread_rng().gen()` random bytes
+
+### Technical Details
+- 121 Rust source files across 5 crates (was 120)
+- 893 tests total: 44 CLI + 564 core unit + 235 TUI + 5 doc-tests + 45 integration (was 884)
+- Zero clippy warnings (`cargo clippy --workspace -- -D warnings`)
+- Key technical challenges solved:
+  - **Nested workspace resolution**: `exclude = ["components/wraith-protocol"]` prevents Cargo from resolving WRAITH's `{ workspace = true }` deps against SPECTRE's workspace root (same pattern as ProRT-IP)
+  - **Type bridging**: SPECTRE Identity stores base64-encoded keys; WRAITH Identity expects raw 32-byte arrays; adapter handles encode/decode with validation
+  - **Error hierarchy mapping**: WRAITH's `NodeError` (7+ variants) mapped to SPECTRE's `CommsError` (6 variants) with context preservation
+  - **Push vs pull receive model**: WRAITH Node is event-driven (push); adapter provides timeout-based polling for compatibility with SPECTRE's pull-based receive API
+
 ## [0.4.4] - 2026-02-05
 
 ### Added
@@ -669,7 +714,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/doublegate/SPECTRE/compare/v0.4.3...HEAD
+[Unreleased]: https://github.com/doublegate/SPECTRE/compare/v0.4.5...HEAD
+[0.4.5]: https://github.com/doublegate/SPECTRE/compare/v0.4.4...v0.4.5
+[0.4.4]: https://github.com/doublegate/SPECTRE/compare/v0.4.3...v0.4.4
 [0.4.3]: https://github.com/doublegate/SPECTRE/compare/v0.4.2...v0.4.3
 [0.4.2]: https://github.com/doublegate/SPECTRE/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/doublegate/SPECTRE/compare/v0.4.0...v0.4.1

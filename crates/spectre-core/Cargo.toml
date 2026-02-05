@@ -60,6 +60,10 @@ quick-xml = { workspace = true }
 prtip-core = { workspace = true }
 prtip-scanner = { workspace = true }
 
+# WRAITH-Protocol communications integration
+wraith-core = { workspace = true }
+wraith-crypto = { workspace = true }
+
 # Crypto utilities
 sha2 = { workspace = true }
 rand = { workspace = true }

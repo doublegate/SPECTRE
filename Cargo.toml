@@ -9,10 +9,11 @@ members = [
 ]
 exclude = [
     "components/prtip",
+    "components/wraith-protocol",
 ]
 
 [workspace.package]
-version = "0.4.4"
+version = "0.4.5"
 edition = "2021"
 rust-version = "1.88"
 authors = ["doublegate"]
@@ -65,6 +66,10 @@ mlua = { version = "0.11", features = ["lua54", "vendored", "async", "send", "se
 # ProRT-IP scanner integration
 prtip-core = { path = "components/prtip/crates/prtip-core" }
 prtip-scanner = { path = "components/prtip/crates/prtip-scanner" }
+
+# WRAITH-Protocol communications integration
+wraith-core = { path = "components/wraith-protocol/crates/wraith-core" }
+wraith-crypto = { path = "components/wraith-protocol/crates/wraith-crypto" }
 
 # Utilities
 uuid = { version = "1.0", features = ["v4"] }

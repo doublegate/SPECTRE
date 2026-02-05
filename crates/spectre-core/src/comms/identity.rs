@@ -67,33 +67,36 @@ pub struct Identity {
 }
 
 impl Identity {
-    /// Generate a new identity
+    /// Generate a new identity using real WRAITH cryptographic key generation.
+    ///
+    /// Produces a real Ed25519 keypair (for node identification) and X25519/Noise
+    /// keypair (for Noise_XX handshakes) via the WRAITH-Protocol library. The
+    /// public key stored is the Ed25519 node ID, and the private key stored is
+    /// the X25519 private key for Noise handshakes.
     #[instrument(skip_all, fields(name = name, key_type = ?key_type))]
     pub fn generate(name: &str, key_type: KeyType, comment: Option<&str>) -> crate::Result<Self> {
-        info!("Generating new identity");
+        info!("Generating new identity via WRAITH crypto");
 
-        // TODO: When WRAITH library is integrated, use real key generation
-        // For now, generate stub keys
+        // Use real WRAITH key generation (Ed25519 + X25519/Noise)
+        let (public_key, private_key) = super::wraith_adapter::generate_wraith_identity_keys()?;
 
-        use rand::RngCore;
-        let mut rng = rand::thread_rng();
-
-        let mut private_key_bytes = vec![0u8; 32];
-        rng.fill_bytes(&mut private_key_bytes);
-
-        let mut public_key_bytes = vec![0u8; 32];
-        rng.fill_bytes(&mut public_key_bytes);
-
+        // Decode public key bytes for fingerprint computation
         use base64::Engine;
-        let private_key = base64::engine::general_purpose::STANDARD.encode(&private_key_bytes);
-        let public_key = base64::engine::general_purpose::STANDARD.encode(&public_key_bytes);
+        let public_key_bytes = base64::engine::general_purpose::STANDARD
+            .decode(&public_key)
+            .map_err(|e| {
+                crate::SpectreError::Comms(CommsError::KeyError(format!(
+                    "Failed to decode generated public key: {}",
+                    e
+                )))
+            })?;
 
         // Generate ID from public key
         let id = super::compute_fingerprint(&public_key_bytes)
             .replace(':', "")
             .to_lowercase();
 
-        debug!(id = %id, "Identity generated");
+        debug!(id = %id, "Identity generated with WRAITH crypto");
 
         Ok(Self {
             id,
@@ -134,6 +137,11 @@ impl Identity {
     /// Get the comment
     pub fn comment(&self) -> Option<&str> {
         self.comment.as_deref()
+    }
+
+    /// Get the base64-encoded public key
+    pub fn public_key_encoded(&self) -> &str {
+        &self.public_key
     }
 
     /// Get the public key fingerprint
