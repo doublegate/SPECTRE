@@ -29,8 +29,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-        with:
-          submodules: recursive
+      - name: Initialize submodules
+        run: git submodule update --init --depth 1 components/prtip components/wraith-protocol components/cyberchef-mcp
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy
@@ -48,8 +48,8 @@ jobs:
         os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v6
-        with:
-          submodules: recursive
+      - name: Initialize submodules
+        run: git submodule update --init --depth 1 components/prtip components/wraith-protocol components/cyberchef-mcp
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
 
@@ -88,8 +88,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-        with:
-          submodules: recursive
+      - name: Initialize submodules
+        run: git submodule update --init --depth 1 components/prtip components/wraith-protocol components/cyberchef-mcp
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - name: Build documentation
@@ -116,8 +116,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-        with:
-          submodules: recursive
+      - name: Initialize submodules
+        run: git submodule update --init --depth 1 components/prtip components/wraith-protocol components/cyberchef-mcp
       - uses: dtolnay/rust-toolchain@1.88.0
       - uses: Swatinem/rust-cache@v2
       - name: Install Linux dependencies
@@ -134,8 +134,8 @@ jobs:
     continue-on-error: true
     steps:
       - uses: actions/checkout@v6
-        with:
-          submodules: recursive
+      - name: Initialize submodules
+        run: git submodule update --init --depth 1 components/prtip components/wraith-protocol components/cyberchef-mcp
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - name: Install Linux dependencies

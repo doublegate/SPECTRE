@@ -69,6 +69,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v6
+      - name: Initialize submodules
+        run: git submodule update --init --depth 1 components/prtip components/wraith-protocol components/cyberchef-mcp
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
