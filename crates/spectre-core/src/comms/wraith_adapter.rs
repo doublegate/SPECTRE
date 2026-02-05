@@ -9,7 +9,7 @@
 //!
 //! The adapter provides two main integration points:
 //!
-//! 1. **Identity generation**: [`generate_wraith_identity`] uses real WRAITH
+//! 1. **Identity generation**: [`generate_wraith_identity_keys`] uses real WRAITH
 //!    `Identity::generate()` and `NoiseKeypair::generate()` to produce
 //!    cryptographically valid Ed25519/X25519 keypairs, replacing the random-byte
 //!    stubs previously used by SPECTRE's `Identity::generate()`.

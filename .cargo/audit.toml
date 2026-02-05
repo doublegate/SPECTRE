@@ -1,0 +1,10 @@
+# cargo-audit configuration
+# See: https://docs.rs/cargo-audit/latest/cargo_audit/config/
+
+[advisories]
+# RUSTSEC-2023-0071: Marvin Attack timing sidechannel in `rsa` crate (v0.9.10)
+# - Transitive dependency: prtip-scanner -> sqlx -> sqlx-mysql -> rsa
+# - No patched version available upstream
+# - Risk accepted: SPECTRE does not use RSA for network-exposed operations;
+#   the crate is pulled in by sqlx-mysql's TLS handshake support
+ignore = ["RUSTSEC-2023-0071"]

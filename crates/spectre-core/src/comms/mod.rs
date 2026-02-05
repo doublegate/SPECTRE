@@ -7,7 +7,7 @@
 //!
 //! The module has three layers:
 //!
-//! 1. **Identity management** ([`identity`]): Cryptographic identity generation,
+//! 1. **Identity management**: Cryptographic identity generation,
 //!    storage, and retrieval. Uses real WRAITH Ed25519/X25519 key generation.
 //!
 //! 2. **WRAITH adapter** ([`wraith_adapter`]): Bridges SPECTRE's communication
