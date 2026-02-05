@@ -31,8 +31,8 @@ clap = { version = "4.5", features = ["derive", "env", "wrap_help", "color", "su
 clap_complete = "4.5"
 
 # TUI
-ratatui = "0.29"
-crossterm = "0.28"
+ratatui = "0.30"
+crossterm = "0.29"
 
 # Serialization
 serde = { version = "1.0", features = ["derive"] }
@@ -83,7 +83,7 @@ bollard = "0.18"
 # Output formatting
 colored = "3"
 comfy-table = "7"
-indicatif = "0.17"
+indicatif = "0.18"
 
 # Testing
 proptest = "1.5"

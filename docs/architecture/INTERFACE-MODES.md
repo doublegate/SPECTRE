@@ -8,12 +8,12 @@
 
 SPECTRE provides four distinct interaction methods, each optimized for different operational contexts and user preferences. All interfaces communicate with the same core orchestration layer, ensuring consistent behavior and data access.
 
-| Mode | Best For | Technology | Status |
-|------|----------|------------|--------|
-| **CLI** | Scripts, automation, CI/CD | Rust (clap) | Planned |
-| **TUI** | Real-time operations, rapid interaction | Rust (ratatui) | Planned |
-| **GUI** | Visual planning, team collaboration | Tauri 2.0 + React | Planned |
-| **MCP** | AI-assisted operations | MCP Protocol | Planned |
+| Mode    | Best For                                | Technology        | Status  |
+| ------- | --------------------------------------- | ----------------- | ------- |
+| **CLI** | Scripts, automation, CI/CD              | Rust (clap)       | Planned |
+| **TUI** | Real-time operations, rapid interaction | Rust (ratatui)    | Planned |
+| **GUI** | Visual planning, team collaboration     | Tauri 2.0 + React | Planned |
+| **MCP** | AI-assisted operations                  | MCP Protocol      | Planned |
 
 ---
 
@@ -22,6 +22,7 @@ SPECTRE provides four distinct interaction methods, each optimized for different
 ### Purpose
 
 The CLI is the primary interface for:
+
 - Shell scripting and automation
 - CI/CD pipeline integration
 - Quick one-off operations
@@ -222,6 +223,7 @@ EOF
 ### Purpose
 
 The TUI provides:
+
 - Real-time operational dashboard
 - Live scan progress visualization
 - Multi-component status monitoring
@@ -259,12 +261,12 @@ The TUI provides:
 │ ┌───────────────────────────────────┐ │ ┌─────────────────────────────────────┐ │
 │ │ Identity: f3a9...c7b2             │ │ │ Phase: RECON                        │ │
 │ │ Peers:    3 connected             │ │ │                                     │ │
-│ │                                   │ │ │ 14:00 ▶ Campaign started            │ │
+│ │                                   │ │ │ 14:00 ▶ Campaign started           │ │
 │ │ Active Channels:                  │ │ │ 14:05   Recon phase initiated       │ │
 │ │ ┌─PEER────────PROTO──TX/RX──────┐ │ │ │ 14:15   187 hosts discovered        │ │
 │ │ │ c2-server   TLS    1.2G/45M   │ │ │ │ 14:22   89 services identified      │ │
 │ │ │ analyst-1   WS     200M/12M   │ │ │ │ 14:30   Analysis started            │ │
-│ │ │ backup      DoH    50M/5M     │ │ │ │ 14:35 ◀ Current                     │ │
+│ │ │ backup      DoH    50M/5M     │ │ │ │ 14:35 ◀ Current                    │ │
 │ │ └─────────────────────────────────┘ │ │                                     │ │
 │ │                                   │ │ │ Next: Exfiltration (pending)        │ │
 │ │ Transfer Queue: 2 pending         │ │ └─────────────────────────────────────┘ │
@@ -276,49 +278,49 @@ The TUI provides:
 
 ### Keyboard Shortcuts
 
-| Key | Action | Context |
-|-----|--------|---------|
-| `F1` | Show help overlay | Global |
-| `F2` | Switch to Scan panel | Global |
-| `F3` | Switch to Chef panel | Global |
-| `F4` | Switch to Comms panel | Global |
-| `F5` | Switch to Reports panel | Global |
-| `F10` / `q` | Quit application | Global |
-| `Tab` | Cycle focus between panels | Global |
-| `Enter` | Activate/select item | Any panel |
-| `Esc` | Cancel/back | Any panel |
-| `/` | Command palette | Global |
-| `:` | Command mode | Global |
+| Key         | Action                     | Context   |
+| ----------- | -------------------------- | --------- |
+| `F1`        | Show help overlay          | Global    |
+| `F2`        | Switch to Scan panel       | Global    |
+| `F3`        | Switch to Chef panel       | Global    |
+| `F4`        | Switch to Comms panel      | Global    |
+| `F5`        | Switch to Reports panel    | Global    |
+| `F10` / `q` | Quit application           | Global    |
+| `Tab`       | Cycle focus between panels | Global    |
+| `Enter`     | Activate/select item       | Any panel |
+| `Esc`       | Cancel/back                | Any panel |
+| `/`         | Command palette            | Global    |
+| `:`         | Command mode               | Global    |
 
 **Scan Panel:**
 
-| Key | Action |
-|-----|--------|
-| `s` | Start new scan |
-| `p` | Pause/resume scan |
-| `x` | Stop scan |
-| `f` | Filter results |
-| `e` | Export results |
-| `j/k` | Navigate results |
+| Key   | Action            |
+| ----- | ----------------- |
+| `s`   | Start new scan    |
+| `p`   | Pause/resume scan |
+| `x`   | Stop scan         |
+| `f`   | Filter results    |
+| `e`   | Export results    |
+| `j/k` | Navigate results  |
 
 **Chef Panel:**
 
-| Key | Action |
-|-----|--------|
-| `r` | Select recipe |
-| `i` | Select input file |
-| `Enter` | Execute recipe |
-| `c` | Clear output |
-| `s` | Save output |
+| Key     | Action            |
+| ------- | ----------------- |
+| `r`     | Select recipe     |
+| `i`     | Select input file |
+| `Enter` | Execute recipe    |
+| `c`     | Clear output      |
+| `s`     | Save output       |
 
 **Comms Panel:**
 
-| Key | Action |
-|-----|--------|
+| Key | Action          |
+| --- | --------------- |
 | `c` | Connect to peer |
 | `d` | Disconnect peer |
-| `t` | Start transfer |
-| `l` | List peers |
+| `t` | Start transfer  |
+| `l` | List peers      |
 
 ### Command Mode
 
@@ -361,6 +363,7 @@ progress_empty = "░"
 ### Purpose
 
 The GUI provides:
+
 - Visual campaign planning workspace
 - Network topology visualization
 - Drag-and-drop workflow builder
@@ -378,17 +381,17 @@ The GUI provides:
 ### Main Workspace
 
 ```text
-┌─────────────────────────────────────────────────────────────────────────────────┐
-│ ☰ SPECTRE                                        [👤 Operator 1] [🔔 3] [⚙️]   │
-├─────────────────────────────────────────────────────────────────────────────────┤
-│ ┌──────────────────────────────────────────────────────────────────────────────┐│
-│ │ Campaign: Operation BLACKOUT          Phase: RECON ▸ ANALYSIS              ││
-│ │ Status: ACTIVE    Started: 14:00    Duration: 2h 35m    Targets: 254       ││
-│ └──────────────────────────────────────────────────────────────────────────────┘│
-├──────────────┬──────────────────────────────────────────────────────────────────┤
-│              │                                                                  │
+┌────────────────────────────────────────────────────────────────────────────────┐
+│ ☰ SPECTRE                                        [👤 Operator 1] [🔔 3] [⚙️]  │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ ┌─────────────────────────────────────────────────────────────────────────────┐│
+│ │ Campaign: Operation BLACKOUT          Phase: RECON ▸ ANALYSIS               ││
+│ │ Status: ACTIVE    Started: 14:00    Duration: 2h 35m    Targets: 254        ││
+│ └─────────────────────────────────────────────────────────────────────────────┘│
+├──────────────┬─────────────────────────────────────────────────────────────────┤
+│              │                                                                 │
 │  NAVIGATION  │                    MAIN WORKSPACE                               │
-│              │                                                                  │
+│              │                                                                 │
 │  📊 Dashboard│   ┌──────────────────────────────────────────────────────────┐  │
 │  🎯 Targets  │   │                                                          │  │
 │  🔍 Recon    │   │              NETWORK TOPOLOGY VIEW                       │  │
@@ -397,19 +400,19 @@ The GUI provides:
 │  📋 Reports  │   │          /│\    /│\                                      │  │
 │  ⚙️ Settings │   │         ○ ○ ○  ○ ○ ○    Legend:                          │  │
 │              │   │         │ │ │  │ │ │    ● Web Server                     │  │
-│  ───────────│   │         ● ● ○  ○ ● ○    ○ Database                       │  │
-│              │   │                         ◆ Critical                        │  │
+│  ─────────── │   │         ● ● ○  ○ ● ○    ○ Database                       │  │
+│              │   │                         ◆ Critical                      │  │
 │  CAMPAIGNS   │   │                                                          │  │
 │  ▸ BLACKOUT  │   └──────────────────────────────────────────────────────────┘  │
-│    NIGHTFALL │                                                                  │
+│    NIGHTFALL │                                                                 │
 │    PHANTOM   │   ┌────────────────────────┬─────────────────────────────────┐  │
 │              │   │ SCAN PROGRESS          │ FINDINGS                        │  │
-│              │   │ ████████████░░ 78%     │ 12 Critical  ◆◆◆◆              │  │
-│              │   │ 198/254 hosts          │ 34 High      ●●●●●●            │  │
-│              │   │ Rate: 45K pps          │ 89 Medium    ○○○○○○○○          │  │
+│              │   │ ████████████░░ 78%     │ 12 Critical  ◆◆◆◆           │  │
+│              │   │ 198/254 hosts          │ 34 High      ●●●●●●             │  │
+│              │   │ Rate: 45K pps          │ 89 Medium    ○○○○○○○○           │  │
 │              │   └────────────────────────┴─────────────────────────────────┘  │
-│              │                                                                  │
-└──────────────┴──────────────────────────────────────────────────────────────────┘
+│              │                                                                 │
+└──────────────┴─────────────────────────────────────────────────────────────────┘
 ```
 
 ### Workflow Builder
@@ -417,18 +420,18 @@ The GUI provides:
 Drag-and-drop interface for creating complex workflows:
 
 ```text
-┌─────────────────────────────────────────────────────────────────────────────────┐
+┌────────────────────────────────────────────────────────────────────────────────┐
 │ Workflow Builder: red-team-recon                               [Save] [Run]    │
-├─────────────────────────────────────────────────────────────────────────────────┤
-│ COMPONENTS          │                      CANVAS                               │
+├────────────────────────────────────────────────────────────────────────────────┤
+│ COMPONENTS          │                      CANVAS                              │
 │ ──────────────────  │  ┌─────────────────────────────────────────────────────┐ │
 │ 📦 Scan             │  │                                                     │ │
-│   ├ SYN Scan        │  │    ┌─────────┐    ┌─────────┐    ┌─────────┐       │ │
-│   ├ Service Detect  │  │    │  SYN    │───▶│ Service │───▶│ Extract │       │ │
-│   └ OS Detect       │  │    │  Scan   │    │ Detect  │    │ Banners │       │ │
-│                     │  │    └─────────┘    └─────────┘    └────┬────┘       │ │
-│ 📦 Analyze          │  │                                       │             │ │
-│   ├ Extract URLs    │  │                                       ▼             │ │
+│   ├ SYN Scan        │  │    ┌─────────┐     ┌─────────┐      ┌─────────┐     │ │
+│   ├ Service Detect  │  │    │  SYN    │───▶│ Service │────▶│ Extract │     │ │
+│   └ OS Detect       │  │    │  Scan   │     │ Detect  │      │ Banners │     │ │
+│                     │  │    └─────────┘     └─────────┘      └────┬────┘     │ │
+│ 📦 Analyze          │  │                                          │          │ │
+│   ├ Extract URLs    │  │                                          ▼          │ │
 │   ├ Decode Base64   │  │                               ┌─────────────┐       │ │
 │   └ Find Patterns   │  │                               │   Decode    │       │ │
 │                     │  │                               │   Base64    │       │ │
@@ -441,36 +444,41 @@ Drag-and-drop interface for creating complex workflows:
 │   └ Export JSON     │  │                               └─────────────┘       │ │
 │                     │  │                                                     │ │
 │                     │  └─────────────────────────────────────────────────────┘ │
-└─────────────────────┴───────────────────────────────────────────────────────────┘
+└─────────────────────┴──────────────────────────────────────────────────────────┘
 ```
 
 ### Features
 
 **Campaign Dashboard:**
+
 - Real-time metrics and statistics
 - Phase progress visualization
 - Timeline of events
 - Alert notifications
 
 **Target Management:**
+
 - Import targets from files
 - Manual entry and CIDR parsing
 - Tagging and categorization
 - Scope management
 
 **Network Visualization:**
+
 - Interactive topology graph
 - Zoom, pan, filter
 - Node details on click
 - Export as SVG/PNG
 
 **Report Generation:**
+
 - Multiple templates (executive, technical, compliance)
 - Export formats: PDF, HTML, DOCX, JSON
 - Custom branding
 - Finding evidence attachment
 
 **Collaboration:**
+
 - Multi-operator support
 - Real-time cursor presence
 - Chat/comments on findings
@@ -483,6 +491,7 @@ Drag-and-drop interface for creating complex workflows:
 ### Purpose
 
 The MCP Server enables:
+
 - AI-assisted security operations
 - Natural language command translation
 - Intelligent workflow suggestions
@@ -496,119 +505,122 @@ SPECTRE implements the [Model Context Protocol](https://modelcontextprotocol.io/
 
 ```json
 {
-  "jsonrpc": "2.0",
-  "id": 1,
-  "method": "initialize",
-  "params": {
-    "protocolVersion": "2024-11-05",
-    "capabilities": {
-      "tools": {}
-    },
-    "clientInfo": {
-      "name": "claude-code",
-      "version": "1.0.0"
+    "jsonrpc": "2.0",
+    "id": 1,
+    "method": "initialize",
+    "params": {
+        "protocolVersion": "2024-11-05",
+        "capabilities": {
+            "tools": {}
+        },
+        "clientInfo": {
+            "name": "claude-code",
+            "version": "1.0.0"
+        }
     }
-  }
 }
 ```
 
 ### Tool Categories
 
-#### Scan Tools (spectre_scan_*)
+#### Scan Tools (spectre*scan*\*)
 
-| Tool | Description | Parameters |
-|------|-------------|------------|
-| `spectre_scan_syn` | TCP SYN scan | target, ports, rate, timeout |
-| `spectre_scan_connect` | TCP Connect scan | target, ports, timeout |
-| `spectre_scan_fin` | TCP FIN scan | target, ports |
-| `spectre_scan_null` | TCP NULL scan | target, ports |
-| `spectre_scan_xmas` | TCP Xmas scan | target, ports |
-| `spectre_scan_ack` | TCP ACK scan | target, ports |
-| `spectre_scan_idle` | Idle/Zombie scan | target, zombie, ports |
-| `spectre_scan_udp` | UDP scan | target, ports |
+| Tool                   | Description      | Parameters                   |
+| ---------------------- | ---------------- | ---------------------------- |
+| `spectre_scan_syn`     | TCP SYN scan     | target, ports, rate, timeout |
+| `spectre_scan_connect` | TCP Connect scan | target, ports, timeout       |
+| `spectre_scan_fin`     | TCP FIN scan     | target, ports                |
+| `spectre_scan_null`    | TCP NULL scan    | target, ports                |
+| `spectre_scan_xmas`    | TCP Xmas scan    | target, ports                |
+| `spectre_scan_ack`     | TCP ACK scan     | target, ports                |
+| `spectre_scan_idle`    | Idle/Zombie scan | target, zombie, ports        |
+| `spectre_scan_udp`     | UDP scan         | target, ports                |
 
 **Example:**
+
 ```json
 {
-  "name": "spectre_scan_syn",
-  "arguments": {
-    "target": "192.168.1.0/24",
-    "ports": "1-1000",
-    "rate": 10000,
-    "service_detection": true
-  }
+    "name": "spectre_scan_syn",
+    "arguments": {
+        "target": "192.168.1.0/24",
+        "ports": "1-1000",
+        "rate": 10000,
+        "service_detection": true
+    }
 }
 ```
 
-#### Detection Tools (spectre_detect_*)
+#### Detection Tools (spectre*detect*\*)
 
-| Tool | Description | Parameters |
-|------|-------------|------------|
+| Tool                     | Description               | Parameters       |
+| ------------------------ | ------------------------- | ---------------- |
 | `spectre_detect_service` | Service version detection | hosts, intensity |
-| `spectre_detect_os` | OS fingerprinting | hosts |
-| `spectre_detect_tls` | TLS certificate analysis | hosts |
-| `spectre_detect_banner` | Banner grabbing | hosts, ports |
+| `spectre_detect_os`      | OS fingerprinting         | hosts            |
+| `spectre_detect_tls`     | TLS certificate analysis  | hosts            |
+| `spectre_detect_banner`  | Banner grabbing           | hosts, ports     |
 
-#### Chef Tools (spectre_chef_*)
+#### Chef Tools (spectre*chef*\*)
 
 All 463 CyberChef operations are exposed as individual tools:
 
-| Tool | Description |
-|------|-------------|
-| `spectre_chef_bake` | Execute full recipe |
-| `spectre_chef_from_base64` | Decode Base64 |
-| `spectre_chef_to_base64` | Encode Base64 |
-| `spectre_chef_aes_decrypt` | AES decryption |
-| `spectre_chef_gunzip` | Gzip decompression |
-| `spectre_chef_extract_urls` | Extract URLs |
-| ... | (463 operations total) |
+| Tool                        | Description            |
+| --------------------------- | ---------------------- |
+| `spectre_chef_bake`         | Execute full recipe    |
+| `spectre_chef_from_base64`  | Decode Base64          |
+| `spectre_chef_to_base64`    | Encode Base64          |
+| `spectre_chef_aes_decrypt`  | AES decryption         |
+| `spectre_chef_gunzip`       | Gzip decompression     |
+| `spectre_chef_extract_urls` | Extract URLs           |
+| ...                         | (463 operations total) |
 
-#### Transfer Tools (spectre_transfer_*)
+#### Transfer Tools (spectre*transfer*\*)
 
-| Tool | Description | Parameters |
-|------|-------------|------------|
-| `spectre_transfer_send` | Send file securely | file, peer, options |
-| `spectre_transfer_receive` | Receive files | output_dir, options |
-| `spectre_transfer_list_peers` | List connected peers | - |
-| `spectre_transfer_connect` | Connect to peer | peer_id |
+| Tool                          | Description          | Parameters          |
+| ----------------------------- | -------------------- | ------------------- |
+| `spectre_transfer_send`       | Send file securely   | file, peer, options |
+| `spectre_transfer_receive`    | Receive files        | output_dir, options |
+| `spectre_transfer_list_peers` | List connected peers | -                   |
+| `spectre_transfer_connect`    | Connect to peer      | peer_id             |
 
-#### Campaign Tools (spectre_campaign_*)
+#### Campaign Tools (spectre*campaign*\*)
 
-| Tool | Description | Parameters |
-|------|-------------|------------|
-| `spectre_campaign_create` | Create new campaign | name, description |
-| `spectre_campaign_run` | Execute campaign | definition |
-| `spectre_campaign_status` | Get campaign status | campaign_id |
-| `spectre_campaign_pause` | Pause campaign | campaign_id |
-| `spectre_campaign_resume` | Resume campaign | campaign_id |
-| `spectre_campaign_abort` | Abort campaign | campaign_id |
+| Tool                      | Description          | Parameters          |
+| ------------------------- | -------------------- | ------------------- |
+| `spectre_campaign_create` | Create new campaign  | name, description   |
+| `spectre_campaign_run`    | Execute campaign     | definition          |
+| `spectre_campaign_status` | Get campaign status  | campaign_id         |
+| `spectre_campaign_pause`  | Pause campaign       | campaign_id         |
+| `spectre_campaign_resume` | Resume campaign      | campaign_id         |
+| `spectre_campaign_abort`  | Abort campaign       | campaign_id         |
 | `spectre_campaign_export` | Export campaign data | campaign_id, format |
-| `spectre_campaign_list` | List all campaigns | - |
+| `spectre_campaign_list`   | List all campaigns   | -                   |
 
 ### Client Configuration
 
 **Claude Code (claude_desktop_config.json):**
+
 ```json
 {
-  "mcpServers": {
-    "spectre": {
-      "command": "spectre-mcp",
-      "args": ["serve"],
-      "env": {
-        "SPECTRE_CONFIG": "/path/to/spectre.toml"
-      }
+    "mcpServers": {
+        "spectre": {
+            "command": "spectre-mcp",
+            "args": ["serve"],
+            "env": {
+                "SPECTRE_CONFIG": "/path/to/spectre.toml"
+            }
+        }
     }
-  }
 }
 ```
 
 **Cursor (MCP settings):**
+
 ```json
 {
-  "name": "SPECTRE",
-  "type": "command",
-  "command": "spectre-mcp",
-  "args": ["serve"]
+    "name": "SPECTRE",
+    "type": "command",
+    "command": "spectre-mcp",
+    "args": ["serve"]
 }
 ```
 
@@ -683,16 +695,19 @@ Progress: 45% | Hosts: 127/254 | Services: 89 identified
 ### Security Considerations
 
 **Tool Access Control:**
+
 - MCP server runs with user privileges
 - Scan operations require cap_net_raw capability
 - Transfer operations require valid peer authentication
 
 **Input Validation:**
+
 - All tool inputs validated against schemas
 - Target specifications sanitized
 - File paths restricted to configured directories
 
 **Audit Logging:**
+
 - All MCP tool calls logged
 - Request/response correlation IDs
 - Timestamp and client identification
@@ -701,16 +716,16 @@ Progress: 45% | Hosts: 127/254 | Services: 89 identified
 
 ## Interface Comparison
 
-| Feature | CLI | TUI | GUI | MCP |
-|---------|-----|-----|-----|-----|
-| Scripting/Automation | ★★★ | ★ | ★ | ★★★ |
-| Real-time Monitoring | ★ | ★★★ | ★★ | ★ |
-| Visual Analysis | ★ | ★★ | ★★★ | ★ |
-| Collaboration | ★ | ★ | ★★★ | ★ |
-| AI Assistance | ★ | ★ | ★★ | ★★★ |
-| Low Bandwidth | ★★★ | ★★ | ★ | ★★★ |
-| Learning Curve | ★★ | ★★ | ★★★ | ★★★ |
-| Power User | ★★★ | ★★★ | ★★ | ★★★ |
+| Feature              | CLI | TUI | GUI | MCP |
+| -------------------- | --- | --- | --- | --- |
+| Scripting/Automation | ★★★ | ★   | ★   | ★★★ |
+| Real-time Monitoring | ★   | ★★★ | ★★  | ★   |
+| Visual Analysis      | ★   | ★★  | ★★★ | ★   |
+| Collaboration        | ★   | ★   | ★★★ | ★   |
+| AI Assistance        | ★   | ★   | ★★  | ★★★ |
+| Low Bandwidth        | ★★★ | ★★  | ★   | ★★★ |
+| Learning Curve       | ★★  | ★★  | ★★★ | ★★★ |
+| Power User           | ★★★ | ★★★ | ★★  | ★★★ |
 
 ---
 

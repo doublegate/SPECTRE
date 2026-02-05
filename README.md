@@ -28,11 +28,11 @@ A unified offensive security toolkit combining wire-speed secure communications,
 
 Each component is a standalone, production-ready project — SPECTRE provides the orchestration layer that binds them into a cohesive operational platform, delivering capabilities far greater than the sum of its parts:
 
-| Component | Role | Capability | Version | Tests |
-|-----------|------|------------|---------|-------|
-| [**WRAITH-Protocol**](https://github.com/doublegate/WRAITH-Protocol) | **Encrypted Comms** | Wire-speed secure file transfer, E2EE messaging, C2 infrastructure | v2.3.7 | 2,957 |
-| [**ProRT-IP**](https://github.com/doublegate/ProRT-IP) | **Enumeration & Recon** | 10M+ pps network scanning, service detection, OS fingerprinting | v1.0.0 | 2,557 |
-| [**CyberChef-MCP**](https://github.com/doublegate/CyberChef-MCP) | **Testing & Analysis** | 463 data manipulation operations, AI-powered via MCP | v1.8.0 | 563 |
+| Component                                                            | Role                    | Capability                                                         | Version | Tests |
+| -------------------------------------------------------------------- | ----------------------- | ------------------------------------------------------------------ | ------- | ----- |
+| [**WRAITH-Protocol**](https://github.com/doublegate/WRAITH-Protocol) | **Encrypted Comms**     | Wire-speed secure file transfer, E2EE messaging, C2 infrastructure | v2.3.7  | 2,957 |
+| [**ProRT-IP**](https://github.com/doublegate/ProRT-IP)               | **Enumeration & Recon** | 10M+ pps network scanning, service detection, OS fingerprinting    | v1.0.0  | 2,557 |
+| [**CyberChef-MCP**](https://github.com/doublegate/CyberChef-MCP)     | **Testing & Analysis**  | 463 data manipulation operations, AI-powered via MCP               | v1.8.0  | 563   |
 
 ### Why SPECTRE?
 
@@ -46,16 +46,16 @@ Modern offensive security requires seamless tool integration. SPECTRE eliminates
 
 ### Platform Metrics
 
-| Metric | Value |
-|--------|-------|
-| **Combined Tests** | 6,347 (SPECTRE: 270 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 563) |
-| **SPECTRE Codebase** | ~14,500 lines Rust (58 source files across 5 crates) |
-| **Component Code** | ~180,000 (Rust) + ~40,000 (TypeScript/JavaScript) |
-| **Languages** | Rust 2024, TypeScript, JavaScript |
-| **Network Throughput** | 10+ Gbps (WRAITH), 10M+ pps (ProRT-IP) |
-| **Data Operations** | 463 via CyberChef MCP |
-| **Interface Modes** | CLI (implemented), TUI, GUI, MCP Server |
-| **Platforms** | Linux, Windows, macOS, Docker |
+| Metric                 | Value                                                                   |
+| ---------------------- | ----------------------------------------------------------------------- |
+| **Combined Tests**     | 6,347 (SPECTRE: 270 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 563) |
+| **SPECTRE Codebase**   | ~14,500 lines Rust (58 source files across 5 crates)                    |
+| **Component Code**     | ~180,000 (Rust) + ~40,000 (TypeScript/JavaScript)                       |
+| **Languages**          | Rust 2024, TypeScript, JavaScript                                       |
+| **Network Throughput** | 10+ Gbps (WRAITH), 10M+ pps (ProRT-IP)                                  |
+| **Data Operations**    | 463 via CyberChef MCP                                                   |
+| **Interface Modes**    | CLI (implemented), TUI, GUI, MCP Server                                 |
+| **Platforms**          | Linux, Windows, macOS, Docker                                           |
 
 ---
 
@@ -113,6 +113,7 @@ spectre scan --output json 10.0.0.0/24 | \
 ```
 
 **Features:**
+
 - Nmap-compatible syntax for ProRT-IP operations
 - Recipe-based CyberChef workflows
 - Pipeline composition with JSON/Protocol Buffers
@@ -130,7 +131,7 @@ spectre scan --tui 192.168.1.0/24  # Scan with live visualization
 
 **Dashboard Panels:**
 
-```text
+```bash
 ┌─────────────────────────────────────────────────────────────────────────────┐
 │ SPECTRE v0.1.0 - Operation BLACKOUT               [Campaign: red-team-01]   │
 ├────────────────────────────────┬────────────────────────────────────────────┤
@@ -144,7 +145,7 @@ spectre scan --tui 192.168.1.0/24  # Scan with live visualization
 ├────────────────────────────────┼────────────────────────────────────────────┤
 │ COMMS STATUS                   │ CAMPAIGN TIMELINE                          │
 │ ┌────────────────────────────┐ │ ┌────────────────────────────────────────┐ │
-│ │ Channel:  TLS-mimicry      │ │ │ 14:00 ▶ Recon started                  │ │
+│ │ Channel:  TLS-mimicry      │ │ │ 14:00 ▶ Recon started                 │ │
 │ │ Peer:     c2.operator.net  │ │ │ 14:15   47 services discovered         │ │
 │ │ Latency:  23ms             │ │ │ 14:22   Analysis complete              │ │
 │ │ Tx/Rx:    1.2GB / 45MB     │ │ │ 14:30   Exfil initiated                │ │
@@ -155,6 +156,7 @@ spectre scan --tui 192.168.1.0/24  # Scan with live visualization
 ```
 
 **Features:**
+
 - 60 FPS rendering (borrowed from ProRT-IP's production TUI)
 - Multi-pane layout: Recon, Analysis, Comms, Campaign status
 - Real-time scan visualization with network graph
@@ -171,6 +173,7 @@ spectre --gui --bind 0.0.0.0:443 # Expose for team access (with TLS)
 ```
 
 **Capabilities:**
+
 - Campaign planning workspace with drag-and-drop workflow builder
 - Network topology visualization from scan results
 - Real-time collaboration for multi-operator teams
@@ -178,6 +181,7 @@ spectre --gui --bind 0.0.0.0:443 # Expose for team access (with TLS)
 - Report generation with exportable formats (PDF, HTML, JSON)
 
 **Technology Stack:**
+
 - Tauri 2.0 framework (same as WRAITH clients)
 - React/TypeScript frontend
 - WebSocket real-time updates
@@ -195,25 +199,25 @@ spectre-mcp serve                # Start MCP server (stdio transport)
 
 ```json
 {
-  "mcpServers": {
-    "spectre": {
-      "command": "spectre-mcp",
-      "args": ["serve"]
+    "mcpServers": {
+        "spectre": {
+            "command": "spectre-mcp",
+            "args": ["serve"]
+        }
     }
-  }
 }
 ```
 
 **MCP Tools Exposed:**
 
-| Tool Category | Operations | Description |
-|--------------|------------|-------------|
-| `spectre_scan_*` | 8 scan types | SYN, Connect, FIN, NULL, Xmas, ACK, Idle, UDP |
-| `spectre_detect_*` | Service/OS | Service detection, OS fingerprinting |
-| `spectre_chef_*` | 463 operations | All CyberChef operations as individual tools |
-| `spectre_send/receive` | File transfer | Encrypted P2P file operations |
-| `spectre_campaign_*` | Orchestration | Campaign create/run/status/abort |
-| `spectre_recipe_*` | 10 tools | Recipe CRUD, export, import, test |
+| Tool Category          | Operations     | Description                                   |
+| ---------------------- | -------------- | --------------------------------------------- |
+| `spectre_scan_*`       | 8 scan types   | SYN, Connect, FIN, NULL, Xmas, ACK, Idle, UDP |
+| `spectre_detect_*`     | Service/OS     | Service detection, OS fingerprinting          |
+| `spectre_chef_*`       | 463 operations | All CyberChef operations as individual tools  |
+| `spectre_send/receive` | File transfer  | Encrypted P2P file operations                 |
+| `spectre_campaign_*`   | Orchestration  | Campaign create/run/status/abort              |
+| `spectre_recipe_*`     | 10 tools       | Recipe CRUD, export, import, test             |
 
 **AI Workflow Example:**
 
@@ -281,12 +285,12 @@ SPECTRE follows a modular microservices architecture where each component operat
 ### Data Flow
 
 ```text
-┌──────────────┐     ┌───────────────┐     ┌────────────────┐     ┌───────────────┐
+┌──────────────┐      ┌───────────────┐      ┌────────────────┐      ┌───────────────┐
 │    Target    │────▶│   ProRT-IP    │────▶│   CyberChef    │────▶│     WRAITH    │
-│   Network    │     │     Recon     │     │    Analysis    │     │   Exfil/C2    │
-└──────────────┘     └───────┬───────┘     └───────┬────────┘     └───────┬───────┘
-                             │                     │                      │
-                             ▼                     ▼                      ▼
+│   Network    │      │     Recon     │      │    Analysis    │      │   Exfil/C2    │
+└──────────────┘      └───────┬───────┘      └───────┬────────┘      └───────┬───────┘
+                             │                     │                       │
+                             ▼                     ▼                       ▼
                         scan.json            decoded.txt           secure_channel
                         hosts.xml            decrypted.bin         encrypted_xfer
                         services.db          forensic.log          covert_comms
@@ -305,19 +309,19 @@ SPECTRE follows a modular microservices architecture where each component operat
 
 ### Integration Layers
 
-| Layer | Purpose | Technology | Status |
-|-------|---------|------------|--------|
-| **CLI Orchestrator** | Unified command interface (12 subcommands) | Rust (clap 4) | **Implemented** |
-| **Core Library** | Config, scanning, comms, analysis, orchestration | Rust (tokio, serde, tracing) | **Implemented** |
-| **Target Management** | Priority queue, scope enforcement, async DNS | Rust (ipnetwork, tokio) | **Implemented** |
-| **Job Orchestration** | State machine, concurrency control, events | Rust (tokio, broadcast channels) | **Implemented** |
-| **Results Aggregation** | Findings, JSON/XML/greppable output, stats | Rust (serde, quick-xml) | **Implemented** |
-| **Data Pipeline** | Composable stages, builder API, metrics | Rust (async-trait, tokio) | **Implemented** |
-| **Campaign Management** | SQLite persistence, phases, artifacts | Rust (rusqlite, sha2) | **Implemented** |
-| **Plugin System** | Lua 5.4 sandbox, manifest, permissions | Rust (mlua) | **Implemented** |
-| **TUI Framework** | Real-time dashboard | Rust (ratatui), ProRT-IP TUI | Planned |
-| **GUI Application** | Visual campaign planning | Tauri 2.0, React, TypeScript | Planned |
-| **MCP Server** | AI-assisted operations | Rust, MCP Protocol | Planned |
+| Layer                   | Purpose                                          | Technology                       | Status          |
+| ----------------------- | ------------------------------------------------ | -------------------------------- | --------------- |
+| **CLI Orchestrator**    | Unified command interface (12 subcommands)       | Rust (clap 4)                    | **Implemented** |
+| **Core Library**        | Config, scanning, comms, analysis, orchestration | Rust (tokio, serde, tracing)     | **Implemented** |
+| **Target Management**   | Priority queue, scope enforcement, async DNS     | Rust (ipnetwork, tokio)          | **Implemented** |
+| **Job Orchestration**   | State machine, concurrency control, events       | Rust (tokio, broadcast channels) | **Implemented** |
+| **Results Aggregation** | Findings, JSON/XML/greppable output, stats       | Rust (serde, quick-xml)          | **Implemented** |
+| **Data Pipeline**       | Composable stages, builder API, metrics          | Rust (async-trait, tokio)        | **Implemented** |
+| **Campaign Management** | SQLite persistence, phases, artifacts            | Rust (rusqlite, sha2)            | **Implemented** |
+| **Plugin System**       | Lua 5.4 sandbox, manifest, permissions           | Rust (mlua)                      | **Implemented** |
+| **TUI Framework**       | Real-time dashboard                              | Rust (ratatui), ProRT-IP TUI     | Planned         |
+| **GUI Application**     | Visual campaign planning                         | Tauri 2.0, React, TypeScript     | Planned         |
+| **MCP Server**          | AI-assisted operations                           | Rust, MCP Protocol               | Planned         |
 
 ---
 
@@ -329,17 +333,18 @@ SPECTRE follows a modular microservices architecture where each component operat
 
 The covert communications backbone of SPECTRE, providing military-grade secure file transfer with traffic analysis resistance.
 
-| Capability | Specification |
-|------------|---------------|
-| **Throughput** | 10+ Gbps with AF_XDP kernel bypass |
-| **Encryption** | XChaCha20-Poly1305, Noise_XX, Double Ratchet |
-| **Obfuscation** | Elligator2, protocol mimicry (TLS/WebSocket/DoH) |
+| Capability       | Specification                                          |
+| ---------------- | ------------------------------------------------------ |
+| **Throughput**   | 10+ Gbps with AF_XDP kernel bypass                     |
+| **Encryption**   | XChaCha20-Poly1305, Noise_XX, Double Ratchet           |
+| **Obfuscation**  | Elligator2, protocol mimicry (TLS/WebSocket/DoH)       |
 | **Applications** | 12 clients (Transfer, Chat, Sync, Vault, RedOps, etc.) |
-| **Post-Quantum** | Hybrid X25519 + ML-KEM-768 KEX |
-| **Tests** | 2,957 passing |
-| **Code** | ~141,000 lines Rust + ~36,600 lines TypeScript |
+| **Post-Quantum** | Hybrid X25519 + ML-KEM-768 KEX                         |
+| **Tests**        | 2,957 passing                                          |
+| **Code**         | ~141,000 lines Rust + ~36,600 lines TypeScript         |
 
 **Key Features:**
+
 - Perfect forward secrecy via Double Ratchet
 - Traffic analysis resistance (Elligator2 key encoding)
 - Protocol mimicry (TLS 1.3, WebSocket, DNS-over-HTTPS)
@@ -347,6 +352,7 @@ The covert communications backbone of SPECTRE, providing military-grade secure f
 - 12 production clients including mobile (Android/iOS)
 
 **SPECTRE Integration Points:**
+
 - `wraith-core` library for encrypted transport
 - `wraith-ffi` for FFI bindings
 - Campaign coordination via WRAITH-RedOps team server
@@ -359,17 +365,18 @@ The covert communications backbone of SPECTRE, providing military-grade secure f
 
 High-performance network scanner combining Masscan/ZMap speed with Nmap detection depth.
 
-| Capability | Specification |
-|------------|---------------|
-| **Throughput** | 10M+ packets/second (stateless), 72K+ pps (verified) |
-| **Scan Types** | SYN, Connect, FIN, NULL, Xmas, ACK, Idle, UDP |
-| **Detection** | Service detection (85-90%), OS fingerprinting (2,600+ sigs) |
-| **Evasion** | Fragmentation, TTL, decoys, timing templates (T0-T5) |
-| **IPv6** | Full dual-stack support across all scan types |
-| **TUI** | 60 FPS production dashboard, 11 widgets |
-| **Tests** | 2,557 passing, 51.40% coverage |
+| Capability     | Specification                                               |
+| -------------- | ----------------------------------------------------------- |
+| **Throughput** | 10M+ packets/second (stateless), 72K+ pps (verified)        |
+| **Scan Types** | SYN, Connect, FIN, NULL, Xmas, ACK, Idle, UDP               |
+| **Detection**  | Service detection (85-90%), OS fingerprinting (2,600+ sigs) |
+| **Evasion**    | Fragmentation, TTL, decoys, timing templates (T0-T5)        |
+| **IPv6**       | Full dual-stack support across all scan types               |
+| **TUI**        | 60 FPS production dashboard, 11 widgets                     |
+| **Tests**      | 2,557 passing, 51.40% coverage                              |
 
 **Key Features:**
+
 - Nmap-compatible CLI syntax (`-sS`, `-sV`, `-O`, `-A`)
 - Lua 5.4 plugin system for custom detection
 - PCAPNG packet capture
@@ -377,6 +384,7 @@ High-performance network scanner combining Masscan/ZMap speed with Nmap detectio
 - NUMA-optimized for multi-socket systems
 
 **SPECTRE Integration Points:**
+
 - TUI framework reuse for SPECTRE dashboard
 - Scan result JSON/XML output to data pipeline
 - Plugin system extensible for SPECTRE workflows
@@ -389,17 +397,18 @@ High-performance network scanner combining Masscan/ZMap speed with Nmap detectio
 
 MCP server exposing CyberChef's 463 operations as AI-callable tools for data manipulation, cryptanalysis, and forensic analysis.
 
-| Capability | Specification |
-|------------|---------------|
-| **Operations** | 463 data manipulation tools |
-| **Interface** | Model Context Protocol (MCP), stdio transport |
-| **Categories** | Encoding, encryption, compression, forensics |
-| **Deployment** | Docker (Chainguard distroless, ~90MB) |
-| **Recipe Mgmt** | 10 tools for workflow save/reuse |
-| **Batch Processing** | Parallel execution up to 100 operations |
-| **Tests** | 563 passing, 74.97% coverage |
+| Capability           | Specification                                 |
+| -------------------- | --------------------------------------------- |
+| **Operations**       | 463 data manipulation tools                   |
+| **Interface**        | Model Context Protocol (MCP), stdio transport |
+| **Categories**       | Encoding, encryption, compression, forensics  |
+| **Deployment**       | Docker (Chainguard distroless, ~90MB)         |
+| **Recipe Mgmt**      | 10 tools for workflow save/reuse              |
+| **Batch Processing** | Parallel execution up to 100 operations       |
+| **Tests**            | 563 passing, 74.97% coverage                  |
 
 **Key Features:**
+
 - AI-native via MCP (works with Claude, Cursor, etc.)
 - Recipe management with CRUD, import/export (JSON/YAML/URL)
 - Batch processing (parallel/sequential execution)
@@ -407,6 +416,7 @@ MCP server exposing CyberChef's 463 operations as AI-callable tools for data man
 - SLSA Build Level 3 provenance
 
 **MCP Tools:**
+
 - `cyberchef_bake` — Execute full recipes
 - `cyberchef_search` — Discover operations
 - 463 individual operation tools (`cyberchef_to_base64`, `cyberchef_aes_decrypt`, etc.)
@@ -414,6 +424,7 @@ MCP server exposing CyberChef's 463 operations as AI-callable tools for data man
 - 5 advanced feature tools (batch, cache, telemetry, quota)
 
 **SPECTRE Integration Points:**
+
 - Direct MCP bridge for AI-assisted analysis
 - Recipe library for common security workflows
 - Batch processing for bulk data operations
@@ -559,14 +570,14 @@ spectre-mcp serve
 
 SPECTRE releases follow an operational codename convention:
 
-| Version | Codename | Focus | Interface Milestone |
-|---------|----------|-------|---------------------|
-| v0.1.0 | **Operation BLACKOUT** | Foundation — CLI skeleton, component integration | CLI MVP |
-| v0.2.0 | **Operation NIGHTFALL** | Data pipeline, scan-to-analysis automation | CLI + Data Pipeline |
-| v0.3.0 | **Operation PHANTOM** | Campaign orchestration, multi-target coordination | TUI MVP |
-| v0.4.0 | **Operation ECLIPSE** | AI-assisted targeting, threat intel integration | MCP Server |
-| v0.5.0 | **Operation SHADOW** | Visual campaign planning, collaboration | GUI MVP |
-| v1.0.0 | **Operation GENESIS** | Production release — full platform capability | All 4 Interfaces |
+| Version | Codename                | Focus                                             | Interface Milestone |
+| ------- | ----------------------- | ------------------------------------------------- | ------------------- |
+| v0.1.0  | **Operation BLACKOUT**  | Foundation — CLI skeleton, component integration  | CLI MVP             |
+| v0.2.0  | **Operation NIGHTFALL** | Data pipeline, scan-to-analysis automation        | CLI + Data Pipeline |
+| v0.3.0  | **Operation PHANTOM**   | Campaign orchestration, multi-target coordination | TUI MVP             |
+| v0.4.0  | **Operation ECLIPSE**   | AI-assisted targeting, threat intel integration   | MCP Server          |
+| v0.5.0  | **Operation SHADOW**    | Visual campaign planning, collaboration           | GUI MVP             |
+| v1.0.0  | **Operation GENESIS**   | Production release — full platform capability     | All 4 Interfaces    |
 
 ### Phase 1: Foundation — Operation BLACKOUT (Complete)
 
@@ -810,12 +821,12 @@ We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed gu
 
 SPECTRE is a multi-license project reflecting its component licenses:
 
-| Component | License |
-|-----------|---------|
-| SPECTRE (CLI, Core, TUI, GUI, MCP) | MIT |
-| WRAITH-Protocol | MIT |
-| ProRT-IP | GPLv3 |
-| CyberChef-MCP | Apache 2.0 |
+| Component                          | License    |
+| ---------------------------------- | ---------- |
+| SPECTRE (CLI, Core, TUI, GUI, MCP) | MIT        |
+| WRAITH-Protocol                    | MIT        |
+| ProRT-IP                           | GPLv3      |
+| CyberChef-MCP                      | Apache 2.0 |
 
 See individual component repositories for full license texts.
 
@@ -850,11 +861,11 @@ SPECTRE builds on the shoulders of giants:
 
 ### Related Repositories
 
-| Repository | Description |
-|------------|-------------|
-| [WRAITH-Protocol](https://github.com/doublegate/WRAITH-Protocol) | Secure communications component (v2.3.7) |
-| [ProRT-IP](https://github.com/doublegate/ProRT-IP) | Network reconnaissance component (v1.0.0) |
-| [CyberChef-MCP](https://github.com/doublegate/CyberChef-MCP) | Data analysis component (v1.8.0) |
+| Repository                                                       | Description                               |
+| ---------------------------------------------------------------- | ----------------------------------------- |
+| [WRAITH-Protocol](https://github.com/doublegate/WRAITH-Protocol) | Secure communications component (v2.3.7)  |
+| [ProRT-IP](https://github.com/doublegate/ProRT-IP)               | Network reconnaissance component (v1.0.0) |
+| [CyberChef-MCP](https://github.com/doublegate/CyberChef-MCP)     | Data analysis component (v1.8.0)          |
 
 ---
 

@@ -9,6 +9,9 @@
 # Build artifacts
 /target/
 **/target/
+# Exception: spectre-core source module named 'target'
+!crates/spectre-core/src/target/
+!crates/spectre-core/src/target/**
 
 # Cargo lock for libraries (keep for applications)
 # Cargo.lock - UNCOMMENT if this is a library-only workspace
@@ -144,6 +147,9 @@ campaign-*.log
 # Scan results (sensitive)
 scans/
 results/
+# Exception: spectre-core source module named 'results'
+!crates/spectre-core/src/results/
+!crates/spectre-core/src/results/**
 *.scan.json
 *.scan.xml
 

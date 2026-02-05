@@ -39,6 +39,7 @@
 //! ```
 
 #![warn(clippy::all)]
+#![cfg_attr(test, allow(clippy::disallowed_methods))]
 #![allow(clippy::module_name_repetitions)]
 #![allow(clippy::missing_errors_doc)]
 #![allow(clippy::missing_panics_doc)]

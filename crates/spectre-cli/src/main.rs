@@ -7,6 +7,8 @@
 //! - **CyberChef-MCP**: Data analysis and transformation
 //! - **WRAITH-Protocol**: Secure encrypted communications
 
+#![cfg_attr(test, allow(clippy::disallowed_methods))]
+
 use anyhow::Result;
 use clap::Parser;
 use tracing::info;
