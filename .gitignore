@@ -215,6 +215,8 @@ docker-compose.*.yml
 coverage/
 *.lcov
 lcov.info
+tarpaulin-report.html
+cobertura.xml
 
 # Test artifacts
 test-results/
@@ -224,6 +226,7 @@ test-output/
 # Benchmark results (keep in separate reports)
 benchmark-results/
 *.bench
+target/criterion/
 
 # =============================================================================
 # Documentation Build
@@ -298,6 +301,9 @@ recipes/*.cache
 *.db-shm
 *.sqlite
 *.sqlite3
+*.sqlite3-journal
+*.sqlite3-wal
+*.sqlite3-shm
 !migrations/**/*.sql
 
 # =============================================================================

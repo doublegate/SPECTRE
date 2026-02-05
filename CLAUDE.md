@@ -19,7 +19,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Phase 3:** Operation PHANTOM (v0.3.x) - TUI Dashboard **COMPLETE**
 **Phase 4:** Operation SPECTER (v0.4.x) - Advanced Features **COMPLETE**
 
-**SPECTRE Tests:** 939 (44 CLI + 610 core + 235 TUI + 5 doc-tests + 45 integration) | **Code:** ~34,000 lines Rust (122 files)
+**SPECTRE Tests:** 972 (44 CLI + 610 core + 268 TUI + 5 doc-tests + 45 integration) | **Code:** ~34,700 lines Rust (122 files)
 
 **Repository:** [github.com/doublegate/SPECTRE](https://github.com/doublegate/SPECTRE)
 
@@ -123,7 +123,7 @@ crates/
 │   │   ├── error.rs        # SpectreError enum (20+ variants, thiserror)
 │   │   └── logging.rs      # tracing-subscriber with env-filter
 │   └── tests/              # Integration tests (45 tests across 6 files)
-├── spectre-tui/        # TUI dashboard (18 files, 235 tests)
+├── spectre-tui/        # TUI dashboard (18 files, 268 tests)
 │   └── src/
 │       ├── lib.rs          # Module declarations, re-exports
 │       ├── app.rs          # App struct, state management, event dispatch

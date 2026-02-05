@@ -4,17 +4,22 @@
 //! scan progress, theme, and command input. It processes events and
 //! orchestrates rendering.
 
+use std::collections::HashMap;
 use std::time::Duration;
 
 use crossterm::event::{KeyCode, KeyEvent};
 use ratatui::Frame;
+use tokio::sync::mpsc;
+
+use spectre_core::config::Config;
 
 use crate::command::{Command, CommandInput};
+use crate::event::{AppEvent, ComponentEvent};
 use crate::keybindings::{map_global_key, map_panel_key, AppAction};
 use crate::layout::{LayoutMode, PanelId, PanelManager};
 use crate::panels::analysis::AnalysisPanel;
 use crate::panels::campaign::CampaignPanel;
-use crate::panels::comms::CommsPanel;
+use crate::panels::comms::{self, CommsPanel};
 use crate::panels::recon::ReconPanel;
 use crate::panels::Panel;
 use crate::scan_state::ScanState;
@@ -52,11 +57,28 @@ pub struct App {
     pub campaign_panel: CampaignPanel,
     /// Active scan state
     pub scan_state: ScanState,
+
+    /// Config for creating component clients
+    config: Config,
+    /// Sender for component events back to the event loop
+    event_tx: mpsc::UnboundedSender<AppEvent>,
 }
 
 impl App {
     /// Create a new application with default settings.
+    ///
+    /// Uses a default config and a no-op event sender. Suitable for tests
+    /// that do not exercise async component commands.
     pub fn new() -> Self {
+        let (tx, _rx) = mpsc::unbounded_channel();
+        Self::with_config(Config::default(), tx)
+    }
+
+    /// Create a new application with the given config and event sender.
+    ///
+    /// The `event_tx` sender is used to deliver results from async component
+    /// operations (scans, chef, comms) back to the main event loop.
+    pub fn with_config(config: Config, event_tx: mpsc::UnboundedSender<AppEvent>) -> Self {
         Self {
             running: true,
             panels: PanelManager::new(),
@@ -71,6 +93,8 @@ impl App {
             comms_panel: CommsPanel::new(),
             campaign_panel: CampaignPanel::new(),
             scan_state: ScanState::new(),
+            config,
+            event_tx,
         }
     }
 
@@ -315,23 +339,249 @@ impl App {
                 self.command_input.message = Some(format!("Set {} = {}", key, value));
             },
             Command::Scan { args } => {
-                self.command_input.message = Some(format!("Scan requested: {}", args));
+                let parts: Vec<&str> = args.split_whitespace().collect();
+                if parts.is_empty() {
+                    self.command_input.error = Some("Usage: :scan <target> [-p ports]".to_string());
+                    return;
+                }
+                let target = parts[0].to_string();
+                // Parse -p flag if present
+                let ports_spec = parts
+                    .iter()
+                    .position(|&p| p == "-p")
+                    .and_then(|i| parts.get(i + 1))
+                    .copied()
+                    .map(String::from);
+
+                self.scan_state.start(
+                    &target,
+                    spectre_core::scan::ScanType::Connect,
+                    0,
+                    "tui-scan",
+                );
                 self.panels.focus_panel(PanelId::Recon);
+                self.command_input.message = Some(format!("Starting scan: {}", target));
+
+                let config = self.config.clone();
+                let tx = self.event_tx.clone();
+                let target_clone = target.clone();
+                tokio::spawn(async move {
+                    match spectre_core::scan::create_stub_scanner(&config) {
+                        Ok(scanner) => {
+                            let targets = match spectre_core::scan::parse_targets(&[target_clone]) {
+                                Ok(t) => t,
+                                Err(e) => {
+                                    let _ =
+                                        tx.send(AppEvent::Component(ComponentEvent::ScanFailed {
+                                            error: format!("Invalid target: {}", e),
+                                        }));
+                                    return;
+                                },
+                            };
+                            let port_list = spectre_core::scan::parse_ports(ports_spec.as_deref())
+                                .unwrap_or_else(|_| vec![22, 80, 443, 8080, 8443]);
+
+                            let scan_config = spectre_core::scan::ScanConfig {
+                                targets,
+                                ports: port_list,
+                                scan_type: spectre_core::scan::ScanType::Connect,
+                                timing: spectre_core::scan::TimingTemplate::Normal,
+                                ..Default::default()
+                            };
+
+                            let tx2 = tx.clone();
+                            let callback: spectre_core::scan::ProgressCallback =
+                                Box::new(move |completed, total| {
+                                    let _ = tx2.send(AppEvent::Component(
+                                        ComponentEvent::ScanProgress { completed, total },
+                                    ));
+                                });
+
+                            match scanner.scan(scan_config, Some(callback)).await {
+                                Ok(results) => {
+                                    for result in &results {
+                                        let _ = tx.send(AppEvent::Component(
+                                            ComponentEvent::ScanResult {
+                                                host: result.host.clone(),
+                                                ports: result.ports.clone(),
+                                            },
+                                        ));
+                                    }
+                                    let _ =
+                                        tx.send(AppEvent::Component(ComponentEvent::ScanComplete));
+                                },
+                                Err(e) => {
+                                    let _ =
+                                        tx.send(AppEvent::Component(ComponentEvent::ScanFailed {
+                                            error: e.to_string(),
+                                        }));
+                                },
+                            }
+                        },
+                        Err(e) => {
+                            let _ = tx.send(AppEvent::Component(ComponentEvent::ScanFailed {
+                                error: format!("Scanner unavailable: {}", e),
+                            }));
+                        },
+                    }
+                });
             },
             Command::Chef { args } => {
-                self.command_input.message = Some(format!("Chef recipe requested: {}", args));
+                let parts: Vec<&str> = args.splitn(2, char::is_whitespace).collect();
+                if parts.is_empty() || parts[0].is_empty() {
+                    self.command_input.error = Some("Usage: :chef <operation> [input]".to_string());
+                    return;
+                }
+                let operation = parts[0].to_string();
+                let input = parts.get(1).unwrap_or(&"").to_string();
+
+                self.analysis_panel.set_recipe(&operation);
                 self.panels.focus_panel(PanelId::Analysis);
+                self.command_input.message = Some(format!("Running: {}", operation));
+
+                let config = self.config.clone();
+                let tx = self.event_tx.clone();
+                let op = operation.clone();
+                tokio::spawn(async move {
+                    match spectre_core::chef::create_stub_chef_client(&config).await {
+                        Ok(client) => {
+                            let args_map: HashMap<String, String> = HashMap::new();
+                            match client.execute(&op, input.as_bytes(), &args_map).await {
+                                Ok(output) => {
+                                    let output_str = String::from_utf8_lossy(&output).to_string();
+                                    let lines: Vec<String> =
+                                        output_str.lines().map(String::from).collect();
+                                    let _ = tx.send(AppEvent::Component(
+                                        ComponentEvent::ChefComplete {
+                                            recipe: op,
+                                            output: lines,
+                                        },
+                                    ));
+                                },
+                                Err(e) => {
+                                    let _ =
+                                        tx.send(AppEvent::Component(ComponentEvent::ChefFailed {
+                                            recipe: op,
+                                            error: e.to_string(),
+                                        }));
+                                },
+                            }
+                        },
+                        Err(e) => {
+                            let _ = tx.send(AppEvent::Component(ComponentEvent::ChefFailed {
+                                recipe: op,
+                                error: format!("Chef unavailable: {}", e),
+                            }));
+                        },
+                    }
+                });
             },
             Command::Send { args } => {
-                self.command_input.message = Some(format!("Send requested: {}", args));
+                let parts: Vec<&str> = args.splitn(2, char::is_whitespace).collect();
+                if parts.len() < 2 {
+                    self.command_input.error = Some("Usage: :send <peer> <message>".to_string());
+                    return;
+                }
+                let peer_name = parts[0].to_string();
+                let data = parts[1].to_string();
+                let data_size = data.len();
+
+                // Add a transfer entry to the UI
+                self.comms_panel.transfers.push(comms::TransferEntry {
+                    name: format!("msg-to-{}", peer_name),
+                    direction: comms::TransferDirection::Send,
+                    progress: 0.0,
+                    size: data_size as u64,
+                    status: comms::TransferStatus::Active,
+                });
                 self.panels.focus_panel(PanelId::Comms);
+                self.command_input.message = Some(format!("Sending to {}...", peer_name));
+
+                let tx = self.event_tx.clone();
+                let peer = peer_name.clone();
+                tokio::spawn(async move {
+                    // Simulate the send completing after a brief delay.
+                    // Real WRAITH integration requires identity/peer setup first.
+                    tokio::time::sleep(std::time::Duration::from_millis(500)).await;
+                    let _ = tx.send(AppEvent::Component(ComponentEvent::CommsSent {
+                        peer,
+                        size: data_size,
+                    }));
+                });
             },
             Command::Campaign { args } => {
-                self.command_input.message = Some(format!("Campaign action: {}", args));
+                let parts: Vec<&str> = args.splitn(2, char::is_whitespace).collect();
+                let subcommand = parts.first().copied().unwrap_or_default();
+                let rest = parts.get(1).copied().unwrap_or_default();
+
+                match subcommand {
+                    "new" | "create" if !rest.is_empty() => {
+                        self.campaign_name = Some(rest.to_string());
+                        self.command_input.message = Some(format!("Campaign '{}' created", rest));
+                    },
+                    "status" => {
+                        let name = self.campaign_name.as_deref().unwrap_or("none");
+                        self.command_input.message = Some(format!("Active campaign: {}", name));
+                    },
+                    "clear" | "end" => {
+                        self.campaign_name = None;
+                        self.campaign_panel.clear();
+                        self.command_input.message = Some("Campaign ended".to_string());
+                    },
+                    _ => {
+                        self.command_input.error =
+                            Some("Usage: :campaign new|status|clear [name]".to_string());
+                    },
+                }
                 self.panels.focus_panel(PanelId::Campaign);
             },
             Command::Export { args } => {
                 self.command_input.message = Some(format!("Export requested: {}", args));
+            },
+        }
+    }
+
+    /// Handle an event from an async component operation.
+    pub fn handle_component_event(&mut self, event: ComponentEvent) {
+        match event {
+            ComponentEvent::ScanProgress { completed, total } => {
+                self.scan_state.update_progress(completed, total);
+            },
+            ComponentEvent::ScanResult { host, ports } => {
+                self.scan_state.add_host_results(&host, &ports);
+            },
+            ComponentEvent::ScanComplete => {
+                self.scan_state.complete();
+                self.command_input.message = Some("Scan complete".to_string());
+            },
+            ComponentEvent::ScanFailed { error } => {
+                self.scan_state.fail(&error);
+                self.command_input.error = Some(format!("Scan failed: {}", error));
+            },
+            ComponentEvent::ChefComplete { recipe, output } => {
+                self.analysis_panel.set_complete(output);
+                self.command_input.message = Some(format!("Chef '{}' complete", recipe));
+            },
+            ComponentEvent::ChefFailed { recipe, error } => {
+                self.analysis_panel.set_error(&error);
+                self.command_input.error = Some(format!("Chef '{}' failed: {}", recipe, error));
+            },
+            ComponentEvent::CommsSent { peer, size } => {
+                // Mark the latest transfer as complete
+                if let Some(xfer) = self.comms_panel.transfers.last_mut() {
+                    xfer.progress = 1.0;
+                    xfer.status = comms::TransferStatus::Complete;
+                }
+                self.command_input.message = Some(format!("Sent {} bytes to {}", size, peer));
+            },
+            ComponentEvent::CommsFailed { peer, error } => {
+                if let Some(xfer) = self.comms_panel.transfers.last_mut() {
+                    xfer.status = comms::TransferStatus::Failed;
+                }
+                self.command_input.error = Some(format!("Send to {} failed: {}", peer, error));
+            },
+            ComponentEvent::StatusMessage(msg) => {
+                self.command_input.message = Some(msg);
             },
         }
     }
@@ -752,8 +1002,8 @@ mod tests {
         }
     }
 
-    #[test]
-    fn test_app_command_scan() {
+    #[tokio::test]
+    async fn test_app_command_scan() {
         let mut app = App::new();
         app.command_input.activate();
         app.command_input.buffer = "scan 10.0.0.0/24".to_string();
@@ -764,8 +1014,8 @@ mod tests {
         assert!(app.command_input.message.is_some());
     }
 
-    #[test]
-    fn test_app_command_chef() {
+    #[tokio::test]
+    async fn test_app_command_chef() {
         let mut app = App::new();
         app.command_input.activate();
         app.command_input.buffer = "chef base64_decode".to_string();
@@ -775,8 +1025,8 @@ mod tests {
         assert_eq!(app.panels.focused, PanelId::Analysis);
     }
 
-    #[test]
-    fn test_app_command_send() {
+    #[tokio::test]
+    async fn test_app_command_send() {
         let mut app = App::new();
         app.command_input.activate();
         app.command_input.buffer = "send peer1 data".to_string();
@@ -851,5 +1101,330 @@ mod tests {
 
         app.on_key(KeyEvent::new(KeyCode::Char('k'), KeyModifiers::NONE));
         assert_eq!(app.campaign_panel.scroll_offset, 0);
+    }
+
+    #[test]
+    fn test_app_with_config() {
+        let config = Config::default();
+        let (tx, _rx) = mpsc::unbounded_channel();
+        let app = App::with_config(config, tx);
+        assert!(app.running);
+    }
+
+    // -- Component event handler tests --
+
+    #[test]
+    fn test_handle_scan_progress() {
+        let mut app = App::new();
+        app.scan_state.start(
+            "10.0.0.1",
+            spectre_core::scan::ScanType::Connect,
+            10,
+            "test",
+        );
+        app.handle_component_event(ComponentEvent::ScanProgress {
+            completed: 5,
+            total: 10,
+        });
+        assert_eq!(app.scan_state.hosts_scanned, 5);
+        assert_eq!(app.scan_state.hosts_total, 10);
+    }
+
+    #[test]
+    fn test_handle_scan_result() {
+        let mut app = App::new();
+        app.scan_state
+            .start("10.0.0.1", spectre_core::scan::ScanType::Connect, 1, "test");
+
+        let ports = vec![spectre_core::scan::PortResult {
+            port: 80,
+            protocol: spectre_core::scan::Protocol::Tcp,
+            state: spectre_core::scan::PortState::Open,
+            service: Some("http".to_string()),
+            version: None,
+            banner: None,
+        }];
+
+        app.handle_component_event(ComponentEvent::ScanResult {
+            host: "10.0.0.1".to_string(),
+            ports,
+        });
+        assert_eq!(app.scan_state.recent_results.len(), 1);
+        assert_eq!(app.scan_state.open_ports, 1);
+    }
+
+    #[test]
+    fn test_handle_scan_complete() {
+        let mut app = App::new();
+        app.scan_state
+            .start("10.0.0.1", spectre_core::scan::ScanType::Connect, 1, "test");
+        app.handle_component_event(ComponentEvent::ScanComplete);
+        assert!(!app.scan_state.active);
+        assert_eq!(app.command_input.message.as_deref(), Some("Scan complete"));
+    }
+
+    #[test]
+    fn test_handle_scan_failed() {
+        let mut app = App::new();
+        app.scan_state
+            .start("10.0.0.1", spectre_core::scan::ScanType::Connect, 1, "test");
+        app.handle_component_event(ComponentEvent::ScanFailed {
+            error: "timeout".to_string(),
+        });
+        assert!(!app.scan_state.active);
+        assert!(app
+            .command_input
+            .error
+            .as_ref()
+            .unwrap()
+            .contains("timeout"));
+    }
+
+    #[test]
+    fn test_handle_chef_complete() {
+        let mut app = App::new();
+        app.analysis_panel.set_recipe("base64_decode");
+        app.handle_component_event(ComponentEvent::ChefComplete {
+            recipe: "base64_decode".to_string(),
+            output: vec!["decoded output".to_string()],
+        });
+        assert_eq!(
+            app.analysis_panel.status,
+            crate::panels::analysis::AnalysisStatus::Complete
+        );
+        assert_eq!(app.analysis_panel.output_preview.len(), 1);
+        assert!(app
+            .command_input
+            .message
+            .as_ref()
+            .unwrap()
+            .contains("base64_decode"));
+    }
+
+    #[test]
+    fn test_handle_chef_failed() {
+        let mut app = App::new();
+        app.analysis_panel.set_recipe("bad_recipe");
+        app.handle_component_event(ComponentEvent::ChefFailed {
+            recipe: "bad_recipe".to_string(),
+            error: "not found".to_string(),
+        });
+        assert!(matches!(
+            app.analysis_panel.status,
+            crate::panels::analysis::AnalysisStatus::Error(_)
+        ));
+        assert!(app
+            .command_input
+            .error
+            .as_ref()
+            .unwrap()
+            .contains("bad_recipe"));
+    }
+
+    #[test]
+    fn test_handle_comms_sent() {
+        let mut app = App::new();
+        app.comms_panel.transfers.push(comms::TransferEntry {
+            name: "msg-to-alpha".to_string(),
+            direction: comms::TransferDirection::Send,
+            progress: 0.0,
+            size: 100,
+            status: comms::TransferStatus::Active,
+        });
+        app.handle_component_event(ComponentEvent::CommsSent {
+            peer: "alpha".to_string(),
+            size: 100,
+        });
+        let xfer = app.comms_panel.transfers.last().unwrap();
+        assert_eq!(xfer.status, comms::TransferStatus::Complete);
+        assert!((xfer.progress - 1.0).abs() < f64::EPSILON);
+        assert!(app.command_input.message.as_ref().unwrap().contains("100"));
+    }
+
+    #[test]
+    fn test_handle_comms_failed() {
+        let mut app = App::new();
+        app.comms_panel.transfers.push(comms::TransferEntry {
+            name: "msg-to-bravo".to_string(),
+            direction: comms::TransferDirection::Send,
+            progress: 0.0,
+            size: 50,
+            status: comms::TransferStatus::Active,
+        });
+        app.handle_component_event(ComponentEvent::CommsFailed {
+            peer: "bravo".to_string(),
+            error: "refused".to_string(),
+        });
+        let xfer = app.comms_panel.transfers.last().unwrap();
+        assert_eq!(xfer.status, comms::TransferStatus::Failed);
+        assert!(app
+            .command_input
+            .error
+            .as_ref()
+            .unwrap()
+            .contains("refused"));
+    }
+
+    #[test]
+    fn test_handle_comms_sent_no_transfers() {
+        // Should not panic when transfers list is empty
+        let mut app = App::new();
+        app.handle_component_event(ComponentEvent::CommsSent {
+            peer: "ghost".to_string(),
+            size: 0,
+        });
+        assert!(app.command_input.message.is_some());
+    }
+
+    #[test]
+    fn test_handle_status_message() {
+        let mut app = App::new();
+        app.handle_component_event(ComponentEvent::StatusMessage("all systems go".to_string()));
+        assert_eq!(app.command_input.message.as_deref(), Some("all systems go"));
+    }
+
+    #[test]
+    fn test_command_scan_empty_args() {
+        let mut app = App::new();
+        app.handle_command(Command::Scan {
+            args: String::new(),
+        });
+        assert!(app.command_input.error.is_some());
+        assert!(app.command_input.error.as_ref().unwrap().contains("Usage"));
+    }
+
+    #[test]
+    fn test_command_chef_empty_args() {
+        let mut app = App::new();
+        app.handle_command(Command::Chef {
+            args: String::new(),
+        });
+        assert!(app.command_input.error.is_some());
+        assert!(app.command_input.error.as_ref().unwrap().contains("Usage"));
+    }
+
+    #[test]
+    fn test_command_send_missing_message() {
+        let mut app = App::new();
+        app.handle_command(Command::Send {
+            args: "peer1".to_string(),
+        });
+        assert!(app.command_input.error.is_some());
+        assert!(app.command_input.error.as_ref().unwrap().contains("Usage"));
+    }
+
+    #[test]
+    fn test_command_campaign_new() {
+        let mut app = App::new();
+        app.handle_command(Command::Campaign {
+            args: "new TestOp".to_string(),
+        });
+        assert_eq!(app.campaign_name.as_deref(), Some("TestOp"));
+        assert!(app.command_input.message.is_some());
+    }
+
+    #[test]
+    fn test_command_campaign_status() {
+        let mut app = App::new();
+        app.campaign_name = Some("Alpha".to_string());
+        app.handle_command(Command::Campaign {
+            args: "status".to_string(),
+        });
+        assert!(app
+            .command_input
+            .message
+            .as_ref()
+            .unwrap()
+            .contains("Alpha"));
+    }
+
+    #[test]
+    fn test_command_campaign_clear() {
+        let mut app = App::new();
+        app.campaign_name = Some("Beta".to_string());
+        app.handle_command(Command::Campaign {
+            args: "clear".to_string(),
+        });
+        assert!(app.campaign_name.is_none());
+        assert!(app
+            .command_input
+            .message
+            .as_ref()
+            .unwrap()
+            .contains("ended"));
+    }
+
+    #[test]
+    fn test_command_campaign_end() {
+        let mut app = App::new();
+        app.campaign_name = Some("Gamma".to_string());
+        app.handle_command(Command::Campaign {
+            args: "end".to_string(),
+        });
+        assert!(app.campaign_name.is_none());
+    }
+
+    #[test]
+    fn test_command_campaign_invalid() {
+        let mut app = App::new();
+        app.handle_command(Command::Campaign {
+            args: "invalid".to_string(),
+        });
+        assert!(app.command_input.error.is_some());
+    }
+
+    #[test]
+    fn test_command_campaign_new_no_name() {
+        let mut app = App::new();
+        app.handle_command(Command::Campaign {
+            args: "new".to_string(),
+        });
+        // "new" without a name should fall through to the default error case
+        assert!(app.command_input.error.is_some());
+    }
+
+    #[tokio::test]
+    async fn test_command_scan_with_ports() {
+        let mut app = App::new();
+        app.command_input.activate();
+        app.command_input.buffer = "scan 10.0.0.1 -p 22,80".to_string();
+        app.command_input.cursor = app.command_input.buffer.len();
+
+        app.on_key(KeyEvent::new(KeyCode::Enter, KeyModifiers::NONE));
+        assert_eq!(app.panels.focused, PanelId::Recon);
+        assert!(app.scan_state.active);
+        assert!(app.command_input.message.is_some());
+    }
+
+    #[tokio::test]
+    async fn test_command_send_with_data() {
+        let mut app = App::new();
+        app.command_input.activate();
+        app.command_input.buffer = "send alpha hello world".to_string();
+        app.command_input.cursor = app.command_input.buffer.len();
+
+        app.on_key(KeyEvent::new(KeyCode::Enter, KeyModifiers::NONE));
+        assert_eq!(app.panels.focused, PanelId::Comms);
+        assert_eq!(app.comms_panel.transfers.len(), 1);
+        assert_eq!(app.comms_panel.transfers[0].name, "msg-to-alpha");
+    }
+
+    #[tokio::test]
+    async fn test_command_chef_with_input() {
+        let mut app = App::new();
+        app.command_input.activate();
+        app.command_input.buffer = "chef base64_decode SGVsbG8=".to_string();
+        app.command_input.cursor = app.command_input.buffer.len();
+
+        app.on_key(KeyEvent::new(KeyCode::Enter, KeyModifiers::NONE));
+        assert_eq!(app.panels.focused, PanelId::Analysis);
+        assert_eq!(
+            app.analysis_panel.current_recipe.as_deref(),
+            Some("base64_decode")
+        );
+        assert_eq!(
+            app.analysis_panel.status,
+            crate::panels::analysis::AnalysisStatus::Running
+        );
     }
 }

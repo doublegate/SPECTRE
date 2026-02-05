@@ -48,8 +48,8 @@ Modern offensive security requires seamless tool integration. SPECTRE eliminates
 
 | Metric                 | Value                                                                   |
 | ---------------------- | ----------------------------------------------------------------------- |
-| **Combined Tests**     | 7,016 (SPECTRE: 939 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 563) |
-| **SPECTRE Codebase**   | ~34,000 lines Rust (122 source files across 5 crates)                     |
+| **Combined Tests**     | 7,049 (SPECTRE: 972 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 563) |
+| **SPECTRE Codebase**   | ~34,700 lines Rust (122 source files across 5 crates)                     |
 | **Component Code**     | ~180,000 (Rust) + ~40,000 (TypeScript/JavaScript)                         |
 | **Languages**          | Rust 2024, TypeScript, JavaScript                                         |
 | **Network Throughput** | 10+ Gbps (WRAITH), 10M+ pps (ProRT-IP)                                   |
@@ -773,7 +773,7 @@ SPECTRE/
 │   │       ├── integration_export.rs         # Export format tests (8)
 │   │       ├── integration_plugin.rs         # Plugin system tests (6)
 │   │       └── integration_perf.rs           # Performance layer tests (6)
-│   ├── spectre-tui/        # TUI dashboard (18 files, 235 tests)
+│   ├── spectre-tui/        # TUI dashboard (18 files, 268 tests)
 │   │   ├── Cargo.toml
 │   │   └── src/
 │   │       ├── lib.rs          # Module declarations, re-exports

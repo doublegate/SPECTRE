@@ -17,18 +17,19 @@ use crate::terminal::{init_terminal, restore_terminal};
 ///
 /// # Arguments
 ///
-/// * `_config` - The SPECTRE configuration (used for initial setup)
+/// * `config` - The SPECTRE configuration (passed to App for component clients)
 ///
 /// # Errors
 ///
 /// Returns an error if terminal initialization fails or if an unrecoverable
 /// error occurs during the event loop.
-pub async fn run(_config: &spectre_core::config::Config) -> Result<()> {
+pub async fn run(config: &spectre_core::config::Config) -> Result<()> {
     info!("Starting SPECTRE TUI dashboard");
 
-    let mut app = App::new();
+    let mut events = EventHandler::new(std::time::Duration::from_millis(16));
+    let event_tx = events.sender();
+    let mut app = App::with_config(config.clone(), event_tx);
     let mut terminal = init_terminal()?;
-    let mut events = EventHandler::new(app.tick_rate);
 
     // Main event loop
     while app.running {
@@ -50,6 +51,9 @@ pub async fn run(_config: &spectre_core::config::Config) -> Result<()> {
             },
             AppEvent::Tick => {
                 app.tick();
+            },
+            AppEvent::Component(component_event) => {
+                app.handle_component_event(component_event);
             },
         }
     }

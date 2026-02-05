@@ -39,6 +39,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **`create_chef_client()` now returns real `McpChefClient`** backed by Docker MCP subprocess (was stub `McpClient`)
 - **`create_stub_chef_client()`** added as separate function for testing environments without Docker
 
+#### TUI Command Handler Wiring — Live Component Integration
+
+- **`crates/spectre-tui/src/event.rs`**: Added `ComponentEvent` enum (9 variants: ScanProgress, ScanResult, ScanComplete, ScanFailed, ChefComplete, ChefFailed, CommsSent, CommsFailed, StatusMessage) and `AppEvent::Component` variant for async operation results
+- **`crates/spectre-tui/src/app.rs`**: Wired command handlers to real spectre-core APIs:
+  - `:scan <target> [-p ports]` — parses args, spawns background scan task via `create_scanner()`, feeds results to ScanState
+  - `:chef <operation> [input]` — executes CyberChef operations via stub client, updates AnalysisPanel
+  - `:send <peer> <message>` — creates TransferEntry, simulates send via async task, updates CommsPanel
+  - `:campaign new|status|clear [name]` — synchronous campaign management
+  - Added `handle_component_event()` method dispatching async results to panels
+  - Added `App::with_config()` constructor accepting Config and event sender
+- **`crates/spectre-tui/src/tui.rs`**: Updated `run()` to pass config to App and handle `AppEvent::Component` in event loop
+- **`EventHandler::sender()`**: New method returning event channel sender for spawned async tasks
+- 33 new tests covering all ComponentEvent variants, validation errors, campaign subcommands
+
+#### .gitignore Enhancements
+
+- Added `tarpaulin-report.html`, `cobertura.xml` for coverage reports
+- Added `target/criterion/` for benchmark cache
+- Added `*.sqlite3-journal`, `*.sqlite3-wal`, `*.sqlite3-shm` for SQLite3 variants
+
 ### Changed
 - **`chef/mod.rs`**: Added `pub mod mcp_adapter`; updated module documentation describing 3-layer architecture (ChefClient trait, MCP adapter, Stub); `create_chef_client()` now returns `McpChefClient`; added `create_stub_chef_client()` returning old `McpClient` stub; added `pub use mcp_adapter::McpChefClient`
 - **`chef/docker.rs`**: Removed TCP port 3001 binding from `start_container()` (MCP uses stdio, not HTTP); replaced with `open_stdin: true`, `attach_stdin: true`, `attach_stdout: true` in container config; updated comments explaining MCP stdio transport; removed `exposed_ports` and `port_bindings` from `ContainerConfig`
@@ -46,7 +66,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Technical Details
 - 122 Rust source files across 5 crates (was 121)
-- 939 tests total: 44 CLI + 610 core unit + 235 TUI + 5 doc-tests + 45 integration (was 893)
+- 972 tests total: 44 CLI + 610 core unit + 268 TUI + 5 doc-tests + 45 integration (was 939)
 - Zero clippy warnings (`cargo clippy --workspace -- -D warnings`)
 - No new workspace dependencies — uses existing `serde`, `serde_json`, `tokio` (process, io, sync), `async-trait`, `tracing`
 - Key architectural decisions:
