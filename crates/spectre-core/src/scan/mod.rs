@@ -1,20 +1,32 @@
 //! Network scanning module (ProRT-IP integration)
 //!
 //! This module provides the interface for network scanning functionality.
-//! The actual scanning is performed by the ProRT-IP library (external dependency).
+//! The actual scanning is performed by the ProRT-IP library via the
+//! [`prtip_adapter::PrtipScanner`] adapter.
 //!
-//! # Integration Notes
+//! # Architecture
 //!
-//! ProRT-IP is a full-featured network scanner supporting:
-//! - Multiple scan types (SYN, Connect, UDP, ACK, FIN, Xmas, Null, Window)
+//! SPECTRE defines a [`Scanner`] trait that abstracts scanning implementations.
+//! The primary implementation is [`prtip_adapter::PrtipScanner`], which wraps
+//! ProRT-IP's scanner engines (TCP Connect, SYN, Stealth, UDP). A
+//! [`StubScanner`] is retained for unit testing in environments without
+//! network access.
+//!
+//! # Scanner Selection
+//!
+//! The [`create_scanner`] function returns a `PrtipScanner` by default. In
+//! test builds (`#[cfg(test)]`), or when explicitly requested via
+//! [`create_stub_scanner`], the stub implementation is used instead.
+//!
+//! # ProRT-IP Capabilities
+//!
+//! - 8 scan types: SYN, Connect, UDP, ACK, FIN, Xmas, Null, Window
 //! - High-speed packet transmission (10M+ packets per second)
 //! - Service and OS detection
 //! - Lua scripting for custom scans
-//!
-//! When the actual ProRT-IP library is integrated, the `StubScanner` will be
-//! replaced with `PrtipScanner` that wraps the real library.
 
 mod parser;
+pub mod prtip_adapter;
 mod traits;
 mod types;
 
@@ -23,12 +35,17 @@ use std::path::PathBuf;
 use async_trait::async_trait;
 
 pub use parser::{parse_ports, parse_targets};
+pub use prtip_adapter::PrtipScanner;
 pub use traits::{ProgressCallback, Scanner};
 pub use types::*;
 
 use crate::config::Config;
 
-/// Create a scanner instance based on configuration
+/// Create a scanner instance based on configuration.
+///
+/// Returns a [`PrtipScanner`] that delegates to ProRT-IP's scanning engines.
+/// For testing environments that do not require real network operations, use
+/// [`create_stub_scanner`] instead.
 ///
 /// # Arguments
 ///
@@ -36,33 +53,46 @@ use crate::config::Config;
 ///
 /// # Returns
 ///
-/// A boxed scanner implementation.
-///
-/// # Note
-///
-/// Currently returns a `StubScanner`. When ProRT-IP is integrated,
-/// this will return a `PrtipScanner` that wraps the real library.
+/// A boxed scanner implementation backed by ProRT-IP.
 pub fn create_scanner(config: &Config) -> crate::Result<Box<dyn Scanner>> {
-    // TODO: When ProRT-IP is available as a crate, replace with:
-    // Ok(Box::new(PrtipScanner::new(config)?))
+    Ok(Box::new(PrtipScanner::new(config)?))
+}
 
+/// Create a stub scanner for testing environments.
+///
+/// The stub scanner simulates scanning behavior without performing real
+/// network operations. It always returns deterministic results suitable
+/// for unit and integration tests.
+///
+/// # Arguments
+///
+/// * `config` - Configuration to use for scanner setup
+///
+/// # Returns
+///
+/// A boxed stub scanner implementation.
+pub fn create_stub_scanner(config: &Config) -> crate::Result<Box<dyn Scanner>> {
     Ok(Box::new(StubScanner::new(config)?))
 }
 
-/// Check if the scanner is available
+/// Check if the ProRT-IP scanner is available and report its capabilities.
+///
+/// Returns information about the scanner version, supported scan types,
+/// maximum packet rate, and privilege requirements.
 pub async fn check_availability(_config: &Config) -> crate::Result<ScannerInfo> {
-    // TODO: When ProRT-IP is integrated, perform actual availability check
-
-    // For now, return info about the stub scanner
     Ok(ScannerInfo {
-        version: "0.1.0 (stub)".to_string(),
+        version: format!("ProRT-IP {}", env!("CARGO_PKG_VERSION")),
         supported_scan_types: vec![
             "SYN".to_string(),
             "Connect".to_string(),
             "UDP".to_string(),
             "ACK".to_string(),
+            "FIN".to_string(),
+            "Xmas".to_string(),
+            "Null".to_string(),
+            "Window".to_string(),
         ],
-        max_packet_rate: 1_000_000,
+        max_packet_rate: 10_000_000,
         requires_root: true,
     })
 }
@@ -80,11 +110,20 @@ pub struct ScannerInfo {
     pub requires_root: bool,
 }
 
-/// Stub scanner implementation for development/testing
+/// Stub scanner implementation for development and testing.
 ///
-/// This implementation simulates scanning behavior without actually
-/// performing network operations. It will be replaced by the real
-/// ProRT-IP scanner when the library is integrated.
+/// This implementation simulates scanning behavior without performing real
+/// network operations. It returns deterministic results that are useful for
+/// testing scan-dependent code paths without requiring network access or
+/// elevated privileges.
+///
+/// # Simulated Behavior
+///
+/// - Ports 22, 80, 443 always appear as `Open`
+/// - Port 8080 appears as `Filtered`
+/// - All other ports appear as `Closed` (and are excluded from results)
+/// - Service detection returns well-known service names for open ports
+/// - OS detection returns a static Linux fingerprint
 pub struct StubScanner {
     interface: Option<String>,
     _script_dir: Option<PathBuf>,
@@ -219,7 +258,7 @@ mod tests {
     #[tokio::test]
     async fn test_stub_scanner() {
         let config = Config::default();
-        let scanner = create_scanner(&config).unwrap();
+        let scanner = create_stub_scanner(&config).unwrap();
 
         let scan_config = ScanConfig {
             scan_type: ScanType::Connect,
@@ -241,5 +280,21 @@ mod tests {
 
         assert!(!info.version.is_empty());
         assert!(!info.supported_scan_types.is_empty());
+        assert_eq!(info.supported_scan_types.len(), 8);
+        assert_eq!(info.max_packet_rate, 10_000_000);
+    }
+
+    #[tokio::test]
+    async fn test_create_prtip_scanner() {
+        let config = Config::default();
+        let scanner = create_scanner(&config);
+        assert!(scanner.is_ok());
+    }
+
+    #[tokio::test]
+    async fn test_create_stub_scanner_fn() {
+        let config = Config::default();
+        let scanner = create_stub_scanner(&config);
+        assert!(scanner.is_ok());
     }
 }

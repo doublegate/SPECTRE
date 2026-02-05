@@ -11,6 +11,41 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GUI application with Tauri 2.0 — Phase 5
 - MCP server implementation — Phase 6
 
+## [0.4.4] - 2026-02-05
+
+### Added
+
+#### ProRT-IP Scanner Integration — Real Component Dependency
+
+- **`crates/spectre-core/src/scan/prtip_adapter.rs`** (NEW, 726 lines, 15 unit tests):
+  - `PrtipScanner` struct implementing SPECTRE's `Scanner` trait via ProRT-IP scanner engines
+  - Scanner engine dispatch for all 8 scan types: TCP Connect (`TcpConnectScanner`), SYN (`SynScanner`), FIN/NULL/Xmas/ACK (`StealthScanner` variants), Window (mapped to ACK), UDP (`UdpScanner`)
+  - `run_on_blocking_thread()` helper to handle ProRT-IP's `!Send` scanner futures (SYN, Stealth, UDP use `ThreadRng` internally) by spawning a dedicated single-threaded Tokio runtime inside `tokio::task::spawn_blocking`
+  - Type conversion functions: `timing_to_prtip()`, `port_state_from_prtip()`, `protocol_from_prtip()`, `numeric_to_timing()`
+  - `resolve_target()` converting SPECTRE `Target` (IP, CIDR, Hostname) to `Vec<IpAddr>` for ProRT-IP
+  - `aggregate_results()` grouping ProRT-IP per-port `ScanResult` values into SPECTRE per-host `ScanResult` with closed-port filtering, service info preservation, and reverse DNS support
+  - `aggregate_results_udp()` variant correctly setting UDP protocol on port results
+  - Comprehensive doc comments with scan type mapping table and usage example
+
+- **`create_scanner()` now returns real `PrtipScanner`** backed by ProRT-IP engines (was `StubScanner`)
+- **`create_stub_scanner()`** added as separate function for testing environments
+- **`prtip-core` and `prtip-scanner`** added as workspace path dependencies (`components/prtip/crates/`)
+
+### Changed
+- **Workspace `Cargo.toml`**: Added `exclude = ["components/prtip"]` to prevent nested workspace resolution conflicts; updated `mlua` from `0.10` to `0.11` (aligning with ProRT-IP's version range); added `prtip-core` and `prtip-scanner` workspace dependencies
+- **`spectre-core/Cargo.toml`**: Added `prtip-core` and `prtip-scanner` as workspace dependencies
+- **`scan/mod.rs`**: Added `pub mod prtip_adapter`, `pub use PrtipScanner`; rewired `create_scanner()` to `PrtipScanner`; updated `check_availability()` to report real ProRT-IP capabilities (8 scan types, 10M pps); updated tests to use appropriate scanner constructors
+
+### Technical Details
+- 120 Rust source files across 5 crates (was 119)
+- 884 tests total: 44 CLI + 556 core unit + 235 TUI + 4 doc-tests + 45 integration (was 865)
+- Zero clippy warnings (`cargo clippy --workspace -- -D warnings`)
+- Key technical challenges solved:
+  - **Nested workspace resolution**: `exclude` directive prevents Cargo from resolving ProRT-IP's `{ workspace = true }` deps (parking_lot, rlimit, regex) against SPECTRE's workspace root
+  - **`!Send` future problem**: ProRT-IP's SYN/Stealth/UDP scanners produce `!Send` futures due to `ThreadRng`; solved with `spawn_blocking` + dedicated single-threaded Tokio runtime
+  - **Type aggregation**: ProRT-IP returns per-port results; SPECTRE expects per-host results with `Vec<PortResult>`; solved with `aggregate_results()` grouping function
+  - **Max rate type mismatch**: SPECTRE `u64` → ProRT-IP `Option<u32>`, clamped with `u32::try_from().unwrap_or(u32::MAX)`
+
 ## [0.4.3] - 2026-02-04
 
 ### Added

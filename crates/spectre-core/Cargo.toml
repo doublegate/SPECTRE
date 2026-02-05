@@ -56,6 +56,10 @@ uuid = { workspace = true }
 tokio-util = { workspace = true }
 quick-xml = { workspace = true }
 
+# ProRT-IP scanner integration
+prtip-core = { workspace = true }
+prtip-scanner = { workspace = true }
+
 # Crypto utilities
 sha2 = { workspace = true }
 rand = { workspace = true }

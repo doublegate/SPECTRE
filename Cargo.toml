@@ -7,9 +7,12 @@ members = [
     "crates/spectre-gui",
     "crates/spectre-mcp",
 ]
+exclude = [
+    "components/prtip",
+]
 
 [workspace.package]
-version = "0.4.3"
+version = "0.4.4"
 edition = "2021"
 rust-version = "1.88"
 authors = ["doublegate"]
@@ -57,7 +60,11 @@ ipnetwork = "0.20"
 rusqlite = { version = "0.32", features = ["bundled"] }
 
 # Plugin system
-mlua = { version = "0.10", features = ["lua54", "vendored", "async", "send", "serialize"] }
+mlua = { version = "0.11", features = ["lua54", "vendored", "async", "send", "serialize"] }
+
+# ProRT-IP scanner integration
+prtip-core = { path = "components/prtip/crates/prtip-core" }
+prtip-scanner = { path = "components/prtip/crates/prtip-scanner" }
 
 # Utilities
 uuid = { version = "1.0", features = ["v4"] }
