@@ -13,7 +13,7 @@ A unified offensive security toolkit combining wire-speed secure communications,
   <a href="https://github.com/doublegate/SPECTRE"><img src="https://img.shields.io/github/stars/doublegate/SPECTRE?style=flat-square" alt="GitHub Stars"></a>
   <a href="https://github.com/doublegate/SPECTRE/fork"><img src="https://img.shields.io/github/forks/doublegate/SPECTRE?style=flat-square" alt="GitHub Forks"></a>
   <a href="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml"><img src="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
-  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.4.1-blue.svg" alt="Version"></a>
+  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.4.2-blue.svg" alt="Version"></a>
   <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.88%2B-orange.svg" alt="Rust"></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-22%2B-green.svg" alt="Node.js"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT%2FGPLv3%2FApache--2.0-green.svg" alt="License"></a>
@@ -48,8 +48,8 @@ Modern offensive security requires seamless tool integration. SPECTRE eliminates
 
 | Metric                 | Value                                                                   |
 | ---------------------- | ----------------------------------------------------------------------- |
-| **Combined Tests**     | 6,941 (SPECTRE: 864 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 563) |
-| **SPECTRE Codebase**   | ~31,000 lines Rust (118 source files across 5 crates)                     |
+| **Combined Tests**     | 6,942 (SPECTRE: 865 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 563) |
+| **SPECTRE Codebase**   | ~31,000 lines Rust (119 source files across 5 crates)                     |
 | **Component Code**     | ~180,000 (Rust) + ~40,000 (TypeScript/JavaScript)                         |
 | **Languages**          | Rust 2024, TypeScript, JavaScript                                         |
 | **Network Throughput** | 10+ Gbps (WRAITH), 10M+ pps (ProRT-IP)                                   |
@@ -71,7 +71,7 @@ SPECTRE provides four distinct interaction methods to suit different operational
 │   ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────────────┐   │
 │   │   CLI    │  │   TUI    │  │   GUI    │  │    MCP Server    │   │
 │   │ spectre  │  │ spectre  │  │ spectre  │  │ spectre-mcp      │   │
-│   │   cmd    │  │   --tui  │  │   --gui  │  │                  │   │
+│   │   cmd    │  │    tui   │  │   --gui  │  │                  │   │
 │   ├──────────┤  ├──────────┤  ├──────────┤  ├──────────────────┤   │
 │   │ Scripts  │  │ Real-    │  │ Visual   │  │ AI-Assisted      │   │
 │   │ Pipelines│  │ time     │  │ Campaign │  │ Natural Language │   │
@@ -125,8 +125,8 @@ spectre scan --output json 10.0.0.0/24 | \
 **Real-time operational dashboard leveraging ProRT-IP's 60 FPS TUI framework.**
 
 ```bash
-spectre --tui                    # Launch full TUI dashboard
-spectre scan --tui 192.168.1.0/24  # Scan with live visualization
+spectre tui                         # Launch full TUI dashboard (alias: spectre ui)
+spectre scan --tui 192.168.1.0/24   # Scan with live visualization
 ```
 
 **Dashboard Panels:**
@@ -313,7 +313,7 @@ SPECTRE follows a modular microservices architecture where each component operat
 
 | Layer                   | Purpose                                          | Technology                       | Status          |
 | ----------------------- | ------------------------------------------------ | -------------------------------- | --------------- |
-| **CLI Orchestrator**    | Unified command interface (12 subcommands)       | Rust (clap 4)                    | **Implemented** |
+| **CLI Orchestrator**    | Unified command interface (13 subcommands)       | Rust (clap 4)                    | **Implemented** |
 | **Core Library**        | Config, scanning, comms, analysis, orchestration | Rust (tokio, serde, tracing)     | **Implemented** |
 | **Target Management**   | Priority queue, scope enforcement, async DNS     | Rust (ipnetwork, tokio)          | **Implemented** |
 | **Job Orchestration**   | State machine, concurrency control, events       | Rust (tokio, broadcast channels) | **Implemented** |
@@ -468,7 +468,7 @@ spectre scan --capture pcap -p 443 10.0.0.0/24 | \
   spectre report --format json --output indicators.json
 
 # TUI mode for live analysis
-spectre --tui threat-hunt --interface eth0
+spectre tui
 ```
 
 ### Security Auditing
@@ -561,7 +561,7 @@ spectre chef "From_Base64" --input encoded.txt
 spectre send document.pdf --peer <peer-id> --encrypt
 
 # TUI: Launch dashboard
-spectre --tui
+spectre tui
 
 # GUI: Launch web interface
 spectre --gui
@@ -589,7 +589,7 @@ SPECTRE releases follow an operational codename convention:
 
 ### Phase 1: Foundation — Operation BLACKOUT (Complete)
 
-- [x] SPECTRE CLI skeleton with subcommand routing (9 commands, Nmap-compatible flags)
+- [x] SPECTRE CLI skeleton with subcommand routing (13 commands, Nmap-compatible flags)
 - [x] Component version detection and health checks (`spectre status`)
 - [x] Unified configuration management (TOML with file discovery and env var support)
 - [x] Structured logging with tracing (RUST_LOG, file output, JSON format)
@@ -666,11 +666,11 @@ SPECTRE/
 ├── .editorconfig           # Editor standards
 │
 ├── crates/
-│   ├── spectre-cli/        # Unified CLI orchestrator (17 files, 43 tests)
+│   ├── spectre-cli/        # Unified CLI orchestrator (18 files, 44 tests)
 │   │   ├── Cargo.toml
 │   │   └── src/
 │   │       ├── main.rs         # Entry point, CLI parsing
-│   │       ├── commands/       # 12 subcommand implementations
+│   │       ├── commands/       # 13 subcommand implementations
 │   │       │   ├── scan.rs         # Network scanning (ProRT-IP)
 │   │       │   ├── chef.rs         # Data analysis (CyberChef-MCP)
 │   │       │   ├── send.rs         # Secure send (WRAITH)
@@ -682,7 +682,8 @@ SPECTRE/
 │   │       │   ├── completions.rs  # Shell completion generation
 │   │       │   ├── campaign.rs     # Campaign management (7 subcommands)
 │   │       │   ├── pipeline.rs     # Data pipeline execution (3 subcommands)
-│   │       │   └── plugin.rs       # Plugin management (3 subcommands)
+│   │       │   ├── plugin.rs       # Plugin management (3 subcommands)
+│   │       │   └── tui.rs          # TUI dashboard launcher
 │   │       └── output/         # Output formatting
 │   │           ├── table.rs        # Table output (comfy-table)
 │   │           └── json.rs         # JSON output (serde_json)
@@ -924,6 +925,6 @@ SPECTRE builds on the shoulders of giants:
 
 **SPECTRE** — _Unified Offensive Security_
 
-**Version:** 0.4.1 | **License:** Multi-license | **Language:** Rust + TypeScript | **Status:** Active Development
+**Version:** 0.4.2 | **License:** Multi-license | **Language:** Rust + TypeScript | **Status:** Active Development
 
 **Last Updated:** 2026-02-04

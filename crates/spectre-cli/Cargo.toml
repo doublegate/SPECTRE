@@ -19,6 +19,9 @@ path = "src/main.rs"
 # Core library
 spectre-core = { path = "../spectre-core" }
 
+# TUI dashboard
+spectre-tui = { path = "../spectre-tui" }
+
 # Async runtime
 tokio = { workspace = true }
 

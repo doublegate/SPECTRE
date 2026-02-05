@@ -20,6 +20,7 @@ pub mod receive;
 pub mod scan;
 pub mod send;
 pub mod status;
+pub mod tui;
 
 /// SPECTRE - Security Platform for Encrypted Comms, Testing, Enumeration, Recon
 ///
@@ -108,6 +109,10 @@ pub enum Commands {
     /// Plugin management (list, run, info)
     Plugin(plugin::PluginArgs),
 
+    /// Launch the TUI dashboard
+    #[command(visible_alias = "ui")]
+    Tui(tui::TuiArgs),
+
     /// Generate shell completions
     Completions(completions::CompletionsArgs),
 }
@@ -140,6 +145,7 @@ pub async fn execute(cli: Cli) -> Result<()> {
         Commands::Campaign(args) => campaign::execute(args, cli.config).await,
         Commands::Pipeline(args) => pipeline::execute(args, cli.config).await,
         Commands::Plugin(args) => plugin::execute(args, cli.config).await,
+        Commands::Tui(args) => tui::execute(args, cli.config).await,
         Commands::Completions(args) => completions::execute(args),
     }
 }

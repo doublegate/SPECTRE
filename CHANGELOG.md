@@ -11,6 +11,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GUI application with Tauri 2.0 — Phase 5
 - MCP server implementation — Phase 6
 
+## [0.4.2] - 2026-02-04
+
+### Added
+
+#### TUI Subcommand — CLI-to-TUI Integration
+
+- **`spectre tui` subcommand** (`crates/spectre-cli/src/commands/tui.rs`):
+  - New CLI entry point to launch the SPECTRE TUI dashboard directly from the CLI binary
+  - Loads SPECTRE configuration via standard `load_config()` pipeline (file discovery, env vars, CLI override)
+  - Invokes `spectre_tui::run()` to start the async event loop with terminal initialization
+  - Visible alias `ui` for convenience (`spectre ui`)
+  - Added `spectre-tui` as a dependency of `spectre-cli` for cross-crate integration
+
+### Changed
+- CLI subcommand count: 12 → 13 (added `tui`)
+- CLI test count: 43 → 44 (added `test_tui_args_default`)
+- CLI source file count: 17 → 18 (added `commands/tui.rs`)
+- `spectre-cli/Cargo.toml`: Added `spectre-tui` path dependency
+- `spectre-cli/src/commands/mod.rs`: Registered `Tui` variant in `Commands` enum with execution routing
+
+### Technical Details
+- 119 Rust source files across 5 crates
+- 865 tests total: 44 CLI + 538 core unit + 235 TUI + 3 doc-tests + 45 integration
+- Zero clippy warnings at all lint levels (standard, pedantic, nursery)
+- No new workspace dependencies — uses existing `spectre-tui` workspace member
+
 ## [0.4.1] - 2026-02-04
 
 ### Changed
@@ -590,7 +616,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/doublegate/SPECTRE/compare/v0.4.1...HEAD
+[Unreleased]: https://github.com/doublegate/SPECTRE/compare/v0.4.2...HEAD
+[0.4.2]: https://github.com/doublegate/SPECTRE/compare/v0.4.1...v0.4.2
 [0.4.1]: https://github.com/doublegate/SPECTRE/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/doublegate/SPECTRE/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/doublegate/SPECTRE/compare/v0.2.0...v0.3.0

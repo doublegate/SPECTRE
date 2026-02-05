@@ -19,7 +19,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Phase 3:** Operation PHANTOM (v0.3.x) - TUI Dashboard **COMPLETE**
 **Phase 4:** Operation SPECTER (v0.4.x) - Advanced Features **COMPLETE**
 
-**SPECTRE Tests:** 864 (43 CLI + 538 core + 235 TUI + 3 doc-tests + 45 integration) | **Code:** ~31,000 lines Rust (118 files)
+**SPECTRE Tests:** 865 (44 CLI + 538 core + 235 TUI + 3 doc-tests + 45 integration) | **Code:** ~31,000 lines Rust (119 files)
 
 **Repository:** [github.com/doublegate/SPECTRE](https://github.com/doublegate/SPECTRE)
 
@@ -91,11 +91,11 @@ Target Network → ProRT-IP (Recon) → CyberChef (Analysis) → WRAITH (Exfil/C
 
 ```
 crates/
-├── spectre-cli/        # Unified CLI orchestrator (17 files, 43 tests)
+├── spectre-cli/        # Unified CLI orchestrator (18 files, 44 tests)
 │   └── src/
 │       ├── main.rs         # Entry point, CLI parsing with clap 4
-│       ├── commands/       # 12 subcommands: scan, chef, send, receive, identity, peer,
-│       │                   # status, config, completions, campaign, pipeline, plugin
+│       ├── commands/       # 13 subcommands: scan, chef, send, receive, identity, peer,
+│       │                   # status, config, completions, campaign, pipeline, plugin, tui
 │       └── output/         # table (comfy-table) and json (serde_json) formatters
 ├── spectre-core/       # Core orchestration library (81 files, 538 unit + 45 integration tests)
 │   ├── src/
@@ -280,6 +280,7 @@ spectre peer <subcommand>         # Trusted peer management
 spectre status                    # Component health checks
 spectre config <subcommand>       # Configuration management
 spectre completions <shell>       # Shell completion generation
+spectre tui                      # Launch TUI dashboard (alias: ui)
 
 # Orchestration commands (Phase 2)
 spectre campaign create <name>    # Create a new campaign
