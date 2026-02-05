@@ -266,13 +266,23 @@ impl McpTransport {
     /// This launches `docker run -i --rm <image>` as a child process, takes
     /// ownership of its stdin/stdout, and spawns a background task to read
     /// response lines and dispatch them to waiting callers.
-    pub async fn spawn(docker_image: &str) -> crate::Result<Self> {
+    ///
+    /// Environment variables passed to the container control v1.9.0 features:
+    /// - `ENABLE_WORKERS`: enables worker thread pool for CPU-intensive ops
+    /// - `CYBERCHEF_WORKER_MAX_THREADS`: max worker threads
+    /// - `ENABLE_STREAMING`: enables streaming progress for large operations
+    pub async fn spawn(docker_image: &str, env_vars: &[(&str, &str)]) -> crate::Result<Self> {
         info!(image = %docker_image, "Spawning CyberChef-MCP container via docker run");
 
-        let mut child = Command::new("docker")
-            .arg("run")
-            .arg("-i")
-            .arg("--rm")
+        let mut cmd = Command::new("docker");
+        cmd.arg("run").arg("-i").arg("--rm");
+
+        // Pass environment variables to the container
+        for (key, value) in env_vars {
+            cmd.arg("-e").arg(format!("{key}={value}"));
+        }
+
+        let mut child = cmd
             .arg(docker_image)
             .stdin(std::process::Stdio::piped())
             .stdout(std::process::Stdio::piped())
@@ -481,14 +491,31 @@ impl McpChefClient {
     ///
     /// This spawns `docker run -i --rm <docker_image>` and performs the MCP
     /// initialization handshake (initialize request + initialized notification).
+    ///
+    /// The `config` parameter controls v1.9.0 features passed as environment
+    /// variables to the container: worker thread pool, streaming, and transport.
     #[instrument(skip_all, fields(image = %docker_image))]
-    pub async fn connect(docker_image: &str, timeout_secs: u64) -> crate::Result<Self> {
+    pub async fn connect(
+        docker_image: &str,
+        timeout_secs: u64,
+        config: &crate::config::ChefConfig,
+    ) -> crate::Result<Self> {
         let timeout = Duration::from_secs(timeout_secs);
 
         info!("Connecting to CyberChef-MCP via Docker stdio");
 
+        // Build environment variables for v1.9.0 features
+        let enable_workers = config.enable_workers.to_string();
+        let worker_threads = config.worker_threads.to_string();
+        let enable_streaming = config.enable_streaming.to_string();
+        let env_vars: Vec<(&str, &str)> = vec![
+            ("ENABLE_WORKERS", &enable_workers),
+            ("CYBERCHEF_WORKER_MAX_THREADS", &worker_threads),
+            ("ENABLE_STREAMING", &enable_streaming),
+        ];
+
         // Spawn the Docker subprocess
-        let transport = McpTransport::spawn(docker_image).await?;
+        let transport = McpTransport::spawn(docker_image, &env_vars).await?;
 
         // Perform MCP initialization handshake
         let init_params = build_initialize_params("spectre", env!("CARGO_PKG_VERSION"));
@@ -801,6 +828,63 @@ impl ChefClient for McpChefClient {
                 })
             },
         }
+    }
+
+    async fn worker_stats(&self) -> crate::Result<super::WorkerStats> {
+        let params = serde_json::json!({
+            "name": "cyberchef_worker_stats",
+            "arguments": {}
+        });
+
+        let result = self
+            .transport
+            .send_request("tools/call", Some(params), self.timeout)
+            .await?;
+
+        let call_result: McpToolCallResult = serde_json::from_value(result).map_err(|e| {
+            crate::SpectreError::Chef(ChefError::OperationFailed {
+                operation: "worker_stats".to_string(),
+                message: format!("Failed to parse worker stats result: {e}"),
+            })
+        })?;
+
+        let text = call_result
+            .content
+            .iter()
+            .filter(|c| c.content_type == "text")
+            .filter_map(|c| c.text.as_deref())
+            .collect::<Vec<_>>()
+            .join("");
+
+        let stats: serde_json::Value = serde_json::from_str(&text).map_err(|e| {
+            crate::SpectreError::Chef(ChefError::OperationFailed {
+                operation: "worker_stats".to_string(),
+                message: format!("Failed to parse worker stats JSON: {e}"),
+            })
+        })?;
+
+        let enabled = stats
+            .get("enabled")
+            .and_then(|v| v.as_bool())
+            .unwrap_or(false);
+
+        Ok(super::WorkerStats {
+            enabled,
+            threads: stats
+                .get("threads")
+                .and_then(|v| v.as_u64())
+                .map(|v| v as usize),
+            completed: stats.get("completed").and_then(|v| v.as_u64()),
+            waiting: stats
+                .get("waiting")
+                .and_then(|v| v.as_u64())
+                .map(|v| v as usize),
+            utilization: stats.get("utilization").and_then(|v| v.as_f64()),
+            message: stats
+                .get("message")
+                .and_then(|v| v.as_str())
+                .map(String::from),
+        })
     }
 }
 
@@ -1349,5 +1433,69 @@ mod tests {
         let parsed: serde_json::Value = serde_json::from_str(notif_msg.trim()).unwrap();
         assert_eq!(parsed["method"], "notifications/initialized");
         assert!(parsed.get("id").is_none());
+    }
+
+    // -----------------------------------------------------------------------
+    // v1.9.0 worker stats tool call tests
+    // -----------------------------------------------------------------------
+
+    #[test]
+    fn test_worker_stats_tool_call_format() {
+        let params = serde_json::json!({
+            "name": "cyberchef_worker_stats",
+            "arguments": {}
+        });
+        let req = build_request(5, "tools/call", Some(params));
+        let msg = serialize_message(&req).unwrap();
+        let parsed: serde_json::Value = serde_json::from_str(msg.trim()).unwrap();
+
+        assert_eq!(parsed["method"], "tools/call");
+        assert_eq!(parsed["params"]["name"], "cyberchef_worker_stats");
+    }
+
+    #[test]
+    fn test_parse_worker_stats_enabled_response() {
+        let json = serde_json::json!({
+            "content": [{
+                "type": "text",
+                "text": "{\"enabled\":true,\"threads\":4,\"completed\":100,\"waiting\":2,\"utilization\":0.75}"
+            }]
+        });
+        let result: McpToolCallResult = serde_json::from_value(json).unwrap();
+        assert!(!result.is_error);
+
+        let text = result.content[0].text.as_deref().unwrap();
+        let stats: serde_json::Value = serde_json::from_str(text).unwrap();
+        assert_eq!(stats["enabled"], true);
+        assert_eq!(stats["threads"], 4);
+        assert_eq!(stats["completed"], 100);
+    }
+
+    #[test]
+    fn test_parse_worker_stats_disabled_response() {
+        let json = serde_json::json!({
+            "content": [{
+                "type": "text",
+                "text": "{\"enabled\":false,\"message\":\"Worker pool is not enabled. Set ENABLE_WORKERS=true to enable.\"}"
+            }]
+        });
+        let result: McpToolCallResult = serde_json::from_value(json).unwrap();
+        let text = result.content[0].text.as_deref().unwrap();
+        let stats: serde_json::Value = serde_json::from_str(text).unwrap();
+        assert_eq!(stats["enabled"], false);
+        assert!(stats["message"]
+            .as_str()
+            .unwrap()
+            .contains("ENABLE_WORKERS"));
+    }
+
+    #[test]
+    fn test_handshake_with_v190_server() {
+        // v1.9.0 server responds with version 1.9.0
+        let server_response = r#"{"jsonrpc":"2.0","id":1,"result":{"protocolVersion":"2024-11-05","capabilities":{"tools":{}},"serverInfo":{"name":"cyberchef-mcp","version":"1.9.0"}}}"#;
+        let resp = deserialize_response(server_response).unwrap();
+        let init_result: McpInitializeResult =
+            serde_json::from_value(resp.result.unwrap()).unwrap();
+        assert_eq!(init_result.server_info.version, "1.9.0");
     }
 }

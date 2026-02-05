@@ -13,7 +13,7 @@ A unified offensive security toolkit combining wire-speed secure communications,
   <a href="https://github.com/doublegate/SPECTRE"><img src="https://img.shields.io/github/stars/doublegate/SPECTRE?style=flat-square" alt="GitHub Stars"></a>
   <a href="https://github.com/doublegate/SPECTRE/fork"><img src="https://img.shields.io/github/forks/doublegate/SPECTRE?style=flat-square" alt="GitHub Forks"></a>
   <a href="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml"><img src="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
-  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.4.6-blue.svg" alt="Version"></a>
+  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.4.7-blue.svg" alt="Version"></a>
   <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.88%2B-orange.svg" alt="Rust"></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-22%2B-green.svg" alt="Node.js"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT%2FGPLv3%2FApache--2.0-green.svg" alt="License"></a>
@@ -32,7 +32,7 @@ Each component is a standalone, production-ready project — SPECTRE provides th
 | -------------------------------------------------------------------- | ----------------------- | ------------------------------------------------------------------ | ------- | ----- |
 | [**WRAITH-Protocol**](https://github.com/doublegate/WRAITH-Protocol) | **Encrypted Comms**     | Wire-speed secure file transfer, E2EE messaging, C2 infrastructure | v2.3.7  | 2,957 |
 | [**ProRT-IP**](https://github.com/doublegate/ProRT-IP)               | **Enumeration & Recon** | 10M+ pps network scanning, service detection, OS fingerprinting    | v1.0.0  | 2,557 |
-| [**CyberChef-MCP**](https://github.com/doublegate/CyberChef-MCP)     | **Testing & Analysis**  | 463 data manipulation operations, AI-powered via MCP               | v1.8.0  | 563   |
+| [**CyberChef-MCP**](https://github.com/doublegate/CyberChef-MCP)     | **Testing & Analysis**  | 463 data manipulation operations, AI-powered via MCP               | v1.9.0  | 689   |
 
 ### Why SPECTRE?
 
@@ -48,8 +48,8 @@ Modern offensive security requires seamless tool integration. SPECTRE eliminates
 
 | Metric                 | Value                                                                   |
 | ---------------------- | ----------------------------------------------------------------------- |
-| **Combined Tests**     | 7,049 (SPECTRE: 972 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 563) |
-| **SPECTRE Codebase**   | ~34,700 lines Rust (122 source files across 5 crates)                     |
+| **Combined Tests**     | 7,183 (SPECTRE: 980 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 689) |
+| **SPECTRE Codebase**   | ~35,000 lines Rust (122 source files across 5 crates)                     |
 | **Component Code**     | ~180,000 (Rust) + ~40,000 (TypeScript/JavaScript)                         |
 | **Languages**          | Rust 2024, TypeScript, JavaScript                                         |
 | **Network Throughput** | 10+ Gbps (WRAITH), 10M+ pps (ProRT-IP)                                   |
@@ -416,7 +416,7 @@ MCP server exposing CyberChef's 463 operations as AI-callable tools for data man
 | **Deployment**       | Docker (Chainguard distroless, ~90MB)         |
 | **Recipe Mgmt**      | 10 tools for workflow save/reuse              |
 | **Batch Processing** | Parallel execution up to 100 operations       |
-| **Tests**            | 563 passing, 74.97% coverage                  |
+| **Tests**            | 689 passing, 74.97% coverage                  |
 
 **Key Features:**
 
@@ -678,7 +678,7 @@ SPECTRE/
 ├── components/             # Git submodules (standalone component repos)
 │   ├── wraith-protocol/    # WRAITH-Protocol (v2.3.7) - Secure communications
 │   ├── prtip/              # ProRT-IP WarScan (v1.0.0) - Network reconnaissance
-│   └── cyberchef-mcp/      # CyberChef-MCP (v1.8.0) - Data analysis
+│   └── cyberchef-mcp/      # CyberChef-MCP (v1.9.0) - Data analysis
 │
 ├── crates/
 │   ├── spectre-cli/        # Unified CLI orchestrator (18 files, 44 tests)
@@ -703,7 +703,7 @@ SPECTRE/
 │   │       └── output/         # Output formatting
 │   │           ├── table.rs        # Table output (comfy-table)
 │   │           └── json.rs         # JSON output (serde_json)
-│   ├── spectre-core/       # Core orchestration library (84 files, 610 unit + 45 integration tests)
+│   ├── spectre-core/       # Core orchestration library (84 files, 618 unit + 45 integration tests)
 │   │   ├── Cargo.toml
 │   │   ├── src/
 │   │   │   ├── lib.rs          # Library root (18 public modules)
@@ -935,12 +935,12 @@ SPECTRE builds on the shoulders of giants:
 | ---------------------------------------------------------------- | ----------------------------------------- |
 | [WRAITH-Protocol](https://github.com/doublegate/WRAITH-Protocol) | Secure communications component (v2.3.7)  |
 | [ProRT-IP](https://github.com/doublegate/ProRT-IP)               | Network reconnaissance component (v1.0.0) |
-| [CyberChef-MCP](https://github.com/doublegate/CyberChef-MCP)     | Data analysis component (v1.8.0)          |
+| [CyberChef-MCP](https://github.com/doublegate/CyberChef-MCP)     | Data analysis component (v1.9.0)          |
 
 ---
 
 **SPECTRE** — _Unified Offensive Security_
 
-**Version:** 0.4.6 | **License:** Multi-license | **Language:** Rust + TypeScript | **Status:** Active Development
+**Version:** 0.4.7 | **License:** Multi-license | **Language:** Rust + TypeScript | **Status:** Active Development
 
 **Last Updated:** 2026-02-05

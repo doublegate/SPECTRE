@@ -149,6 +149,15 @@ pub struct ChefConfig {
 
     /// Connection timeout in seconds
     pub timeout: u64,
+
+    /// Enable worker thread pool for CPU-intensive operations (v1.9.0)
+    pub enable_workers: bool,
+
+    /// Maximum worker threads (v1.9.0, default: 4)
+    pub worker_threads: u32,
+
+    /// Enable streaming for large operations (v1.9.0)
+    pub enable_streaming: bool,
 }
 
 impl Default for ChefConfig {
@@ -160,6 +169,9 @@ impl Default for ChefConfig {
             auto_start: true,
             recipe_dir: None,
             timeout: 30,
+            enable_workers: false,
+            worker_threads: 4,
+            enable_streaming: true,
         }
     }
 }

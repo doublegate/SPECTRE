@@ -138,6 +138,9 @@ fn merge_config(base: Config, overlay: Config) -> Config {
             auto_start: overlay.chef.auto_start,
             recipe_dir: overlay.chef.recipe_dir.or(base.chef.recipe_dir),
             timeout: overlay.chef.timeout,
+            enable_workers: overlay.chef.enable_workers || base.chef.enable_workers,
+            worker_threads: overlay.chef.worker_threads,
+            enable_streaming: overlay.chef.enable_streaming,
         },
         comms: super::CommsConfig {
             relay_url: overlay.comms.relay_url.or(base.comms.relay_url),

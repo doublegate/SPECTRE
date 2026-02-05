@@ -11,7 +11,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | Component | Role | Repository | Version | Tests |
 |-----------|------|------------|---------|-------|
 | **ProRT-IP** | Network reconnaissance (10M+ pps scanning) | Rust | v1.0.0 | 2,557 |
-| **CyberChef-MCP** | Data analysis (463 operations via MCP) | TypeScript/Docker | v1.8.0 | 563 |
+| **CyberChef-MCP** | Data analysis (463 operations via MCP) | TypeScript/Docker | v1.9.0 | 689 |
 | **WRAITH-Protocol** | Secure communications (10+ Gbps E2EE) | Rust | v2.3.7 | 2,957 |
 
 **Phase 1:** Operation BLACKOUT (v0.1.x) - Foundation/CLI skeleton **COMPLETE**
@@ -19,7 +19,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Phase 3:** Operation PHANTOM (v0.3.x) - TUI Dashboard **COMPLETE**
 **Phase 4:** Operation SPECTER (v0.4.x) - Advanced Features **COMPLETE**
 
-**SPECTRE Tests:** 972 (44 CLI + 610 core + 268 TUI + 5 doc-tests + 45 integration) | **Code:** ~34,700 lines Rust (122 files)
+**SPECTRE Tests:** 980 (44 CLI + 618 core + 268 TUI + 5 doc-tests + 45 integration) | **Code:** ~35,000 lines Rust (122 files)
 
 **Repository:** [github.com/doublegate/SPECTRE](https://github.com/doublegate/SPECTRE)
 
@@ -93,7 +93,7 @@ Target Network → ProRT-IP (Recon) → CyberChef (Analysis) → WRAITH (Exfil/C
 components/                # Git submodules (standalone component repos)
 ├── wraith-protocol/       # WRAITH-Protocol v2.3.7 - Secure communications
 ├── prtip/                 # ProRT-IP v1.0.0 - Network reconnaissance
-└── cyberchef-mcp/         # CyberChef-MCP v1.8.0 - Data analysis
+└── cyberchef-mcp/         # CyberChef-MCP v1.9.0 - Data analysis
 
 crates/
 ├── spectre-cli/        # Unified CLI orchestrator (18 files, 44 tests)
@@ -102,7 +102,7 @@ crates/
 │       ├── commands/       # 13 subcommands: scan, chef, send, receive, identity, peer,
 │       │                   # status, config, completions, campaign, pipeline, plugin, tui
 │       └── output/         # table (comfy-table) and json (serde_json) formatters
-├── spectre-core/       # Core orchestration library (84 files, 610 unit + 45 integration tests)
+├── spectre-core/       # Core orchestration library (84 files, 618 unit + 45 integration tests)
 │   ├── src/
 │   │   ├── config/         # TOML config with file discovery and env var support
 │   │   ├── scan/           # Scanner trait, ProRT-IP adapter, port/target parsing, 8 scan types

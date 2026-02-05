@@ -232,6 +232,18 @@ impl ChefClient for McpClient {
             examples: vec![format!("spectre chef {} --input \"data\"", operation)],
         })
     }
+
+    async fn worker_stats(&self) -> crate::Result<super::WorkerStats> {
+        // Stub always reports workers as disabled
+        Ok(super::WorkerStats {
+            enabled: false,
+            threads: None,
+            completed: None,
+            waiting: None,
+            utilization: None,
+            message: Some("Stub client — worker pool not available".to_string()),
+        })
+    }
 }
 
 #[cfg(test)]
@@ -307,5 +319,16 @@ mod tests {
             .await
             .unwrap();
         assert!(filtered.iter().all(|op| op.category == "Encryption"));
+    }
+
+    #[tokio::test]
+    async fn test_worker_stats_stub() {
+        let client = McpClient::connect("http://localhost:3001", 30)
+            .await
+            .unwrap();
+
+        let stats = client.worker_stats().await.unwrap();
+        assert!(!stats.enabled);
+        assert!(stats.message.is_some());
     }
 }

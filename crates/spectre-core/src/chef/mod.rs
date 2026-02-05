@@ -13,10 +13,19 @@
 //!
 //! # Integration Notes
 //!
-//! CyberChef-MCP runs as a Docker container exposing 463 data operations via the
-//! Model Context Protocol (MCP). The protocol uses JSON-RPC 2.0 over stdio: the
+//! CyberChef-MCP v1.9.0 runs as a Docker container exposing 463+ data operations via
+//! the Model Context Protocol (MCP). The protocol uses JSON-RPC 2.0 over stdio: the
 //! client writes JSON requests to the container's stdin and reads responses from
 //! its stdout, one JSON object per line.
+//!
+//! ## v1.9.0 Features
+//!
+//! - **Worker thread pool**: CPU-intensive operations (AES, RSA, SHA, compression)
+//!   can be routed to a Piscina worker pool via `ENABLE_WORKERS=true`
+//! - **Streaming progress**: Operations report progress via MCP notifications
+//!   when a `progressToken` is provided in request metadata
+//! - **Configurable transport**: Supports stdio (default) or Streamable HTTP
+//!   via `CYBERCHEF_TRANSPORT=http`
 //!
 //! The [`DockerManager`] handles container lifecycle (pull, start, stop) via the
 //! bollard Docker API, while [`mcp_adapter::McpChefClient`] handles the MCP
@@ -44,9 +53,14 @@ use crate::error::ChefError;
 /// via the MCP protocol (JSON-RPC 2.0 over stdio). Requires Docker to be installed
 /// and the configured image to be available.
 ///
+/// v1.9.0 features (worker pool, streaming, transport) are controlled by
+/// `ChefConfig` fields and passed as environment variables to the container.
+///
 /// For testing without Docker, use [`create_stub_chef_client`] instead.
 pub async fn create_chef_client(config: &Config) -> crate::Result<Box<dyn ChefClient>> {
-    let client = McpChefClient::connect(&config.chef.docker_image, config.chef.timeout).await?;
+    let client =
+        McpChefClient::connect(&config.chef.docker_image, config.chef.timeout, &config.chef)
+            .await?;
     Ok(Box::new(client))
 }
 
@@ -86,6 +100,12 @@ pub trait ChefClient: Send + Sync {
 
     /// Get help for an operation
     async fn operation_help(&self, operation: &str) -> crate::Result<OperationHelp>;
+
+    /// Get worker thread pool statistics (v1.9.0)
+    ///
+    /// Returns pool stats if workers are enabled (`ENABLE_WORKERS=true`),
+    /// or a disabled status otherwise.
+    async fn worker_stats(&self) -> crate::Result<WorkerStats>;
 }
 
 /// Health status information
@@ -99,6 +119,23 @@ pub struct HealthStatus {
     pub mcp_version: String,
     /// Number of available operations
     pub operation_count: usize,
+}
+
+/// Worker thread pool statistics (v1.9.0)
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct WorkerStats {
+    /// Whether the worker pool is enabled
+    pub enabled: bool,
+    /// Number of active threads (None if disabled)
+    pub threads: Option<usize>,
+    /// Total completed tasks (None if disabled)
+    pub completed: Option<u64>,
+    /// Tasks waiting in queue (None if disabled)
+    pub waiting: Option<usize>,
+    /// Pool utilization ratio 0.0-1.0 (None if disabled)
+    pub utilization: Option<f64>,
+    /// Optional status message
+    pub message: Option<String>,
 }
 
 /// Operation information
@@ -290,6 +327,54 @@ mod tests {
         );
         assert_eq!(recipe.name, "test");
         assert_eq!(recipe.operations.len(), 2);
+    }
+
+    #[test]
+    fn test_worker_stats_disabled() {
+        let stats = WorkerStats {
+            enabled: false,
+            threads: None,
+            completed: None,
+            waiting: None,
+            utilization: None,
+            message: Some("Worker pool is not enabled".to_string()),
+        };
+        assert!(!stats.enabled);
+        assert!(stats.threads.is_none());
+        assert!(stats.message.is_some());
+    }
+
+    #[test]
+    fn test_worker_stats_enabled() {
+        let stats = WorkerStats {
+            enabled: true,
+            threads: Some(4),
+            completed: Some(100),
+            waiting: Some(2),
+            utilization: Some(0.75),
+            message: None,
+        };
+        assert!(stats.enabled);
+        assert_eq!(stats.threads, Some(4));
+        assert_eq!(stats.completed, Some(100));
+        assert_eq!(stats.utilization, Some(0.75));
+    }
+
+    #[test]
+    fn test_worker_stats_serialization() {
+        let stats = WorkerStats {
+            enabled: true,
+            threads: Some(4),
+            completed: Some(50),
+            waiting: Some(0),
+            utilization: Some(0.5),
+            message: None,
+        };
+        let json = serde_json::to_string(&stats).unwrap();
+        let deserialized: WorkerStats = serde_json::from_str(&json).unwrap();
+        assert_eq!(deserialized.enabled, stats.enabled);
+        assert_eq!(deserialized.threads, stats.threads);
+        assert_eq!(deserialized.completed, stats.completed);
     }
 
     #[test]

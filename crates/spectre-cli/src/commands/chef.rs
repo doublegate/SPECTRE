@@ -13,10 +13,11 @@ use crate::output::{OutputFormat, OutputWriter};
 /// Arguments for the chef command
 #[derive(Args, Debug)]
 #[command(
-    about = "Data transformation and analysis via CyberChef-MCP",
-    long_about = "Perform data transformation and analysis operations using CyberChef-MCP.\n\n\
-                  Supports 463 operations including encoding, encryption, compression, and more.\n\
-                  Operations can be chained together using recipes."
+    about = "Data transformation and analysis via CyberChef-MCP v1.9.0",
+    long_about = "Perform data transformation and analysis operations using CyberChef-MCP v1.9.0.\n\n\
+                  Supports 463+ operations including encoding, encryption, compression, and more.\n\
+                  Operations can be chained together using recipes.\n\
+                  v1.9.0: Worker thread pool, streaming progress, configurable transport."
 )]
 pub struct ChefArgs {
     #[command(subcommand)]
@@ -84,6 +85,10 @@ pub enum ChefCommands {
 
     /// Manage recipes
     Recipe(RecipeArgs),
+
+    /// Show worker thread pool statistics (v1.9.0)
+    #[command(name = "worker-stats")]
+    WorkerStats,
 }
 
 /// Arguments for setup subcommand
@@ -190,6 +195,7 @@ pub async fn execute(args: ChefArgs, config_path: Option<PathBuf>) -> Result<()>
             ChefCommands::List(list_args) => execute_list(list_args, &config).await,
             ChefCommands::Info(help_args) => execute_help(help_args, &config).await,
             ChefCommands::Recipe(recipe_args) => execute_recipe(recipe_args, &config).await,
+            ChefCommands::WorkerStats => execute_worker_stats(&config).await,
         };
     }
 
@@ -263,6 +269,37 @@ async fn execute_health_check(config: &spectre_core::config::Config) -> Result<(
             Ok(())
         },
     }
+}
+
+/// Execute worker-stats subcommand (v1.9.0)
+async fn execute_worker_stats(config: &spectre_core::config::Config) -> Result<()> {
+    let chef = spectre_core::chef::create_chef_client(config)
+        .await
+        .context("Failed to connect to CyberChef-MCP")?;
+
+    let stats = chef.worker_stats().await?;
+
+    println!("Worker Thread Pool Statistics");
+    println!("  Enabled: {}", stats.enabled);
+
+    if stats.enabled {
+        if let Some(threads) = stats.threads {
+            println!("  Threads: {threads}");
+        }
+        if let Some(completed) = stats.completed {
+            println!("  Completed Tasks: {completed}");
+        }
+        if let Some(waiting) = stats.waiting {
+            println!("  Queued Tasks: {waiting}");
+        }
+        if let Some(utilization) = stats.utilization {
+            println!("  Utilization: {:.1}%", utilization * 100.0);
+        }
+    } else if let Some(message) = &stats.message {
+        println!("  {message}");
+    }
+
+    Ok(())
 }
 
 /// Execute setup subcommand

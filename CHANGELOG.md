@@ -11,6 +11,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GUI application with Tauri 2.0 — Phase 5
 - MCP server implementation — Phase 6
 
+## [0.4.7] - 2026-02-05
+
+### Changed
+
+#### CyberChef-MCP Submodule Updated to v1.9.0
+
+- **Submodule `components/cyberchef-mcp`**: Updated from v1.8.0 (2cfe7b73) to v1.9.0 (5ef1193b)
+- **Upstream GCHQ sync**: CyberChef v10.20.0 incorporated upstream
+- **689 tests** in CyberChef-MCP (was 563), raising combined ecosystem tests to 7,183
+
+#### v1.9.0 Feature Integration in spectre-core
+
+- **`ChefClient` trait**: Added `worker_stats()` method for querying worker thread pool statistics
+- **`WorkerStats` type**: New struct with `enabled`, `threads`, `completed`, `waiting`, `utilization`, `message` fields
+- **`McpChefClient::connect()`**: Now accepts `ChefConfig` reference, passes `ENABLE_WORKERS`, `CYBERCHEF_WORKER_MAX_THREADS`, `ENABLE_STREAMING` environment variables to Docker container
+- **`McpTransport::spawn()`**: Extended with `env_vars` parameter, adds `-e KEY=VALUE` flags to `docker run` command
+- **`worker_stats()` implementation**: Calls `cyberchef_worker_stats` MCP tool, parses JSON response into `WorkerStats`
+- **`ChefConfig`**: Added `enable_workers` (bool, default: false), `worker_threads` (u32, default: 4), `enable_streaming` (bool, default: true) fields
+- **Stub client**: `McpClient::worker_stats()` returns disabled status for testing
+
+#### CLI v1.9.0 Support
+
+- **`spectre chef worker-stats`**: New subcommand displaying worker thread pool statistics (threads, completed tasks, utilization)
+- Updated CLI help text to reference CyberChef-MCP v1.9.0 features
+
+### Technical Details
+- 122 Rust source files, ~35,000 lines
+- 980 tests total: 44 CLI + 618 core unit + 268 TUI + 5 doc-tests + 45 integration (was 972)
+- 8 new tests: 3 WorkerStats type tests, 4 MCP adapter v1.9.0 protocol tests, 1 stub worker_stats test
+- Combined ecosystem tests: 7,183 (SPECTRE 980 + ProRT-IP 2,557 + CyberChef 689 + WRAITH 2,957)
+- Zero clippy warnings, clean doc build under `RUSTDOCFLAGS="-D warnings"`
+
 ## [0.4.6] - 2026-02-05
 
 ### Added
@@ -779,7 +811,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/doublegate/SPECTRE/compare/v0.4.5...HEAD
+[Unreleased]: https://github.com/doublegate/SPECTRE/compare/v0.4.7...HEAD
+[0.4.7]: https://github.com/doublegate/SPECTRE/compare/v0.4.6...v0.4.7
+[0.4.6]: https://github.com/doublegate/SPECTRE/compare/v0.4.5...v0.4.6
 [0.4.5]: https://github.com/doublegate/SPECTRE/compare/v0.4.4...v0.4.5
 [0.4.4]: https://github.com/doublegate/SPECTRE/compare/v0.4.3...v0.4.4
 [0.4.3]: https://github.com/doublegate/SPECTRE/compare/v0.4.2...v0.4.3
