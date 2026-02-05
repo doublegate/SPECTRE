@@ -18,3 +18,7 @@ ratatui = { workspace = true }
 crossterm = { workspace = true }
 anyhow = { workspace = true }
 tracing = { workspace = true }
+chrono = { workspace = true }
+
+[dev-dependencies]
+tokio-test = "0.4"

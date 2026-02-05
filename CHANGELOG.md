@@ -8,9 +8,102 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Planned
-- TUI dashboard with real-time visualization — Phase 3
-- Multi-target campaign coordination — Phase 3
-- Parallel operation scheduling — Phase 3
+- GUI application with Tauri 2.0 — Phase 5
+- MCP server implementation — Phase 6
+- Advanced features, workflows — Phase 4
+
+## [0.3.0] - 2026-02-04
+
+### Added
+
+#### Phase 3 Complete: Operation PHANTOM — TUI Dashboard
+
+**spectre-tui crate** (18 source files, 235 tests):
+
+- **Core TUI framework** (`app.rs`, `event.rs`, `terminal.rs`, `tui.rs`):
+  - `App` struct with centralized state management and event dispatch
+  - Async `EventHandler` using tokio tasks for crossterm polling with configurable tick rate
+  - Terminal initialization/restoration with panic hook for safe cleanup
+  - Main `run()` entry point with async event loop targeting 60 FPS
+
+- **Layout and panels** (`layout.rs`, `panels/`):
+  - `PanelManager` with 4 layout modes: Grid (2x2), Wide (side-by-side), Tall (stacked), Focus (single maximized)
+  - `PanelId` enum: Recon, Analysis, Comms, Campaign
+  - `Panel` trait with `render()` and `on_key()` for consistent panel behavior
+  - Header bar with SPECTRE title, campaign name, and help shortcut
+  - Status bar with quick action shortcuts and system status indicators
+
+- **Recon panel** (`panels/recon.rs`, `scan_state.rs`):
+  - Real-time scan progress display with ratatui `Gauge` widget
+  - Scan metrics: target, scan type, progress %, rate (pps), hosts scanned/total, open ports, services
+  - ETA calculation based on elapsed time and completion percentage
+  - Scrollable results table with port, state, service, and version columns
+  - Port state color coding (green=open, red=closed, yellow=filtered)
+  - Integration with `spectre_core::job::JobEvent` for live updates
+  - Result filtering by IP address, port number, service name
+  - Result sorting by IP, open port count, scan time
+
+- **Analysis panel** (`panels/analysis.rs`):
+  - CyberChef recipe status display with progress bar
+  - Output preview with scrollable text area
+  - Recipe name, input source, processing speed, and ETA display
+
+- **Comms panel** (`panels/comms.rs`):
+  - Peer connection table with protocol, status, and TX/RX bandwidth
+  - Transfer queue display with direction (upload/download), progress, and status indicators
+  - Connection status summary (identity, peer count, online status)
+
+- **Campaign panel** (`panels/campaign.rs`):
+  - Campaign phase timeline visualization using `CampaignPhase` state machine
+  - Phase progress indicators (completed/active/pending markers)
+  - Campaign metrics: name, status, duration, phase, objectives
+  - Timeline event log with timestamps
+
+- **Command input system** (`command.rs`):
+  - 11 TUI commands: `scan`, `chef`, `send`, `campaign`, `set`, `theme`, `export`, `clear`, `layout`, `help`, `quit`
+  - Command parsing with argument extraction
+  - Command history with up/down arrow navigation
+  - Tab completion for command names
+  - Cursor movement (Home/End, left/right, Backspace/Delete)
+  - Error display for invalid commands with timeout auto-clear
+
+- **Keyboard shortcuts** (`keybindings.rs`):
+  - Global shortcuts: F1 (help), F2-F5 (panel focus), F10/q (quit), Tab/Shift+Tab (cycle panels)
+  - Vim-style navigation: j/k (up/down), h/l (left/right), g/G (top/bottom), Ctrl+d/u (page down/up)
+  - Command mode: `:` to enter, Esc to cancel, Enter to execute
+  - Command palette: `/` for search/fuzzy command access
+  - Panel-specific shortcuts routed based on focused panel
+  - `AppAction` enum for decoupled key-to-action mapping
+
+- **Theme system** (`theme.rs`):
+  - `Theme` struct with 12 configurable colors (bg, fg, primary, secondary, accent, success, warning, error, muted, border, border_focused, highlight)
+  - 5 built-in themes:
+    - `dark` (default): Dark background with green accents
+    - `light`: Light background with dark text and blue accents
+    - `tactical`: Military-style green on black
+    - `matrix`: Bright green text on black (Matrix-inspired)
+    - `hacker`: Amber text on dark background
+  - Runtime theme switching via `:theme <name>` or `:set theme <name>`
+  - Style builder methods for consistent widget styling
+
+- **Shared widgets** (`widgets/`):
+  - `HelpOverlay`: Centered modal with keyboard shortcuts grouped by category (Navigation, Panels, Commands, Within Panels)
+  - `StatusBar`: Header rendering (title + campaign) and footer rendering (shortcuts or command input)
+
+### Changed
+- Workspace version: 0.2.0 -> 0.3.0
+- spectre-tui: Replaced placeholder `lib.rs` with 12 module declarations and public API re-exports
+- spectre-tui `Cargo.toml`: Added `chrono` workspace dependency
+
+### Technical Details
+- 75 Rust source files, ~20,800 lines of code
+- 505 tests total: 43 (spectre-cli) + 224 (spectre-core) + 235 (spectre-tui) + 3 (doc-tests)
+- Zero clippy warnings with `-D warnings`
+- All formatting passes `cargo fmt --all --check`
+- TUI test breakdown: app (28), layout (30), theme (25), command (52), keybindings (18), scan_state (32), panels/recon (15), panels/analysis (10), panels/comms (10), panels/campaign (10), widgets (5)
+- Rendering tests use `ratatui::backend::TestBackend` for headless verification
+- Async runtime: tokio (full features)
+- Minimum supported Rust version: 1.88
 
 ## [0.2.0] - 2026-02-04
 
@@ -382,7 +475,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/doublegate/SPECTRE/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/doublegate/SPECTRE/compare/v0.3.0...HEAD
+[0.3.0]: https://github.com/doublegate/SPECTRE/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/doublegate/SPECTRE/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/doublegate/SPECTRE/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/doublegate/SPECTRE/compare/v0.1.0...v0.1.1

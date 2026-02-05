@@ -2313,7 +2313,7 @@ dependencies = [
 
 [[package]]
 name = "spectre-cli"
-version = "0.1.0"
+version = "0.3.0"
 dependencies = [
  "anyhow",
  "assert_cmd",
@@ -2340,7 +2340,7 @@ dependencies = [
 
 [[package]]
 name = "spectre-core"
-version = "0.1.0"
+version = "0.3.0"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -2375,7 +2375,7 @@ dependencies = [
 
 [[package]]
 name = "spectre-gui"
-version = "0.1.0"
+version = "0.3.0"
 dependencies = [
  "anyhow",
  "serde",
@@ -2387,7 +2387,7 @@ dependencies = [
 
 [[package]]
 name = "spectre-mcp"
-version = "0.1.0"
+version = "0.3.0"
 dependencies = [
  "anyhow",
  "serde",
@@ -2399,13 +2399,15 @@ dependencies = [
 
 [[package]]
 name = "spectre-tui"
-version = "0.1.0"
+version = "0.3.0"
 dependencies = [
  "anyhow",
+ "chrono",
  "crossterm",
  "ratatui",
  "spectre-core",
  "tokio",
+ "tokio-test",
  "tracing",
 ]
 

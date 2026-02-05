@@ -13,7 +13,7 @@ A unified offensive security toolkit combining wire-speed secure communications,
   <a href="https://github.com/doublegate/SPECTRE"><img src="https://img.shields.io/github/stars/doublegate/SPECTRE?style=flat-square" alt="GitHub Stars"></a>
   <a href="https://github.com/doublegate/SPECTRE/fork"><img src="https://img.shields.io/github/forks/doublegate/SPECTRE?style=flat-square" alt="GitHub Forks"></a>
   <a href="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml"><img src="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
-  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.2.0-blue.svg" alt="Version"></a>
+  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.3.0-blue.svg" alt="Version"></a>
   <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.88%2B-orange.svg" alt="Rust"></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-22%2B-green.svg" alt="Node.js"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT%2FGPLv3%2FApache--2.0-green.svg" alt="License"></a>
@@ -48,14 +48,14 @@ Modern offensive security requires seamless tool integration. SPECTRE eliminates
 
 | Metric                 | Value                                                                   |
 | ---------------------- | ----------------------------------------------------------------------- |
-| **Combined Tests**     | 6,347 (SPECTRE: 270 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 563) |
-| **SPECTRE Codebase**   | ~14,500 lines Rust (58 source files across 5 crates)                    |
-| **Component Code**     | ~180,000 (Rust) + ~40,000 (TypeScript/JavaScript)                       |
-| **Languages**          | Rust 2024, TypeScript, JavaScript                                       |
-| **Network Throughput** | 10+ Gbps (WRAITH), 10M+ pps (ProRT-IP)                                  |
-| **Data Operations**    | 463 via CyberChef MCP                                                   |
-| **Interface Modes**    | CLI (implemented), TUI, GUI, MCP Server                                 |
-| **Platforms**          | Linux, Windows, macOS, Docker                                           |
+| **Combined Tests**     | 6,582 (SPECTRE: 505 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 563) |
+| **SPECTRE Codebase**   | ~20,800 lines Rust (75 source files across 5 crates)                     |
+| **Component Code**     | ~180,000 (Rust) + ~40,000 (TypeScript/JavaScript)                        |
+| **Languages**          | Rust 2024, TypeScript, JavaScript                                        |
+| **Network Throughput** | 10+ Gbps (WRAITH), 10M+ pps (ProRT-IP)                                   |
+| **Data Operations**    | 463 via CyberChef MCP                                                    |
+| **Interface Modes**    | CLI (implemented), TUI (implemented), GUI, MCP Server                    |
+| **Platforms**          | Linux, Windows, macOS, Docker                                            |
 
 ---
 
@@ -157,11 +157,13 @@ spectre scan --tui 192.168.1.0/24  # Scan with live visualization
 
 **Features:**
 
-- 60 FPS rendering (borrowed from ProRT-IP's production TUI)
-- Multi-pane layout: Recon, Analysis, Comms, Campaign status
-- Real-time scan visualization with network graph
-- Keyboard shortcuts for rapid operation
-- Theme customization (dark/light/tactical)
+- 60 FPS async rendering with crossterm backend and panic-safe terminal restoration
+- 4-panel layout (Recon, Analysis, Comms, Campaign) with 4 layout modes (Grid/Wide/Tall/Focus)
+- Real-time scan progress with rate metrics, ETA, scrollable results browser
+- Vim-style keyboard navigation (j/k/h/l, g/G, Ctrl+d/u) plus F-key panel switching
+- Command mode (`:`) with 11 commands, history, tab completion
+- 5 built-in themes (dark, light, tactical, matrix, hacker) with runtime switching
+- Help overlay (`?`/`F1`) with grouped keyboard shortcut reference
 
 ### GUI — Graphical User Interface
 
@@ -319,7 +321,7 @@ SPECTRE follows a modular microservices architecture where each component operat
 | **Data Pipeline**       | Composable stages, builder API, metrics          | Rust (async-trait, tokio)        | **Implemented** |
 | **Campaign Management** | SQLite persistence, phases, artifacts            | Rust (rusqlite, sha2)            | **Implemented** |
 | **Plugin System**       | Lua 5.4 sandbox, manifest, permissions           | Rust (mlua)                      | **Implemented** |
-| **TUI Framework**       | Real-time dashboard                              | Rust (ratatui), ProRT-IP TUI     | Planned         |
+| **TUI Framework**       | Real-time dashboard (60 FPS, 4-panel, 5 themes)  | Rust (ratatui 0.30, crossterm)   | **Implemented** |
 | **GUI Application**     | Visual campaign planning                         | Tauri 2.0, React, TypeScript     | Planned         |
 | **MCP Server**          | AI-assisted operations                           | Rust, MCP Protocol               | Planned         |
 
@@ -602,13 +604,16 @@ SPECTRE releases follow an operational codename convention:
 - [x] 3 new CLI commands: `campaign` (7 subcommands), `pipeline` (3 subcommands), `plugin` (3 subcommands)
 - [x] 270 unit tests passing, zero clippy warnings
 
-### Phase 3: Orchestration — Operation PHANTOM
+### Phase 3: TUI Dashboard — Operation PHANTOM (Complete)
 
-- [ ] TUI dashboard (leveraging ProRT-IP framework)
-- [ ] Multi-target campaign coordination
-- [ ] Parallel operation scheduling
-- [ ] Result aggregation and reporting
-- [ ] Real-time status visualization
+- [x] TUI framework with async event loop, 60 FPS rendering, panic-safe terminal restoration
+- [x] 4-panel layout (Recon, Analysis, Comms, Campaign) with Grid/Wide/Tall/Focus modes
+- [x] Real-time scan display with progress bars, rate metrics, ETA calculation
+- [x] Results browser with scrollable host/port tables, filtering, and sorting
+- [x] Command input system with 11 commands, history navigation, tab completion
+- [x] Vim-style keyboard shortcuts with F-key panel switching, help overlay
+- [x] 5 built-in themes (dark, light, tactical, matrix, hacker) with runtime switching
+- [x] 235 unit tests passing, zero clippy warnings
 
 ### Phase 4: AI Integration — Operation ECLIPSE
 
@@ -723,7 +728,27 @@ SPECTRE/
 │   │           ├── sandbox.rs      # Lua 5.4 sandbox (mlua)
 │   │           ├── api.rs          # spectre.* Lua API
 │   │           └── manifest.rs     # plugin.toml manifest, permissions
-│   ├── spectre-tui/        # TUI dashboard (planned)
+│   ├── spectre-tui/        # TUI dashboard (18 files, 235 tests)
+│   │   ├── Cargo.toml
+│   │   └── src/
+│   │       ├── lib.rs          # Module declarations, re-exports
+│   │       ├── app.rs          # App struct, state management, event dispatch
+│   │       ├── event.rs        # Async EventHandler (crossterm + tick timer)
+│   │       ├── terminal.rs     # Terminal init/restore, panic hook
+│   │       ├── tui.rs          # Main run() entry point with async event loop
+│   │       ├── layout.rs       # 4-panel layout, Grid/Wide/Tall/Focus modes
+│   │       ├── theme.rs        # 5 built-in themes, color schemes
+│   │       ├── command.rs      # Command input, 11 commands, history, completion
+│   │       ├── keybindings.rs  # Key mapping, vim-style nav, F-keys
+│   │       ├── scan_state.rs   # Scan progress tracking, ETA, filtering
+│   │       ├── panels/         # 4 panel implementations
+│   │       │   ├── recon.rs        # Scan metrics, progress bar, results table
+│   │       │   ├── analysis.rs     # CyberChef recipe status, output preview
+│   │       │   ├── comms.rs        # Peer connections, transfer queue
+│   │       │   └── campaign.rs     # Phase timeline, campaign metrics
+│   │       └── widgets/        # Shared widget components
+│   │           ├── help_overlay.rs # Help popup with keybinding groups
+│   │           └── status_bar.rs   # Header bar + status bar rendering
 │   ├── spectre-gui/        # GUI application (planned)
 │   └── spectre-mcp/        # MCP server (planned)
 │
@@ -871,6 +896,6 @@ SPECTRE builds on the shoulders of giants:
 
 **SPECTRE** — _Unified Offensive Security_
 
-**Version:** 0.2.0 | **License:** Multi-license | **Language:** Rust + TypeScript | **Status:** Active Development
+**Version:** 0.3.0 | **License:** Multi-license | **Language:** Rust + TypeScript | **Status:** Active Development
 
 **Last Updated:** 2026-02-04

@@ -16,8 +16,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Phase 1:** Operation BLACKOUT (v0.1.x) - Foundation/CLI skeleton **COMPLETE**
 **Phase 2:** Operation NIGHTFALL (v0.2.x) - Core Orchestration **COMPLETE**
+**Phase 3:** Operation PHANTOM (v0.3.x) - TUI Dashboard **COMPLETE**
 
-**SPECTRE Tests:** 270 (43 CLI + 224 core + 3 doc-tests) | **Code:** ~14,500 lines Rust (58 files)
+**SPECTRE Tests:** 505 (43 CLI + 224 core + 235 TUI + 3 doc-tests) | **Code:** ~20,800 lines Rust (75 files)
 
 **Repository:** [github.com/doublegate/SPECTRE](https://github.com/doublegate/SPECTRE)
 
@@ -109,7 +110,20 @@ crates/
 │       ├── plugin/         # Lua 5.4 sandbox, manifest, permissions (30 tests)
 │       ├── error.rs        # SpectreError enum (13 variants, thiserror)
 │       └── logging.rs      # tracing-subscriber with env-filter
-├── spectre-tui/        # TUI dashboard (planned - Phase 3)
+├── spectre-tui/        # TUI dashboard (18 files, 235 tests)
+│   └── src/
+│       ├── lib.rs          # Module declarations, re-exports
+│       ├── app.rs          # App struct, state management, event dispatch
+│       ├── event.rs        # Async EventHandler (crossterm + tick timer)
+│       ├── terminal.rs     # Terminal init/restore, panic hook
+│       ├── tui.rs          # Main run() entry point
+│       ├── layout.rs       # 4-panel layout, Grid/Wide/Tall/Focus modes
+│       ├── theme.rs        # 5 built-in themes (dark, light, tactical, matrix, hacker)
+│       ├── command.rs      # Command input, 11 commands, history, tab completion
+│       ├── keybindings.rs  # Key mapping, vim-style nav, F-keys, AppAction
+│       ├── scan_state.rs   # Scan progress tracking, ETA, filtering, sorting
+│       ├── panels/         # Recon, Analysis, Comms, Campaign panel renderers
+│       └── widgets/        # HelpOverlay, StatusBar shared widgets
 ├── spectre-gui/        # GUI application (planned - Phase 5)
 └── spectre-mcp/        # MCP server (planned - Phase 6)
 ```
@@ -235,7 +249,7 @@ Development is organized into 7 phases (56 sprints total):
 |-------|----------|---------|-------|
 | 1 | Operation BLACKOUT | v0.1.x | Foundation - CLI skeleton, component integration **COMPLETE** |
 | 2 | Operation NIGHTFALL | v0.2.x | Core orchestration - target, job, results, pipeline, campaign, plugins **COMPLETE** |
-| 3 | Operation PHANTOM | v0.3.x | TUI dashboard (60 FPS), real-time visualization |
+| 3 | Operation PHANTOM | v0.3.x | TUI dashboard - 4-panel layout, 5 themes, command input, vim-style nav **COMPLETE** |
 | 4 | Operation SPECTER | v0.4.x | Advanced features, workflows, plugins |
 | 5 | Operation SHADOW | v0.5.x | GUI application (Tauri 2.0) |
 | 6 | Operation WRAITH | v0.6.x | MCP server implementation |
