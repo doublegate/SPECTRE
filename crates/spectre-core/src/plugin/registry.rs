@@ -249,7 +249,7 @@ impl PluginRegistry {
             let pa = va.get(i).copied().unwrap_or(0);
             let pb = vb.get(i).copied().unwrap_or(0);
             match pa.cmp(&pb) {
-                std::cmp::Ordering::Equal => continue,
+                std::cmp::Ordering::Equal => {},
                 other => return other,
             }
         }
@@ -306,7 +306,7 @@ mod tests {
             path: PathBuf::from(format!("/plugins/{}", name)),
             enabled: true,
             tags: vec!["test".to_string()],
-            dependencies: deps.into_iter().map(|s| s.to_string()).collect(),
+            dependencies: deps.into_iter().map(str::to_string).collect(),
         }
     }
 

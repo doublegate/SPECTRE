@@ -94,7 +94,7 @@ pub struct CheckArgs {
 /// Arguments for config get
 #[derive(Args, Debug)]
 pub struct GetArgs {
-    /// Configuration key (dot notation, e.g., scan.default_ports)
+    /// Configuration key (dot notation, e.g., `scan.default_ports`)
     pub key: String,
 }
 
@@ -141,8 +141,8 @@ async fn execute_init(args: InitArgs) -> Result<()> {
     // Check if file exists
     if output_path.exists() && !args.force {
         anyhow::bail!(
-            "Configuration file already exists: {:?}\nUse --force to overwrite.",
-            output_path
+            "Configuration file already exists: {}\nUse --force to overwrite.",
+            output_path.display()
         );
     }
 
@@ -161,7 +161,7 @@ async fn execute_init(args: InitArgs) -> Result<()> {
     // Write config
     tokio::fs::write(&output_path, content).await?;
 
-    println!("Configuration file created: {:?}", output_path);
+    println!("Configuration file created: {}", output_path.display());
 
     if !args.minimal {
         println!();
@@ -187,17 +187,17 @@ async fn execute_show(args: ShowArgs, config_path: Option<PathBuf>) -> Result<()
     } else {
         if let Some(section) = &args.section {
             let toml = config.section_as_toml(section)?;
-            println!("{}", toml);
+            println!("{toml}");
         } else {
             let toml = config.to_toml()?;
-            println!("{}", toml);
+            println!("{toml}");
         }
 
         if args.sources {
             println!();
             println!("Configuration Sources:");
             for source in config.sources() {
-                println!("  - {:?}", source);
+                println!("  - {}", source.display());
             }
         }
     }
@@ -250,7 +250,7 @@ async fn execute_get(args: GetArgs, config_path: Option<PathBuf>) -> Result<()> 
 
     let value = config.get(&args.key)?;
 
-    println!("{}", value);
+    println!("{value}");
 
     Ok(())
 }
@@ -261,8 +261,8 @@ async fn execute_set(args: SetArgs) -> Result<()> {
 
     if !file_path.exists() {
         anyhow::bail!(
-            "Configuration file not found: {:?}\nRun 'spectre config init' first.",
-            file_path
+            "Configuration file not found: {}\nRun 'spectre config init' first.",
+            file_path.display()
         );
     }
 
@@ -290,8 +290,8 @@ async fn execute_paths() -> Result<()> {
     let project_path = PathBuf::from("./spectre.toml");
     let project_exists = project_path.exists();
     println!(
-        "  1. Project:  {:?} {}",
-        project_path,
+        "  1. Project:  {} {}",
+        project_path.display(),
         if project_exists { "(found)" } else { "" }
     );
 
@@ -299,8 +299,8 @@ async fn execute_paths() -> Result<()> {
     if let Some(user_path) = spectre_core::config::user_config_path() {
         let user_exists = user_path.exists();
         println!(
-            "  2. User:     {:?} {}",
-            user_path,
+            "  2. User:     {} {}",
+            user_path.display(),
             if user_exists { "(found)" } else { "" }
         );
     } else {
@@ -311,8 +311,8 @@ async fn execute_paths() -> Result<()> {
     let system_path = spectre_core::config::system_config_path();
     let system_exists = system_path.exists();
     println!(
-        "  3. System:   {:?} {}",
-        system_path,
+        "  3. System:   {} {}",
+        system_path.display(),
         if system_exists { "(found)" } else { "" }
     );
 
@@ -334,6 +334,7 @@ mod tests {
         let commands = vec![ConfigCommands::Paths];
 
         for cmd in commands {
+            #[allow(clippy::match_same_arms)]
             match cmd {
                 ConfigCommands::Init(_) => {},
                 ConfigCommands::Show(_) => {},

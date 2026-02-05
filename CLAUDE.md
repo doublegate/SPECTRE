@@ -19,7 +19,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Phase 3:** Operation PHANTOM (v0.3.x) - TUI Dashboard **COMPLETE**
 **Phase 4:** Operation SPECTER (v0.4.x) - Advanced Features **COMPLETE**
 
-**SPECTRE Tests:** 856 (43 CLI + 530 core + 235 TUI + 3 doc-tests + 45 integration) | **Code:** ~31,000 lines Rust (118 files)
+**SPECTRE Tests:** 864 (43 CLI + 538 core + 235 TUI + 3 doc-tests + 45 integration) | **Code:** ~31,000 lines Rust (118 files)
 
 **Repository:** [github.com/doublegate/SPECTRE](https://github.com/doublegate/SPECTRE)
 
@@ -97,7 +97,7 @@ crates/
 │       ├── commands/       # 12 subcommands: scan, chef, send, receive, identity, peer,
 │       │                   # status, config, completions, campaign, pipeline, plugin
 │       └── output/         # table (comfy-table) and json (serde_json) formatters
-├── spectre-core/       # Core orchestration library (81 files, 530 unit + 45 integration tests)
+├── spectre-core/       # Core orchestration library (81 files, 538 unit + 45 integration tests)
 │   ├── src/
 │   │   ├── config/         # TOML config with file discovery and env var support
 │   │   ├── scan/           # Scanner trait, port/target parsing, 8 scan types
@@ -203,7 +203,7 @@ to-dos/                 # Sprint planning and roadmap
 
 ## Development Standards
 
-- **Rust:** `cargo fmt`, `cargo clippy -- -D warnings`
+- **Rust:** `cargo fmt`, `cargo clippy -- -D warnings` (also clean under `-W clippy::pedantic -W clippy::nursery`)
 - **TypeScript/JavaScript:** ESLint, Prettier
 - **Commits:** [Conventional Commits](https://www.conventionalcommits.org/)
 - **Testing:** TDD approach, all PRs require tests

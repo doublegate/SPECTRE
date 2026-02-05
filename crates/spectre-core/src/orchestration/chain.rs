@@ -34,7 +34,7 @@ impl StepCondition {
     /// Evaluate this condition against scan results
     pub fn evaluate(&self, results: &[ScanResult]) -> bool {
         match self {
-            Self::Always => true,
+            Self::Always | Self::Custom(_) => true, // Custom conditions default to true
             Self::PortOpen(port) => results.iter().any(|r| {
                 r.ports
                     .iter()
@@ -51,10 +51,8 @@ impl StepCondition {
             Self::HasResults => !results.is_empty(),
             Self::OsDetected(os_name) => results.iter().any(|r| {
                 r.os.as_ref()
-                    .map(|os| os.name.to_lowercase().contains(&os_name.to_lowercase()))
-                    .unwrap_or(false)
+                    .is_some_and(|os| os.name.to_lowercase().contains(&os_name.to_lowercase()))
             }),
-            Self::Custom(_) => true, // Custom conditions default to true
         }
     }
 }
@@ -105,13 +103,13 @@ impl ScanStep {
     }
 
     /// Enable service detection
-    pub fn with_service_detection(mut self) -> Self {
+    pub const fn with_service_detection(mut self) -> Self {
         self.service_detection = true;
         self
     }
 
     /// Enable OS detection
-    pub fn with_os_detection(mut self) -> Self {
+    pub const fn with_os_detection(mut self) -> Self {
         self.os_detection = true;
         self
     }
@@ -162,7 +160,7 @@ impl ScanChain {
     }
 
     /// Get the number of steps
-    pub fn step_count(&self) -> usize {
+    pub const fn step_count(&self) -> usize {
         self.steps.len()
     }
 
@@ -415,7 +413,7 @@ mod tests {
         chain.record_results("step-1", results);
 
         assert!(chain.results_for_step("step-1").is_some());
-        assert_eq!(chain.results_for_step("step-1").map(|r| r.len()), Some(1));
+        assert_eq!(chain.results_for_step("step-1").map(Vec::len), Some(1));
         assert!(chain.results_for_step("step-2").is_none());
     }
 

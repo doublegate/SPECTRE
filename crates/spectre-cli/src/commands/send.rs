@@ -140,7 +140,7 @@ pub async fn execute(args: SendArgs, config_path: Option<PathBuf>) -> Result<()>
         Ok(receipt) => {
             println!("Message sent successfully.");
             println!("  Message ID: {}", receipt.message_id);
-            println!("  Size: {} bytes", data_len);
+            println!("  Size: {data_len} bytes");
 
             if args.confirm {
                 println!(
@@ -154,7 +154,7 @@ pub async fn execute(args: SendArgs, config_path: Option<PathBuf>) -> Result<()>
             }
 
             if let Some(timestamp) = receipt.timestamp {
-                println!("  Timestamp: {}", timestamp);
+                println!("  Timestamp: {timestamp}");
             }
 
             info!(
@@ -165,7 +165,7 @@ pub async fn execute(args: SendArgs, config_path: Option<PathBuf>) -> Result<()>
             Ok(())
         },
         Err(e) => {
-            anyhow::bail!("Failed to send message: {}", e);
+            anyhow::bail!("Failed to send message: {e}");
         },
     }
 }
@@ -181,7 +181,7 @@ async fn get_send_data(
     } else if let Some(path) = file {
         tokio::fs::read(path)
             .await
-            .context(format!("Failed to read file: {:?}", path))
+            .context(format!("Failed to read file: {}", path.display()))
     } else if stdin {
         use tokio::io::AsyncReadExt;
         let mut buffer = Vec::new();

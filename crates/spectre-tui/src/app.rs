@@ -75,18 +75,18 @@ impl App {
     }
 
     /// Create a new application with a custom tick rate.
-    pub fn with_tick_rate(mut self, tick_rate: Duration) -> Self {
+    pub const fn with_tick_rate(mut self, tick_rate: Duration) -> Self {
         self.tick_rate = tick_rate;
         self
     }
 
     /// Process a tick event (called on each render cycle).
-    pub fn tick(&mut self) {
+    pub const fn tick(&mut self) {
         self.frame_count += 1;
     }
 
     /// Handle a terminal resize event.
-    pub fn on_resize(&mut self, _width: u16, _height: u16) {
+    pub const fn on_resize(&mut self, _width: u16, _height: u16) {
         // Layout recomputation happens automatically during rendering
     }
 
@@ -107,7 +107,7 @@ impl App {
         // Help overlay intercepts Esc and ?
         if self.show_help {
             match key.code {
-                KeyCode::Esc | KeyCode::Char('?') | KeyCode::Char('q') => {
+                KeyCode::Esc | KeyCode::Char('?' | 'q') => {
                     self.show_help = false;
                 },
                 _ => {},
@@ -240,7 +240,7 @@ impl App {
     }
 
     /// Jump to top in the focused panel.
-    fn navigate_panel_top(&mut self) {
+    const fn navigate_panel_top(&mut self) {
         match self.panels.focused {
             PanelId::Recon => {
                 self.scan_state.select_first();
@@ -265,8 +265,7 @@ impl App {
                 self.analysis_panel.scroll_offset =
                     self.analysis_panel.output_preview.len().saturating_sub(1);
             },
-            PanelId::Comms => {},
-            PanelId::Campaign => {},
+            PanelId::Comms | PanelId::Campaign => {},
         }
     }
 

@@ -43,6 +43,7 @@ pub fn format_json(hosts: &[Host], pretty: bool) -> crate::Result<String> {
 }
 
 /// Format hosts as nmap-compatible XML
+#[allow(clippy::similar_names, clippy::too_many_lines)]
 pub fn format_xml(hosts: &[Host]) -> crate::Result<String> {
     use quick_xml::events::{BytesDecl, BytesEnd, BytesStart, Event};
     use quick_xml::Writer;

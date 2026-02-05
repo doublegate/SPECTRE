@@ -39,7 +39,7 @@ impl PipelineBuilder {
     }
 
     /// Set whether to continue on stage errors
-    pub fn continue_on_error(mut self, yes: bool) -> Self {
+    pub const fn continue_on_error(mut self, yes: bool) -> Self {
         self.continue_on_error = yes;
         self
     }

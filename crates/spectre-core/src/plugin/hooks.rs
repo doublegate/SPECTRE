@@ -78,7 +78,7 @@ impl HookRegistration {
     }
 
     /// Set priority
-    pub fn with_priority(mut self, priority: u32) -> Self {
+    pub const fn with_priority(mut self, priority: u32) -> Self {
         self.priority = priority;
         self
     }
@@ -110,7 +110,7 @@ impl HookContext {
 
     /// Get a data field
     pub fn get(&self, key: &str) -> Option<&str> {
-        self.data.get(key).map(|s| s.as_str())
+        self.data.get(key).map(String::as_str)
     }
 }
 
@@ -167,12 +167,12 @@ impl HookManager {
 
     /// Get the total number of registered hooks
     pub fn hook_count(&self) -> usize {
-        self.hooks.values().map(|v| v.len()).sum()
+        self.hooks.values().map(Vec::len).sum()
     }
 
     /// Get the number of hooks for a specific event
     pub fn event_hook_count(&self, event: HookEvent) -> usize {
-        self.hooks.get(&event).map(|v| v.len()).unwrap_or(0)
+        self.hooks.get(&event).map_or(0, Vec::len)
     }
 
     /// List all events that have registered hooks

@@ -35,7 +35,7 @@ pub fn render_header(
 
     // Right-aligned frame counter (for debug/performance)
     let right_text = format!("F:{} ", frame_count);
-    let used_width: usize = spans.iter().map(|s| s.width()).sum();
+    let used_width: usize = spans.iter().map(ratatui::prelude::Span::width).sum();
     let remaining = (area.width as usize).saturating_sub(used_width + right_text.len());
 
     if remaining > 0 {

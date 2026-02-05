@@ -7,6 +7,6 @@
 #![warn(missing_docs)]
 
 /// Placeholder for MCP module
-pub fn placeholder() {
+pub const fn placeholder() {
     // MCP implementation will be added in Phase 6
 }

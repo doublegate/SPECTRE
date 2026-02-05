@@ -251,7 +251,7 @@ async fn execute_show(args: ShowArgs, config: &spectre_core::config::Config) -> 
         println!("  Created: {}", identity.created_at());
 
         if let Some(comment) = identity.comment() {
-            println!("  Comment: {}", comment);
+            println!("  Comment: {comment}");
         }
 
         if args.show_private {
@@ -276,7 +276,7 @@ async fn execute_export(args: ExportArgs, config: &spectre_core::config::Config)
 
     if let Some(output_path) = &args.output {
         tokio::fs::write(output_path, &data).await?;
-        println!("Identity exported to: {:?}", output_path);
+        println!("Identity exported to: {}", output_path.display());
     } else {
         // Print to stdout
         use std::io::Write;
@@ -356,12 +356,13 @@ async fn execute_switch(args: SwitchArgs, config: &spectre_core::config::Config)
 
 /// Execute identity delete
 async fn execute_delete(args: DeleteArgs, config: &spectre_core::config::Config) -> Result<()> {
+    use std::io::Write;
+
     if !args.force {
         print!(
             "Are you sure you want to delete identity '{}'? [y/N] ",
             args.name
         );
-        use std::io::Write;
         std::io::stdout().flush()?;
 
         let mut input = String::new();

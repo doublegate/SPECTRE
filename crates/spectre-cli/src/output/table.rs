@@ -58,7 +58,7 @@ mod tests {
     fn test_create_table() {
         let table = create_table();
         // Just ensure it can be created without panicking
-        let _ = format!("{}", table);
+        let _ = format!("{table}");
     }
 
     #[test]

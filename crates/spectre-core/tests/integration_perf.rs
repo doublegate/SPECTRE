@@ -33,7 +33,7 @@ fn test_cache_heavy_usage() {
     let mut cache: LruCache<u32, String> = LruCache::new(100);
 
     for i in 0..100 {
-        cache.insert(i, format!("value-{}", i));
+        cache.insert(i, format!("value-{i}"));
     }
     assert_eq!(cache.len(), 100);
 
@@ -44,7 +44,7 @@ fn test_cache_heavy_usage() {
 
     // Add more entries, evicting old ones
     for i in 100..150 {
-        cache.insert(i, format!("value-{}", i));
+        cache.insert(i, format!("value-{i}"));
     }
 
     assert_eq!(cache.len(), 100);

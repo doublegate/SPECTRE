@@ -118,12 +118,12 @@ impl PluginSandbox {
     }
 
     /// Get the permissions for this sandbox
-    pub fn permissions(&self) -> &PermissionConfig {
+    pub const fn permissions(&self) -> &PermissionConfig {
         &self.permissions
     }
 
     /// Get the resource limits for this sandbox
-    pub fn limits(&self) -> &ResourceLimits {
+    pub const fn limits(&self) -> &ResourceLimits {
         &self.limits
     }
 }

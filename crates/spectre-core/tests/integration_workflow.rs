@@ -148,7 +148,7 @@ fn test_variable_store_substitution() {
 async fn test_workflow_progress_tracking() {
     let mut wf = WorkflowDef::new("progress-test");
     for i in 0..5 {
-        wf.add_step(StepDef::new(&format!("step-{}", i), "scan"));
+        wf.add_step(StepDef::new(&format!("step-{i}"), "scan"));
     }
 
     let mut executor = WorkflowExecutor::new(wf);

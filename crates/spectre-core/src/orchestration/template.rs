@@ -130,7 +130,7 @@ impl ScanTemplate {
     }
 
     /// Set timing template
-    pub fn with_timing(mut self, timing: TimingTemplate) -> Self {
+    pub const fn with_timing(mut self, timing: TimingTemplate) -> Self {
         self.timing = timing;
         self
     }
@@ -232,7 +232,7 @@ fn top_1000_ports() -> Vec<u16> {
             ports.push(p);
         }
     }
-    ports.sort();
+    ports.sort_unstable();
     ports.dedup();
     ports
 }

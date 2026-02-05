@@ -37,6 +37,11 @@ impl ExportScheduleEntry {
     }
 
     /// Check if this entry is due for export
+    #[allow(
+        clippy::cast_precision_loss,
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss
+    )]
     pub fn is_due(&self, now: &DateTime<Utc>) -> bool {
         if !self.enabled {
             return false;
@@ -95,7 +100,7 @@ impl ExportScheduler {
     }
 
     /// Get entry count
-    pub fn count(&self) -> usize {
+    pub const fn count(&self) -> usize {
         self.entries.len()
     }
 

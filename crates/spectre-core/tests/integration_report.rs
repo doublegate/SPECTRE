@@ -201,8 +201,7 @@ fn test_risk_score_and_rating() {
     let rating = summary.risk_rating();
     assert!(
         ["Low", "Moderate", "Elevated", "High", "Critical"].contains(&rating),
-        "Invalid risk rating: {}",
-        rating
+        "Invalid risk rating: {rating}"
     );
 }
 

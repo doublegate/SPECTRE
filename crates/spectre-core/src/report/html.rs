@@ -1,5 +1,7 @@
 //! HTML report generator — standalone HTML with embedded CSS
 
+use std::fmt::Write;
+
 use super::ReportData;
 
 /// HTML report generator
@@ -7,6 +9,7 @@ pub struct HtmlReportGenerator;
 
 impl HtmlReportGenerator {
     /// Generate a standalone HTML report
+    #[allow(clippy::too_many_lines)]
     pub fn generate(data: &ReportData) -> crate::Result<String> {
         let mut html = String::with_capacity(8192);
 
@@ -16,7 +19,7 @@ impl HtmlReportGenerator {
         html.push_str(
             "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n",
         );
-        html.push_str(&format!("<title>{}</title>\n", escape_html(&data.title)));
+        let _ = writeln!(html, "<title>{}</title>", escape_html(&data.title));
         html.push_str("<style>\n");
         html.push_str(Self::embedded_css());
         html.push_str("</style>\n");
@@ -24,16 +27,18 @@ impl HtmlReportGenerator {
 
         // Header
         html.push_str("<div class=\"header\">\n");
-        html.push_str(&format!("<h1>{}</h1>\n", escape_html(&data.title)));
-        html.push_str(&format!(
-            "<p class=\"date\">Generated: {}</p>\n",
+        let _ = writeln!(html, "<h1>{}</h1>", escape_html(&data.title));
+        let _ = writeln!(
+            html,
+            "<p class=\"date\">Generated: {}</p>",
             escape_html(&data.date)
-        ));
+        );
         if let Some(ref campaign) = data.campaign {
-            html.push_str(&format!(
-                "<p class=\"campaign\">Campaign: {}</p>\n",
+            let _ = writeln!(
+                html,
+                "<p class=\"campaign\">Campaign: {}</p>",
                 escape_html(campaign)
-            ));
+            );
         }
         html.push_str("</div>\n");
 
@@ -41,28 +46,28 @@ impl HtmlReportGenerator {
         html.push_str("<div class=\"section\">\n");
         html.push_str("<h2>Executive Summary</h2>\n");
         html.push_str("<div class=\"summary-grid\">\n");
-        html.push_str(&format!(
-            "<div class=\"stat\"><span class=\"stat-value\">{}</span><span class=\"stat-label\">Total Hosts</span></div>\n",
+        let _ = writeln!(html,
+            "<div class=\"stat\"><span class=\"stat-value\">{}</span><span class=\"stat-label\">Total Hosts</span></div>",
             data.summary.total_hosts
-        ));
-        html.push_str(&format!(
-            "<div class=\"stat\"><span class=\"stat-value\">{}</span><span class=\"stat-label\">Hosts Up</span></div>\n",
+        );
+        let _ = writeln!(html,
+            "<div class=\"stat\"><span class=\"stat-value\">{}</span><span class=\"stat-label\">Hosts Up</span></div>",
             data.summary.hosts_up
-        ));
-        html.push_str(&format!(
-            "<div class=\"stat\"><span class=\"stat-value\">{}</span><span class=\"stat-label\">Open Ports</span></div>\n",
+        );
+        let _ = writeln!(html,
+            "<div class=\"stat\"><span class=\"stat-value\">{}</span><span class=\"stat-label\">Open Ports</span></div>",
             data.summary.total_open_ports
-        ));
-        html.push_str(&format!(
-            "<div class=\"stat\"><span class=\"stat-value\">{}</span><span class=\"stat-label\">Findings</span></div>\n",
+        );
+        let _ = writeln!(html,
+            "<div class=\"stat\"><span class=\"stat-value\">{}</span><span class=\"stat-label\">Findings</span></div>",
             data.summary.total_findings
-        ));
-        html.push_str(&format!(
-            "<div class=\"stat risk-{}\"><span class=\"stat-value\">{}</span><span class=\"stat-label\">Risk: {}</span></div>\n",
+        );
+        let _ = writeln!(html,
+            "<div class=\"stat risk-{}\"><span class=\"stat-value\">{}</span><span class=\"stat-label\">Risk: {}</span></div>",
             data.summary.risk_rating().to_lowercase(),
             data.summary.risk_score,
             data.summary.risk_rating()
-        ));
+        );
         html.push_str("</div>\n");
         html.push_str("</div>\n");
 
@@ -71,26 +76,31 @@ impl HtmlReportGenerator {
             html.push_str("<div class=\"section\">\n");
             html.push_str("<h2>Severity Breakdown</h2>\n");
             html.push_str("<table>\n<tr><th>Severity</th><th>Count</th></tr>\n");
-            html.push_str(&format!(
-                "<tr class=\"critical\"><td>Critical</td><td>{}</td></tr>\n",
+            let _ = writeln!(
+                html,
+                "<tr class=\"critical\"><td>Critical</td><td>{}</td></tr>",
                 data.summary.critical_count
-            ));
-            html.push_str(&format!(
-                "<tr class=\"high\"><td>High</td><td>{}</td></tr>\n",
+            );
+            let _ = writeln!(
+                html,
+                "<tr class=\"high\"><td>High</td><td>{}</td></tr>",
                 data.summary.high_count
-            ));
-            html.push_str(&format!(
-                "<tr class=\"medium\"><td>Medium</td><td>{}</td></tr>\n",
+            );
+            let _ = writeln!(
+                html,
+                "<tr class=\"medium\"><td>Medium</td><td>{}</td></tr>",
                 data.summary.medium_count
-            ));
-            html.push_str(&format!(
-                "<tr class=\"low\"><td>Low</td><td>{}</td></tr>\n",
+            );
+            let _ = writeln!(
+                html,
+                "<tr class=\"low\"><td>Low</td><td>{}</td></tr>",
                 data.summary.low_count
-            ));
-            html.push_str(&format!(
-                "<tr class=\"info\"><td>Info</td><td>{}</td></tr>\n",
+            );
+            let _ = writeln!(
+                html,
+                "<tr class=\"info\"><td>Info</td><td>{}</td></tr>",
                 data.summary.info_count
-            ));
+            );
             html.push_str("</table>\n");
             html.push_str("</div>\n");
         }
@@ -104,20 +114,20 @@ impl HtmlReportGenerator {
             for finding in &data.findings {
                 let port_str = finding
                     .port
-                    .map(|p| p.to_string())
-                    .unwrap_or_else(|| "-".to_string());
+                    .map_or_else(|| "-".to_string(), |p| p.to_string());
                 let service_str = finding.service.as_deref().unwrap_or("-");
 
                 let severity_str = finding.severity.to_string();
-                html.push_str(&format!(
-                    "<tr class=\"{}\"><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>\n",
+                let _ =
+                    writeln!(html,
+                    "<tr class=\"{}\"><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>",
                     severity_str,
                     escape_html(&severity_str),
                     escape_html(&finding.title),
                     escape_html(&finding.host),
                     escape_html(&port_str),
                     escape_html(service_str),
-                ));
+                );
             }
 
             html.push_str("</table>\n");
@@ -130,16 +140,16 @@ impl HtmlReportGenerator {
             html.push_str("<h2>Host Details</h2>\n");
 
             for host in &data.hosts {
-                html.push_str(&format!("<h3>{}", escape_html(&host.ip)));
+                let _ = write!(html, "<h3>{}", escape_html(&host.ip));
                 if let Some(ref hostname) = host.hostname {
-                    html.push_str(&format!(" ({})", escape_html(hostname)));
+                    let _ = write!(html, " ({})", escape_html(hostname));
                 }
                 html.push_str("</h3>\n");
 
                 if let Some(ref os) = host.os {
-                    html.push_str(&format!("<p>OS: {}", escape_html(os)));
+                    let _ = write!(html, "<p>OS: {}", escape_html(os));
                     if let Some(ref ver) = host.os_version {
-                        html.push_str(&format!(" {}", escape_html(ver)));
+                        let _ = write!(html, " {}", escape_html(ver));
                     }
                     html.push_str("</p>\n");
                 }
@@ -149,14 +159,15 @@ impl HtmlReportGenerator {
                     for svc in &host.services {
                         let name = svc.service_name.as_deref().unwrap_or("-");
                         let ver = svc.version.as_deref().unwrap_or("-");
-                        html.push_str(&format!(
-                            "<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>\n",
+                        let _ = writeln!(
+                            html,
+                            "<tr><td>{}</td><td>{}</td><td>{}</td><td>{}</td><td>{}</td></tr>",
                             svc.port,
                             escape_html(&svc.protocol),
                             escape_html(&svc.state),
                             escape_html(name),
                             escape_html(ver),
-                        ));
+                        );
                     }
                     html.push_str("</table>\n");
                 }
@@ -167,10 +178,11 @@ impl HtmlReportGenerator {
 
         // Footer
         html.push_str("<div class=\"footer\">\n");
-        html.push_str(&format!(
-            "<p>Generated by SPECTRE v{}</p>\n",
+        let _ = writeln!(
+            html,
+            "<p>Generated by SPECTRE v{}</p>",
             env!("CARGO_PKG_VERSION")
-        ));
+        );
         html.push_str("</div>\n");
         html.push_str("</body>\n</html>\n");
 
@@ -178,8 +190,8 @@ impl HtmlReportGenerator {
     }
 
     /// Embedded CSS for standalone reports
-    fn embedded_css() -> &'static str {
-        r#"
+    const fn embedded_css() -> &'static str {
+        r"
 body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 20px; background: #f5f5f5; color: #333; }
 .header { background: #1a1a2e; color: #fff; padding: 30px; margin: -20px -20px 20px -20px; }
 .header h1 { margin: 0 0 10px 0; }
@@ -204,7 +216,7 @@ th { background: #f8f8f8; font-weight: 600; }
 .risk-moderate { border-left: 4px solid #388e3c; }
 .risk-low { border-left: 4px solid #1976d2; }
 .footer { text-align: center; padding: 20px; color: #999; font-size: 12px; }
-"#
+"
     }
 }
 

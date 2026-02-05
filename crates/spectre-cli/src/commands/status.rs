@@ -90,7 +90,7 @@ pub async fn execute(args: StatusArgs, config_path: Option<PathBuf>) -> Result<(
 
     if args.json {
         let json = serde_json::to_string_pretty(&statuses)?;
-        println!("{}", json);
+        println!("{json}");
     } else {
         print_status_header();
 
@@ -106,12 +106,12 @@ pub async fn execute(args: StatusArgs, config_path: Option<PathBuf>) -> Result<(
         if healthy_count == total_count {
             println!(
                 "{}",
-                format!("All {} components healthy", total_count).green()
+                format!("All {total_count} components healthy").green()
             );
         } else {
             println!(
                 "{}",
-                format!("{}/{} components healthy", healthy_count, total_count).yellow()
+                format!("{healthy_count}/{total_count} components healthy").yellow()
             );
         }
     }
@@ -138,17 +138,17 @@ fn print_status(status: &ComponentStatus, detailed: bool) {
     let name = format!("{:<12}", status.name);
     let status_text = &status.status;
 
-    println!("{} {} - {}", indicator, name, status_text);
+    println!("{indicator} {name} - {status_text}");
 
     if let Some(version) = &status.version {
-        println!("             Version: {}", version);
+        println!("             Version: {version}");
     }
 
     if detailed {
         if let Some(details) = &status.details {
             if let Some(obj) = details.as_object() {
                 for (key, value) in obj {
-                    println!("             {}: {}", key, value);
+                    println!("             {key}: {value}");
                 }
             }
         }
@@ -180,7 +180,7 @@ async fn check_prtip_status(
         Err(e) => ComponentStatus {
             name: "ProRT-IP".to_string(),
             healthy: false,
-            status: format!("Unavailable: {}", e),
+            status: format!("Unavailable: {e}"),
             version: None,
             details: None,
         },
@@ -217,7 +217,7 @@ async fn check_chef_status(
             Err(e) => ComponentStatus {
                 name: "CyberChef".to_string(),
                 healthy: false,
-                status: format!("Health check failed: {}", e),
+                status: format!("Health check failed: {e}"),
                 version: None,
                 details: None,
             },
@@ -225,7 +225,7 @@ async fn check_chef_status(
         Err(e) => ComponentStatus {
             name: "CyberChef".to_string(),
             healthy: false,
-            status: format!("Not connected: {}", e),
+            status: format!("Not connected: {e}"),
             version: None,
             details: if detailed {
                 Some(serde_json::json!({
@@ -285,7 +285,7 @@ async fn check_wraith_status(
                 Err(e) => ComponentStatus {
                     name: "WRAITH".to_string(),
                     healthy: false,
-                    status: format!("Client error: {}", e),
+                    status: format!("Client error: {e}"),
                     version: Some(spectre_core::comms::WRAITH_VERSION.to_string()),
                     details: None,
                 },

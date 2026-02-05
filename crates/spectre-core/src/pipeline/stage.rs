@@ -15,12 +15,12 @@ pub enum PipelineData {
     /// JSON data
     Json(serde_json::Value),
     /// Multiple items
-    Items(Vec<PipelineData>),
+    Items(Vec<Self>),
 }
 
 impl PipelineData {
     /// Get the number of items in this data
-    pub fn len(&self) -> usize {
+    pub const fn len(&self) -> usize {
         match self {
             Self::Empty => 0,
             Self::Bytes(_) | Self::Text(_) | Self::Json(_) => 1,
@@ -29,7 +29,7 @@ impl PipelineData {
     }
 
     /// Check if the data is empty
-    pub fn is_empty(&self) -> bool {
+    pub const fn is_empty(&self) -> bool {
         self.len() == 0
     }
 

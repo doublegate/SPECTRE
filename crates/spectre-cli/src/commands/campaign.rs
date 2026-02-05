@@ -71,6 +71,7 @@ pub enum CampaignCommands {
 }
 
 /// Execute campaign commands
+#[allow(clippy::too_many_lines)]
 pub async fn execute(args: CampaignArgs, config_path: Option<PathBuf>) -> Result<()> {
     let db_path = get_db_path(&config_path);
     let store = CampaignStore::open(&db_path)?;
@@ -82,8 +83,8 @@ pub async fn execute(args: CampaignArgs, config_path: Option<PathBuf>) -> Result
             store.save_campaign(&campaign)?;
 
             println!("{} Campaign created", "OK".green().bold());
-            println!("  ID:   {}", id);
-            println!("  Name: {}", name);
+            println!("  ID:   {id}");
+            println!("  Name: {name}");
             println!("  Phase: {}", campaign.phase);
         },
 
@@ -102,14 +103,14 @@ pub async fn execute(args: CampaignArgs, config_path: Option<PathBuf>) -> Result
             if !campaign.objectives.is_empty() {
                 println!("  Objectives:");
                 for obj in &campaign.objectives {
-                    println!("    - {}", obj);
+                    println!("    - {obj}");
                 }
             }
 
             if !campaign.targets.is_empty() {
                 println!("  Targets:");
                 for target in &campaign.targets {
-                    println!("    - {}", target);
+                    println!("    - {target}");
                 }
             }
 
@@ -180,19 +181,19 @@ pub async fn execute(args: CampaignArgs, config_path: Option<PathBuf>) -> Result
             };
 
             if let Some(path) = output {
-                std::fs::write(&path, &content)?;
+                tokio::fs::write(&path, &content).await?;
                 println!(
                     "{} Campaign exported to {}",
                     "OK".green().bold(),
                     path.display()
                 );
             } else {
-                println!("{}", content);
+                println!("{content}");
             }
         },
 
         CampaignCommands::Import { file } => {
-            let content = std::fs::read_to_string(&file)?;
+            let content = tokio::fs::read_to_string(&file).await?;
 
             let campaign = if file
                 .extension()
@@ -208,8 +209,8 @@ pub async fn execute(args: CampaignArgs, config_path: Option<PathBuf>) -> Result
             store.save_campaign(&campaign)?;
 
             println!("{} Campaign imported", "OK".green().bold());
-            println!("  ID:   {}", id);
-            println!("  Name: {}", name);
+            println!("  ID:   {id}");
+            println!("  Name: {name}");
         },
 
         CampaignCommands::Archive { id } => {
@@ -238,9 +239,10 @@ fn get_db_path(config_path: &Option<PathBuf>) -> PathBuf {
     }
 
     // Use default data directory
-    directories::ProjectDirs::from("com", "spectre", "spectre")
-        .map(|dirs: directories::ProjectDirs| dirs.data_dir().join("campaigns.db"))
-        .unwrap_or_else(|| PathBuf::from("campaigns.db"))
+    directories::ProjectDirs::from("com", "spectre", "spectre").map_or_else(
+        || PathBuf::from("campaigns.db"),
+        |dirs: directories::ProjectDirs| dirs.data_dir().join("campaigns.db"),
+    )
 }
 
 #[cfg(test)]

@@ -8,7 +8,7 @@ use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use crate::layout::PanelId;
 
 /// Actions that can be triggered by keyboard shortcuts.
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AppAction {
     /// Quit the application
     Quit,
@@ -78,7 +78,7 @@ pub fn map_global_key(key: KeyEvent) -> AppAction {
     // Ctrl combinations
     if key.modifiers.contains(KeyModifiers::CONTROL) {
         match key.code {
-            KeyCode::Char('c') | KeyCode::Char('q') => return AppAction::Quit,
+            KeyCode::Char('c' | 'q') => return AppAction::Quit,
             KeyCode::Char('d') => return AppAction::HalfPageDown,
             KeyCode::Char('u') => return AppAction::HalfPageUp,
             _ => {},
@@ -99,7 +99,7 @@ pub fn map_global_key(key: KeyEvent) -> AppAction {
 /// Map a key event to a panel-specific navigation action.
 ///
 /// Returns `AppAction::None` if the key is not bound for panel navigation.
-pub fn map_panel_key(key: KeyEvent) -> AppAction {
+pub const fn map_panel_key(key: KeyEvent) -> AppAction {
     match key.code {
         // Vim-style navigation
         KeyCode::Char('j') | KeyCode::Down => AppAction::NavigateDown,
@@ -149,6 +149,7 @@ impl std::fmt::Display for KeyCategory {
 }
 
 /// Get all keybinding entries for the help overlay.
+#[allow(clippy::too_many_lines)]
 pub fn all_keybindings() -> Vec<KeybindingEntry> {
     vec![
         // Global

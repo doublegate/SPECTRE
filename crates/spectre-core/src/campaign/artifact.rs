@@ -76,11 +76,9 @@ impl Artifact {
         let hash = hex::encode(Sha256::digest(&data));
 
         let mime_type = match &artifact_type {
-            ArtifactType::ScanResult => "application/json",
-            ArtifactType::AnalysisOutput => "text/plain",
-            ArtifactType::FindingReport => "application/json",
+            ArtifactType::ScanResult | ArtifactType::FindingReport => "application/json",
+            ArtifactType::AnalysisOutput | ArtifactType::LogFile => "text/plain",
             ArtifactType::Screenshot => "image/png",
-            ArtifactType::LogFile => "text/plain",
             ArtifactType::ConfigSnapshot => "application/toml",
             ArtifactType::Custom(_) => "application/octet-stream",
         };

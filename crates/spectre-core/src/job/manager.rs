@@ -36,6 +36,7 @@ pub struct JobManager {
     cancel_token: CancellationToken,
 }
 
+#[allow(clippy::significant_drop_tightening)]
 impl JobManager {
     /// Create a new job manager
     ///
@@ -211,7 +212,7 @@ impl JobManager {
 
         job.transition(JobState::Complete)?;
 
-        let elapsed_ms = job.elapsed().map(|d| d.as_millis() as u64).unwrap_or(0);
+        let elapsed_ms = job.elapsed().map_or(0, |d| d.as_millis() as u64);
 
         let _ = self.event_tx.send(JobEvent::Completed {
             job_id: job_id.to_string(),
@@ -284,7 +285,7 @@ impl JobManager {
     }
 
     /// Get the maximum concurrent job limit
-    pub fn max_concurrent(&self) -> usize {
+    pub const fn max_concurrent(&self) -> usize {
         self.max_concurrent
     }
 

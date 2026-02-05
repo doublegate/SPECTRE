@@ -97,7 +97,7 @@ impl JobEvent {
     }
 
     /// Get the timestamp of this event
-    pub fn timestamp(&self) -> DateTime<Utc> {
+    pub const fn timestamp(&self) -> DateTime<Utc> {
         match self {
             Self::Created { timestamp, .. }
             | Self::StateChanged { timestamp, .. }

@@ -151,6 +151,8 @@ pub async fn execute(args: PeerArgs, config_path: Option<PathBuf>) -> Result<()>
 
 /// Execute peer add
 async fn execute_add(args: AddArgs, config: &spectre_core::config::Config) -> Result<()> {
+    use std::io::Write;
+
     info!("Adding new peer");
 
     // Load public key from various sources
@@ -162,11 +164,10 @@ async fn execute_add(args: AddArgs, config: &spectre_core::config::Config) -> Re
     if !args.no_verify {
         println!("Peer Public Key Fingerprint:");
         println!();
-        println!("  {}", fingerprint);
+        println!("  {fingerprint}");
         println!();
         print!("Does this match the expected fingerprint? [y/N] ");
 
-        use std::io::Write;
         std::io::stdout().flush()?;
 
         let mut input = String::new();
@@ -193,7 +194,7 @@ async fn execute_add(args: AddArgs, config: &spectre_core::config::Config) -> Re
     println!("  ID: {}", peer.id());
     println!("  Alias: {}", args.alias.as_deref().unwrap_or("<none>"));
     println!("  Trust Level: {}/10", args.trust);
-    println!("  Fingerprint: {}", fingerprint);
+    println!("  Fingerprint: {fingerprint}");
 
     info!(
         peer_id = %peer.id(),
@@ -222,7 +223,7 @@ async fn execute_list(args: ListArgs, config: &spectre_core::config::Config) -> 
 
     if args.json {
         let json = serde_json::to_string_pretty(&peers)?;
-        println!("{}", json);
+        println!("{json}");
     } else {
         println!("Trusted Peers:");
         println!();
@@ -237,8 +238,7 @@ async fn execute_list(args: ListArgs, config: &spectre_core::config::Config) -> 
             let id = &peer.id[..16];
             let last_seen = peer
                 .last_seen
-                .map(|t| t.to_string())
-                .unwrap_or_else(|| "Never".to_string());
+                .map_or_else(|| "Never".to_string(), |t| t.to_string());
 
             println!(
                 "{:<20} {:<16} {:<6} {:<24}",
@@ -256,7 +256,7 @@ async fn execute_show(args: ShowArgs, config: &spectre_core::config::Config) -> 
 
     if args.json {
         let json = serde_json::to_string_pretty(&peer)?;
-        println!("{}", json);
+        println!("{json}");
     } else {
         println!("Peer Information:");
         println!();
@@ -268,12 +268,12 @@ async fn execute_show(args: ShowArgs, config: &spectre_core::config::Config) -> 
         println!("  Added: {}", peer.created_at());
 
         if let Some(last_seen) = peer.last_seen() {
-            println!("  Last Seen: {}", last_seen);
+            println!("  Last Seen: {last_seen}");
         }
 
         if let Some(notes) = peer.notes() {
             println!();
-            println!("  Notes: {}", notes);
+            println!("  Notes: {notes}");
         }
     }
 
@@ -282,15 +282,16 @@ async fn execute_show(args: ShowArgs, config: &spectre_core::config::Config) -> 
 
 /// Execute peer remove
 async fn execute_remove(args: RemoveArgs, config: &spectre_core::config::Config) -> Result<()> {
+    use std::io::Write;
+
     let peer = spectre_core::comms::resolve_peer(&args.peer, config)?;
 
     if !args.force {
         print!(
             "Are you sure you want to remove peer '{}'? [y/N] ",
-            peer.alias().unwrap_or(&peer.id()[..16])
+            peer.alias().unwrap_or_else(|| &peer.id()[..16])
         );
 
-        use std::io::Write;
         std::io::stdout().flush()?;
 
         let mut input = String::new();
@@ -319,21 +320,19 @@ async fn execute_verify(args: VerifyArgs, config: &spectre_core::config::Config)
 
     println!("Peer Fingerprint:");
     println!();
-    println!("  {}", fingerprint);
+    println!("  {fingerprint}");
     println!();
 
     if let Some(expected) = &args.fingerprint {
-        let normalized_expected = expected.replace(":", "").replace(" ", "").to_uppercase();
-        let normalized_actual = fingerprint.replace(":", "").replace(" ", "").to_uppercase();
+        let normalized_expected = expected.replace([':', ' '], "").to_uppercase();
+        let normalized_actual = fingerprint.replace([':', ' '], "").to_uppercase();
 
         if normalized_expected == normalized_actual {
             println!("Fingerprint MATCHES expected value.");
             Ok(())
         } else {
             anyhow::bail!(
-                "Fingerprint DOES NOT MATCH!\n  Expected: {}\n  Actual: {}",
-                expected,
-                fingerprint
+                "Fingerprint DOES NOT MATCH!\n  Expected: {expected}\n  Actual: {fingerprint}"
             );
         }
     } else {
@@ -343,6 +342,7 @@ async fn execute_verify(args: VerifyArgs, config: &spectre_core::config::Config)
 }
 
 /// Execute peer update
+#[allow(clippy::useless_let_if_seq)] // Multiple conditions set updated
 async fn execute_update(args: UpdateArgs, config: &spectre_core::config::Config) -> Result<()> {
     let mut peer = spectre_core::comms::resolve_peer(&args.peer, config)?;
 
@@ -384,7 +384,7 @@ async fn load_public_key(key: &str) -> Result<Vec<u8>> {
     }
 
     // Try to decode as hex first (more specific format)
-    if let Ok(decoded) = hex::decode(key.replace(":", "")) {
+    if let Ok(decoded) = hex::decode(key.replace(':', "")) {
         return Ok(decoded);
     }
 

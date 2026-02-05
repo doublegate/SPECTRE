@@ -124,7 +124,7 @@ pub struct CommandInput {
 
 impl CommandInput {
     /// Create a new command input widget.
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self {
             active: false,
             buffer: String::new(),
@@ -274,12 +274,11 @@ impl CommandInput {
                 let new_idx = idx + 1;
                 self.history_index = Some(new_idx);
                 self.buffer = self.history[new_idx].clone();
-                self.cursor = self.buffer.len();
             } else {
                 self.history_index = None;
                 self.buffer = self.saved_buffer.clone();
-                self.cursor = self.buffer.len();
             }
+            self.cursor = self.buffer.len();
         }
     }
 
@@ -362,7 +361,7 @@ impl CommandInput {
     }
 
     /// Get the cursor position for display (accounting for the ':' prefix).
-    pub fn display_cursor(&self) -> usize {
+    pub const fn display_cursor(&self) -> usize {
         self.cursor + 1
     }
 }

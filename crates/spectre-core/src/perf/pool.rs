@@ -104,7 +104,7 @@ impl<T: Send + 'static> ConnectionPool<T> {
     }
 
     /// Get the pool configuration
-    pub fn config(&self) -> &PoolConfig {
+    pub const fn config(&self) -> &PoolConfig {
         &self.config
     }
 

@@ -57,7 +57,7 @@ impl RecipeBundle {
     }
 
     /// Get the number of recipes
-    pub fn count(&self) -> usize {
+    pub const fn count(&self) -> usize {
         self.recipes.len()
     }
 }

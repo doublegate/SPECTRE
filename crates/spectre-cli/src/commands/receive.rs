@@ -123,7 +123,7 @@ pub async fn execute(args: ReceiveArgs, config_path: Option<PathBuf>) -> Result<
             }
         }
 
-        println!("\nReceived {} message(s).", received);
+        println!("\nReceived {received} message(s).");
     } else {
         // Single receive mode
         let max_count = args.count;
@@ -141,7 +141,7 @@ pub async fn execute(args: ReceiveArgs, config_path: Option<PathBuf>) -> Result<
                     }
                 },
                 Err(e) => {
-                    anyhow::bail!("Failed to receive message: {}", e);
+                    anyhow::bail!("Failed to receive message: {e}");
                 },
             }
         }
@@ -164,14 +164,14 @@ async fn handle_received_message(
     }
 
     // Print message info
-    println!("\n--- Message #{} ---", index);
+    println!("\n--- Message #{index} ---");
     println!("  ID: {}", msg.id);
     println!("  From: {}", msg.sender);
     println!("  Size: {} bytes", msg.data.len());
     println!("  Timestamp: {}", msg.timestamp);
 
     if let Some(expires) = &msg.expires_at {
-        println!("  Expires: {}", expires);
+        println!("  Expires: {expires}");
     }
 
     // Save or display content
@@ -182,11 +182,11 @@ async fn handle_received_message(
         tokio::fs::create_dir_all(output_dir).await?;
         tokio::fs::write(&path, &msg.data).await?;
 
-        println!("  Saved to: {:?}", path);
+        println!("  Saved to: {}", path.display());
     } else {
         // Display as text if possible
         if let Ok(text) = std::str::from_utf8(&msg.data) {
-            println!("  Content:\n{}", text);
+            println!("  Content:\n{text}");
         } else {
             println!("  Content: <binary data, use --output-dir to save>");
         }

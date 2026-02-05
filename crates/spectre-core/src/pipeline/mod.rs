@@ -108,7 +108,7 @@ impl Pipeline {
     }
 
     /// Set whether to continue on stage errors
-    pub fn set_continue_on_error(&mut self, continue_on_error: bool) {
+    pub const fn set_continue_on_error(&mut self, continue_on_error: bool) {
         self.continue_on_error = continue_on_error;
     }
 
@@ -217,7 +217,7 @@ impl Pipeline {
     }
 
     /// Get the pipeline metrics
-    pub fn metrics(&self) -> &PipelineMetrics {
+    pub const fn metrics(&self) -> &PipelineMetrics {
         &self.metrics
     }
 }

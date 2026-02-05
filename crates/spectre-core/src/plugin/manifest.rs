@@ -92,7 +92,7 @@ impl PermissionConfig {
     }
 
     /// Check if a specific permission is granted
-    pub fn has_permission(&self, perm: PluginPermission) -> bool {
+    pub const fn has_permission(&self, perm: PluginPermission) -> bool {
         match perm {
             PluginPermission::Network => self.network,
             PluginPermission::FilesystemRead => self.filesystem,
@@ -116,15 +116,15 @@ pub struct ResourceLimits {
     pub max_instructions: u64,
 }
 
-fn default_memory_limit() -> usize {
+const fn default_memory_limit() -> usize {
     16 * 1024 * 1024 // 16 MB
 }
 
-fn default_timeout() -> u64 {
+const fn default_timeout() -> u64 {
     30
 }
 
-fn default_instruction_limit() -> u64 {
+const fn default_instruction_limit() -> u64 {
     10_000_000
 }
 
@@ -148,7 +148,7 @@ impl PluginManifest {
             )))
         })?;
 
-        let manifest: PluginManifest = toml::from_str(&content).map_err(|e| {
+        let manifest: Self = toml::from_str(&content).map_err(|e| {
             crate::SpectreError::Plugin(crate::error::PluginError::InvalidManifest(format!(
                 "Failed to parse manifest: {}",
                 e
@@ -185,7 +185,10 @@ impl PluginManifest {
         }
 
         // Validate main script ends in .lua
-        if !self.main.ends_with(".lua") {
+        if !std::path::Path::new(&self.main)
+            .extension()
+            .is_some_and(|ext| ext.eq_ignore_ascii_case("lua"))
+        {
             return Err(crate::SpectreError::Plugin(
                 crate::error::PluginError::InvalidManifest(
                     "Main script must be a .lua file".to_string(),

@@ -91,6 +91,7 @@ impl WorkflowExecutor {
     }
 
     /// Execute the workflow (simulated — real execution would use actual scan/report engines)
+    #[allow(clippy::too_many_lines)]
     pub async fn execute(&mut self) -> crate::Result<()> {
         self.status = WorkflowStatus::Running;
         self.started_at = Some(Utc::now());
@@ -108,7 +109,7 @@ impl WorkflowExecutor {
                 let actual = self
                     .variables
                     .get(&condition.variable)
-                    .map(|s| s.to_string());
+                    .map(ToString::to_string);
                 if !condition.evaluate(actual.as_deref()) {
                     debug!(step = %step.name, "Step skipped (condition not met)");
                     self.step_results.push(StepResult {
@@ -256,6 +257,11 @@ impl WorkflowExecutor {
     }
 
     /// Get progress as fraction (0.0 to 1.0)
+    #[allow(
+        clippy::cast_precision_loss,
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss
+    )]
     pub fn progress(&self) -> f64 {
         let total = self.workflow.steps.len();
         if total == 0 {

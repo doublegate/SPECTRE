@@ -86,7 +86,7 @@ pub enum ScanSortCriterion {
 
 impl ScanState {
     /// Create a new idle scan state.
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self {
             active: false,
             target: String::new(),
@@ -130,7 +130,7 @@ impl ScanState {
     }
 
     /// Mark the scan as complete.
-    pub fn complete(&mut self) {
+    pub const fn complete(&mut self) {
         self.active = false;
         self.progress = 1.0;
         self.eta = None;
@@ -294,7 +294,7 @@ impl ScanState {
     }
 
     /// Move selection up in the results list.
-    pub fn select_prev(&mut self) {
+    pub const fn select_prev(&mut self) {
         if self.selected_index > 0 {
             self.selected_index -= 1;
         }
@@ -309,7 +309,7 @@ impl ScanState {
     }
 
     /// Jump to the top of the results list.
-    pub fn select_first(&mut self) {
+    pub const fn select_first(&mut self) {
         self.selected_index = 0;
         self.scroll_offset = 0;
     }
@@ -321,7 +321,7 @@ impl ScanState {
     }
 
     /// Set the sort criterion.
-    pub fn set_sort(&mut self, criterion: ScanSortCriterion) {
+    pub const fn set_sort(&mut self, criterion: ScanSortCriterion) {
         self.sort_by = criterion;
     }
 
@@ -338,6 +338,7 @@ impl Default for ScanState {
 }
 
 #[cfg(test)]
+#[allow(clippy::float_cmp)]
 mod tests {
     use super::*;
     use chrono::Utc;

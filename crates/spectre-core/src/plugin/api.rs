@@ -67,7 +67,7 @@ pub fn register_spectre_api(lua: &Lua, _permissions: &PermissionConfig) -> crate
 }
 
 /// Convert a Lua value to serde_json::Value
-#[allow(clippy::only_used_in_recursion)]
+#[allow(clippy::only_used_in_recursion, clippy::match_same_arms)]
 fn lua_value_to_json(lua: &Lua, value: &mlua::Value) -> mlua::Result<serde_json::Value> {
     match value {
         mlua::Value::Nil => Ok(serde_json::Value::Null),

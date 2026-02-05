@@ -56,7 +56,7 @@ pub fn parse_targets(specs: &[String]) -> crate::Result<Vec<Target>> {
                 targets.push(Target::Ip(network.ip()));
             } else {
                 // It's a network range, expand it
-                for ip in network.iter() {
+                for ip in &network {
                     targets.push(Target::Ip(ip));
                 }
             }
@@ -163,6 +163,7 @@ fn is_valid_hostname(s: &str) -> bool {
 /// # Returns
 ///
 /// Vector of port numbers to scan.
+#[allow(clippy::similar_names)]
 pub fn parse_ports(spec: Option<&str>) -> crate::Result<Vec<u16>> {
     let spec = spec.unwrap_or("common");
 
@@ -324,5 +325,56 @@ mod tests {
         assert!(!is_valid_hostname(""));
         assert!(!is_valid_hostname("-example.com"));
         assert!(!is_valid_hostname("example..com"));
+    }
+
+    // Property-based tests using proptest
+    mod proptest_tests {
+        use super::*;
+        use proptest::prelude::*;
+
+        proptest! {
+            #[test]
+            fn valid_ipv4_always_parses(a in 0u8..=255, b in 0u8..=255, c in 0u8..=255, d in 0u8..=255) {
+                let ip_str = format!("{a}.{b}.{c}.{d}");
+                let targets = parse_targets(&[ip_str]).unwrap();
+                prop_assert_eq!(targets.len(), 1);
+            }
+
+            #[test]
+            fn port_ranges_are_within_bounds(start in 1u16..=65534, delta in 0u16..=100) {
+                let end = start.saturating_add(delta);
+                let spec = format!("{start}-{end}");
+                let ports = parse_ports(Some(&spec)).unwrap();
+                for port in &ports {
+                    prop_assert!(*port >= 1);
+                    prop_assert!(*port >= start && *port <= end);
+                }
+            }
+
+            #[test]
+            fn single_port_parses_correctly(port in 1u16..=65535) {
+                let spec = port.to_string();
+                let ports = parse_ports(Some(&spec)).unwrap();
+                prop_assert_eq!(ports, vec![port]);
+            }
+
+            #[test]
+            fn port_list_deduplicates(p1 in 1u16..=65535, p2 in 1u16..=65535) {
+                let spec = format!("{p1},{p2}");
+                let ports = parse_ports(Some(&spec)).unwrap();
+                // Check no duplicates
+                let mut sorted = ports.clone();
+                sorted.sort_unstable();
+                sorted.dedup();
+                prop_assert_eq!(ports.len(), sorted.len());
+            }
+
+            #[test]
+            fn valid_hostname_parses(label in "[a-z][a-z0-9]{0,10}") {
+                let hostname = format!("{label}.example.com");
+                let targets = parse_targets(&[hostname]).unwrap();
+                prop_assert_eq!(targets.len(), 1);
+            }
+        }
     }
 }

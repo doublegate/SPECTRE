@@ -163,7 +163,7 @@ pub struct ScanArgs {
 
 impl ScanArgs {
     /// Determine the effective scan type from flags
-    pub fn effective_scan_type(&self) -> ScanType {
+    pub const fn effective_scan_type(&self) -> ScanType {
         if self.syn_scan {
             ScanType::Syn
         } else if self.connect_scan {
@@ -270,7 +270,7 @@ pub async fn execute(args: ScanArgs, config_path: Option<PathBuf>) -> Result<()>
 }
 
 /// Map CLI scan type to core scan type
-fn map_scan_type(scan_type: ScanType) -> spectre_core::scan::ScanType {
+const fn map_scan_type(scan_type: ScanType) -> spectre_core::scan::ScanType {
     match scan_type {
         ScanType::Syn => spectre_core::scan::ScanType::Syn,
         ScanType::Connect => spectre_core::scan::ScanType::Connect,
@@ -284,7 +284,7 @@ fn map_scan_type(scan_type: ScanType) -> spectre_core::scan::ScanType {
 }
 
 /// Map CLI timing template to core timing
-fn map_timing(timing: TimingTemplate) -> spectre_core::scan::TimingTemplate {
+const fn map_timing(timing: TimingTemplate) -> spectre_core::scan::TimingTemplate {
     match timing {
         TimingTemplate::Paranoid => spectre_core::scan::TimingTemplate::Paranoid,
         TimingTemplate::Sneaky => spectre_core::scan::TimingTemplate::Sneaky,

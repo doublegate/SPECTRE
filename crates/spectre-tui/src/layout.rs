@@ -20,62 +20,57 @@ pub enum PanelId {
 
 impl PanelId {
     /// Get all panel IDs in order.
-    pub fn all() -> &'static [PanelId] {
-        &[
-            PanelId::Recon,
-            PanelId::Analysis,
-            PanelId::Comms,
-            PanelId::Campaign,
-        ]
+    pub const fn all() -> &'static [Self] {
+        &[Self::Recon, Self::Analysis, Self::Comms, Self::Campaign]
     }
 
     /// Get the next panel in cycle order.
-    pub fn next(self) -> PanelId {
+    pub const fn next(self) -> Self {
         match self {
-            PanelId::Recon => PanelId::Analysis,
-            PanelId::Analysis => PanelId::Comms,
-            PanelId::Comms => PanelId::Campaign,
-            PanelId::Campaign => PanelId::Recon,
+            Self::Recon => Self::Analysis,
+            Self::Analysis => Self::Comms,
+            Self::Comms => Self::Campaign,
+            Self::Campaign => Self::Recon,
         }
     }
 
     /// Get the previous panel in cycle order.
-    pub fn prev(self) -> PanelId {
+    pub const fn prev(self) -> Self {
         match self {
-            PanelId::Recon => PanelId::Campaign,
-            PanelId::Analysis => PanelId::Recon,
-            PanelId::Comms => PanelId::Analysis,
-            PanelId::Campaign => PanelId::Comms,
+            Self::Recon => Self::Campaign,
+            Self::Analysis => Self::Recon,
+            Self::Comms => Self::Analysis,
+            Self::Campaign => Self::Comms,
         }
     }
 
     /// Get the display title for this panel.
-    pub fn title(self) -> &'static str {
+    pub const fn title(self) -> &'static str {
         match self {
-            PanelId::Recon => "Recon [ProRT-IP]",
-            PanelId::Analysis => "Analysis [CyberChef]",
-            PanelId::Comms => "Comms [WRAITH]",
-            PanelId::Campaign => "Campaign",
+            Self::Recon => "Recon [ProRT-IP]",
+            Self::Analysis => "Analysis [CyberChef]",
+            Self::Comms => "Comms [WRAITH]",
+            Self::Campaign => "Campaign",
         }
     }
 
     /// Get a numeric index (0-based) for this panel.
-    pub fn index(self) -> usize {
+    pub const fn index(self) -> usize {
         match self {
-            PanelId::Recon => 0,
-            PanelId::Analysis => 1,
-            PanelId::Comms => 2,
-            PanelId::Campaign => 3,
+            Self::Recon => 0,
+            Self::Analysis => 1,
+            Self::Comms => 2,
+            Self::Campaign => 3,
         }
     }
 
     /// Create a panel ID from a numeric index.
-    pub fn from_index(index: usize) -> Option<PanelId> {
+    pub const fn from_index(index: usize) -> Option<Self> {
         match index {
-            0 => Some(PanelId::Recon),
-            1 => Some(PanelId::Analysis),
-            2 => Some(PanelId::Comms),
-            3 => Some(PanelId::Campaign),
+            0 => Some(Self::Recon),
+            1 => Some(Self::Analysis),
+            2 => Some(Self::Comms),
+            3 => Some(Self::Campaign),
             _ => None,
         }
     }
@@ -102,18 +97,19 @@ pub enum LayoutMode {
 
 impl LayoutMode {
     /// Parse a layout mode from a string.
-    pub fn from_str_name(name: &str) -> Option<LayoutMode> {
+    #[allow(clippy::match_same_arms)] // "focus" arm documented separately for clarity
+    pub fn from_str_name(name: &str) -> Option<Self> {
         match name.to_lowercase().as_str() {
-            "grid" | "g" => Some(LayoutMode::Grid),
-            "wide" | "w" | "horizontal" => Some(LayoutMode::Wide),
-            "tall" | "t" | "vertical" => Some(LayoutMode::Tall),
+            "grid" | "g" => Some(Self::Grid),
+            "wide" | "w" | "horizontal" => Some(Self::Wide),
+            "tall" | "t" | "vertical" => Some(Self::Tall),
             "focus" | "f" => None, // Needs a panel ID
             _ => None,
         }
     }
 
     /// Get available layout mode names.
-    pub fn available_modes() -> &'static [&'static str] {
+    pub const fn available_modes() -> &'static [&'static str] {
         &["grid", "wide", "tall", "focus"]
     }
 }
@@ -129,7 +125,7 @@ pub struct PanelManager {
 
 impl PanelManager {
     /// Create a new panel manager with default grid layout.
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self {
             mode: LayoutMode::Grid,
             focused: PanelId::Recon,
@@ -137,27 +133,27 @@ impl PanelManager {
     }
 
     /// Cycle focus to the next panel.
-    pub fn focus_next(&mut self) {
+    pub const fn focus_next(&mut self) {
         self.focused = self.focused.next();
     }
 
     /// Cycle focus to the previous panel.
-    pub fn focus_prev(&mut self) {
+    pub const fn focus_prev(&mut self) {
         self.focused = self.focused.prev();
     }
 
     /// Set focus to a specific panel.
-    pub fn focus_panel(&mut self, panel: PanelId) {
+    pub const fn focus_panel(&mut self, panel: PanelId) {
         self.focused = panel;
     }
 
     /// Set the layout mode.
-    pub fn set_mode(&mut self, mode: LayoutMode) {
+    pub const fn set_mode(&mut self, mode: LayoutMode) {
         self.mode = mode;
     }
 
     /// Toggle between grid layout and focus mode for the current panel.
-    pub fn toggle_focus(&mut self) {
+    pub const fn toggle_focus(&mut self) {
         self.mode = match self.mode {
             LayoutMode::Focus(_) => LayoutMode::Grid,
             _ => LayoutMode::Focus(self.focused),

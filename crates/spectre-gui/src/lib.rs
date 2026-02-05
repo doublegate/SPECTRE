@@ -6,6 +6,6 @@
 #![warn(missing_docs)]
 
 /// Placeholder for GUI module
-pub fn placeholder() {
+pub const fn placeholder() {
     // GUI implementation will be added in Phase 5
 }

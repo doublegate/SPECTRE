@@ -61,7 +61,7 @@ impl IncrementalExporter {
     }
 
     /// Create from existing state
-    pub fn from_state(state: ExportState) -> Self {
+    pub const fn from_state(state: ExportState) -> Self {
         Self { state }
     }
 
@@ -86,7 +86,7 @@ impl IncrementalExporter {
     }
 
     /// Get the current state
-    pub fn state(&self) -> &ExportState {
+    pub const fn state(&self) -> &ExportState {
         &self.state
     }
 

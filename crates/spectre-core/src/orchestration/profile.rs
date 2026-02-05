@@ -53,7 +53,7 @@ impl ScanProfile {
     }
 
     /// Set timing template
-    pub fn with_timing(mut self, timing: TimingTemplate) -> Self {
+    pub const fn with_timing(mut self, timing: TimingTemplate) -> Self {
         self.timing = timing;
         self
     }
@@ -65,19 +65,19 @@ impl ScanProfile {
     }
 
     /// Enable service detection
-    pub fn with_service_detection(mut self) -> Self {
+    pub const fn with_service_detection(mut self) -> Self {
         self.service_detection = true;
         self
     }
 
     /// Enable OS detection
-    pub fn with_os_detection(mut self) -> Self {
+    pub const fn with_os_detection(mut self) -> Self {
         self.os_detection = true;
         self
     }
 
     /// Set rate limit
-    pub fn with_rate_limit(mut self, rate: u64) -> Self {
+    pub const fn with_rate_limit(mut self, rate: u64) -> Self {
         self.rate_limit = Some(rate);
         self
     }

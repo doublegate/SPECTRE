@@ -115,7 +115,7 @@ impl EnhancedTarget {
     }
 
     /// Set the priority for this target
-    pub fn with_priority(mut self, priority: i32) -> Self {
+    pub const fn with_priority(mut self, priority: i32) -> Self {
         self.priority = priority;
         self
     }
@@ -146,7 +146,7 @@ impl EnhancedTarget {
     }
 
     /// Get the IP address, if this is an IP target
-    pub fn ip(&self) -> Option<IpAddr> {
+    pub const fn ip(&self) -> Option<IpAddr> {
         match &self.address {
             TargetAddress::Ip(ip) => Some(*ip),
             TargetAddress::Hostname(_) => None,

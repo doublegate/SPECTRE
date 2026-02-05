@@ -11,12 +11,15 @@ fn make_entry(name: &str, version: &str, deps: Vec<&str>) -> RegistryEntry {
     RegistryEntry {
         name: name.to_string(),
         version: version.to_string(),
-        description: format!("{} plugin", name),
+        description: format!("{name} plugin"),
         author: "Test".to_string(),
-        path: PathBuf::from(format!("/plugins/{}", name)),
+        path: PathBuf::from(format!("/plugins/{name}")),
         enabled: true,
         tags: vec!["test".to_string()],
-        dependencies: deps.into_iter().map(|s| s.to_string()).collect(),
+        dependencies: deps
+            .into_iter()
+            .map(std::string::ToString::to_string)
+            .collect(),
     }
 }
 
@@ -133,7 +136,7 @@ fn test_plugin_template_generation() {
     let dir = tempfile::tempdir().unwrap();
 
     for template_type in PluginTemplateType::all() {
-        let name = format!("test-{}", template_type);
+        let name = format!("test-{template_type}");
         let path =
             PluginTemplateGenerator::generate(&name, template_type, "Test Author", dir.path())
                 .unwrap();

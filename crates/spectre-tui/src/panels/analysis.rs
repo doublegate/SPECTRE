@@ -83,14 +83,14 @@ impl AnalysisPanel {
     }
 
     /// Scroll down in the output preview.
-    pub fn scroll_down(&mut self) {
+    pub const fn scroll_down(&mut self) {
         if self.scroll_offset < self.output_preview.len().saturating_sub(1) {
             self.scroll_offset += 1;
         }
     }
 
     /// Scroll up in the output preview.
-    pub fn scroll_up(&mut self) {
+    pub const fn scroll_up(&mut self) {
         self.scroll_offset = self.scroll_offset.saturating_sub(1);
     }
 }

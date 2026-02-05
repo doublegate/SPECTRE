@@ -8,6 +8,10 @@
 //! - **WRAITH-Protocol**: Secure encrypted communications
 
 #![cfg_attr(test, allow(clippy::disallowed_methods))]
+#![allow(clippy::unused_async)]
+#![allow(clippy::struct_excessive_bools)]
+#![allow(clippy::option_if_let_else)]
+#![allow(clippy::ref_option)] // CLI helper functions use &Option<T> from clap args // CLI args structs need multiple bool flags // CLI handlers are async for dispatch trait uniformity
 
 use anyhow::Result;
 use clap::Parser;

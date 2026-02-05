@@ -13,7 +13,7 @@ A unified offensive security toolkit combining wire-speed secure communications,
   <a href="https://github.com/doublegate/SPECTRE"><img src="https://img.shields.io/github/stars/doublegate/SPECTRE?style=flat-square" alt="GitHub Stars"></a>
   <a href="https://github.com/doublegate/SPECTRE/fork"><img src="https://img.shields.io/github/forks/doublegate/SPECTRE?style=flat-square" alt="GitHub Forks"></a>
   <a href="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml"><img src="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
-  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.4.0-blue.svg" alt="Version"></a>
+  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.4.1-blue.svg" alt="Version"></a>
   <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.88%2B-orange.svg" alt="Rust"></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-22%2B-green.svg" alt="Node.js"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT%2FGPLv3%2FApache--2.0-green.svg" alt="License"></a>
@@ -48,7 +48,7 @@ Modern offensive security requires seamless tool integration. SPECTRE eliminates
 
 | Metric                 | Value                                                                   |
 | ---------------------- | ----------------------------------------------------------------------- |
-| **Combined Tests**     | 6,933 (SPECTRE: 856 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 563) |
+| **Combined Tests**     | 6,941 (SPECTRE: 864 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 563) |
 | **SPECTRE Codebase**   | ~31,000 lines Rust (118 source files across 5 crates)                     |
 | **Component Code**     | ~180,000 (Rust) + ~40,000 (TypeScript/JavaScript)                         |
 | **Languages**          | Rust 2024, TypeScript, JavaScript                                         |
@@ -862,7 +862,7 @@ We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed gu
 
 ### Development Standards
 
-- Rust code: `cargo fmt`, `cargo clippy -- -D warnings`
+- Rust code: `cargo fmt`, `cargo clippy -- -D warnings`, pedantic/nursery clean
 - TypeScript/JavaScript: ESLint, Prettier
 - Commit messages: [Conventional Commits](https://www.conventionalcommits.org/)
 - All PRs require tests and documentation
@@ -924,6 +924,6 @@ SPECTRE builds on the shoulders of giants:
 
 **SPECTRE** — _Unified Offensive Security_
 
-**Version:** 0.4.0 | **License:** Multi-license | **Language:** Rust + TypeScript | **Status:** Active Development
+**Version:** 0.4.1 | **License:** Multi-license | **Language:** Rust + TypeScript | **Status:** Active Development
 
 **Last Updated:** 2026-02-04

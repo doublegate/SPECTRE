@@ -117,7 +117,7 @@ impl Campaign {
     }
 
     /// Check if the campaign is active (not planning and not complete)
-    pub fn is_active(&self) -> bool {
+    pub const fn is_active(&self) -> bool {
         !matches!(
             self.phase,
             CampaignPhase::Planning | CampaignPhase::Complete | CampaignPhase::Archived
@@ -125,7 +125,7 @@ impl Campaign {
     }
 
     /// Check if the campaign is complete
-    pub fn is_complete(&self) -> bool {
+    pub const fn is_complete(&self) -> bool {
         matches!(
             self.phase,
             CampaignPhase::Complete | CampaignPhase::Archived

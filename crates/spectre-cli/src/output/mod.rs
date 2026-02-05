@@ -37,7 +37,7 @@ impl OutputWriter {
         let output: Box<dyn Write> = if let Some(path) = file_path {
             Box::new(
                 std::fs::File::create(path)
-                    .context(format!("Failed to create output file: {:?}", path))?,
+                    .context(format!("Failed to create output file: {}", path.display()))?,
             )
         } else {
             Box::new(std::io::stdout())
@@ -102,7 +102,7 @@ impl OutputWriter {
             }
         }
 
-        writeln!(self.output, "{}", table)?;
+        writeln!(self.output, "{table}")?;
         Ok(())
     }
 
@@ -128,14 +128,14 @@ impl OutputWriter {
             ]);
         }
 
-        writeln!(self.output, "{}", table)?;
+        writeln!(self.output, "{table}")?;
         Ok(())
     }
 
     // JSON output methods
     fn write_scan_json(&mut self, results: &[spectre_core::scan::ScanResult]) -> Result<()> {
         let json = serde_json::to_string_pretty(results)?;
-        writeln!(self.output, "{}", json)?;
+        writeln!(self.output, "{json}")?;
         Ok(())
     }
 
@@ -144,7 +144,7 @@ impl OutputWriter {
         operations: &[spectre_core::chef::OperationInfo],
     ) -> Result<()> {
         let json = serde_json::to_string_pretty(operations)?;
-        writeln!(self.output, "{}", json)?;
+        writeln!(self.output, "{json}")?;
         Ok(())
     }
 
@@ -192,7 +192,7 @@ impl OutputWriter {
     // YAML output methods
     fn write_scan_yaml(&mut self, results: &[spectre_core::scan::ScanResult]) -> Result<()> {
         let yaml = serde_yaml::to_string(results)?;
-        writeln!(self.output, "{}", yaml)?;
+        writeln!(self.output, "{yaml}")?;
         Ok(())
     }
 
@@ -201,7 +201,7 @@ impl OutputWriter {
         operations: &[spectre_core::chef::OperationInfo],
     ) -> Result<()> {
         let yaml = serde_yaml::to_string(operations)?;
-        writeln!(self.output, "{}", yaml)?;
+        writeln!(self.output, "{yaml}")?;
         Ok(())
     }
 }

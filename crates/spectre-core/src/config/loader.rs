@@ -110,10 +110,10 @@ fn merge_config(base: Config, overlay: Config) -> Config {
             temp_dir: overlay.general.temp_dir.or(base.general.temp_dir),
         },
         scan: super::ScanConfig {
-            default_ports: if overlay.scan.default_ports != "common" {
-                overlay.scan.default_ports
-            } else {
+            default_ports: if overlay.scan.default_ports == "common" {
                 base.scan.default_ports
+            } else {
+                overlay.scan.default_ports
             },
             default_timing: overlay.scan.default_timing,
             max_rate: if overlay.scan.max_rate != 0 {
@@ -128,10 +128,10 @@ fn merge_config(base: Config, overlay: Config) -> Config {
             script_dir: overlay.scan.script_dir.or(base.scan.script_dir),
         },
         chef: super::ChefConfig {
-            mcp_endpoint: if overlay.chef.mcp_endpoint != "http://localhost:3001" {
-                overlay.chef.mcp_endpoint
-            } else {
+            mcp_endpoint: if overlay.chef.mcp_endpoint == "http://localhost:3001" {
                 base.chef.mcp_endpoint
+            } else {
+                overlay.chef.mcp_endpoint
             },
             docker_image: overlay.chef.docker_image,
             container_name: overlay.chef.container_name,
@@ -148,10 +148,10 @@ fn merge_config(base: Config, overlay: Config) -> Config {
             timeout: overlay.comms.timeout,
         },
         output: super::OutputConfig {
-            format: if overlay.output.format != "table" {
-                overlay.output.format
-            } else {
+            format: if overlay.output.format == "table" {
                 base.output.format
+            } else {
+                overlay.output.format
             },
             output_dir: overlay.output.output_dir.or(base.output.output_dir),
             timestamps: overlay.output.timestamps,

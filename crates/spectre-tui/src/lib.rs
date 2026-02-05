@@ -35,6 +35,11 @@
 #![allow(clippy::doc_markdown)]
 #![allow(clippy::uninlined_format_args)]
 #![allow(clippy::unused_async)]
+#![allow(clippy::unused_self)]
+#![allow(clippy::cast_possible_truncation)] // TUI rendering with u16 areas
+#![allow(clippy::cast_precision_loss)] // Progress bar calculations
+#![allow(clippy::cast_sign_loss)] // Checked TUI area conversions
+#![allow(clippy::option_if_let_else)] // if-let-else is often more readable than map_or_else
 
 pub mod app;
 pub mod command;

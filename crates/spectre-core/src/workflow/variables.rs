@@ -25,7 +25,7 @@ impl VariableStore {
 
     /// Get a variable value
     pub fn get(&self, key: &str) -> Option<&str> {
-        self.variables.get(key).map(|s| s.as_str())
+        self.variables.get(key).map(String::as_str)
     }
 
     /// Remove a variable
@@ -64,7 +64,7 @@ impl VariableStore {
     /// Merge another variable store into this one
     ///
     /// Values from `other` override existing values.
-    pub fn merge(&mut self, other: &VariableStore) {
+    pub fn merge(&mut self, other: &Self) {
         for (key, value) in &other.variables {
             self.variables.insert(key.clone(), value.clone());
         }
@@ -72,11 +72,11 @@ impl VariableStore {
 
     /// Get all variable names
     pub fn keys(&self) -> Vec<&str> {
-        self.variables.keys().map(|s| s.as_str()).collect()
+        self.variables.keys().map(String::as_str).collect()
     }
 
     /// Create from a HashMap
-    pub fn from_map(map: HashMap<String, String>) -> Self {
+    pub const fn from_map(map: HashMap<String, String>) -> Self {
         Self { variables: map }
     }
 }
@@ -177,7 +177,7 @@ mod tests {
         store.set("a", "1");
         store.set("b", "2");
         let mut keys = store.keys();
-        keys.sort();
+        keys.sort_unstable();
         assert_eq!(keys, vec!["a", "b"]);
     }
 

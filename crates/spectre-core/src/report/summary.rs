@@ -37,10 +37,15 @@ pub struct ExecutiveSummary {
 
 impl ExecutiveSummary {
     /// Generate executive summary from hosts and findings
+    #[allow(
+        clippy::cast_precision_loss,
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss
+    )]
     pub fn from_hosts_and_findings(hosts: &[Host], findings: &[Finding]) -> Self {
         let total_hosts = hosts.len();
         let hosts_up = hosts.iter().filter(|h| h.open_services() > 0).count();
-        let total_open_ports: usize = hosts.iter().map(|h| h.open_services()).sum();
+        let total_open_ports: usize = hosts.iter().map(Host::open_services).sum();
 
         let mut severity_breakdown = HashMap::new();
         let mut host_finding_count: HashMap<String, usize> = HashMap::new();
@@ -114,7 +119,7 @@ impl ExecutiveSummary {
     }
 
     /// Get a text-based risk rating
-    pub fn risk_rating(&self) -> &str {
+    pub const fn risk_rating(&self) -> &str {
         match self.risk_score {
             0..=20 => "Low",
             21..=40 => "Moderate",

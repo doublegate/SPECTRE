@@ -54,7 +54,7 @@ impl ScheduleField {
 
 impl ScheduleExpression {
     /// Create a schedule that runs every hour
-    pub fn hourly() -> Self {
+    pub const fn hourly() -> Self {
         Self {
             minute: ScheduleField::Value(0),
             hour: ScheduleField::Any,
@@ -65,7 +65,7 @@ impl ScheduleExpression {
     }
 
     /// Create a schedule that runs daily at a specific hour
-    pub fn daily(hour: u32) -> Self {
+    pub const fn daily(hour: u32) -> Self {
         Self {
             minute: ScheduleField::Value(0),
             hour: ScheduleField::Value(hour),
@@ -76,7 +76,7 @@ impl ScheduleExpression {
     }
 
     /// Create a schedule that runs weekly on a specific day and hour
-    pub fn weekly(day_of_week: u32, hour: u32) -> Self {
+    pub const fn weekly(day_of_week: u32, hour: u32) -> Self {
         Self {
             minute: ScheduleField::Value(0),
             hour: ScheduleField::Value(hour),
@@ -155,7 +155,7 @@ impl ScheduleExpression {
 
         // Check for list (N,M,...)
         if field.contains(',') {
-            let values: Result<Vec<u32>, _> = field.split(',').map(|v| v.parse()).collect();
+            let values: Result<Vec<u32>, _> = field.split(',').map(str::parse).collect();
             let values = values.map_err(|_| {
                 crate::SpectreError::Orchestration(
                     crate::error::OrchestrationError::InvalidSchedule(format!(
@@ -244,7 +244,7 @@ pub struct ScanScheduler {
 
 impl ScanScheduler {
     /// Create a new scan scheduler
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self {
             entries: Vec::new(),
         }
@@ -274,7 +274,7 @@ impl ScanScheduler {
     }
 
     /// Get entry count
-    pub fn count(&self) -> usize {
+    pub const fn count(&self) -> usize {
         self.entries.len()
     }
 

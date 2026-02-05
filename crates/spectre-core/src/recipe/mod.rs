@@ -108,7 +108,7 @@ impl Recipe {
     }
 
     /// Get the number of operations
-    pub fn operation_count(&self) -> usize {
+    pub const fn operation_count(&self) -> usize {
         self.operations.len()
     }
 

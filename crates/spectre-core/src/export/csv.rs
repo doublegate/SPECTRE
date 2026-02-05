@@ -1,5 +1,7 @@
 //! CSV export for scan results, findings, and host summaries
 
+use std::fmt::Write;
+
 use crate::results::{Finding, Host};
 use crate::scan::ScanResult;
 
@@ -16,7 +18,8 @@ impl CsvExporter {
                 let service = port.service.as_deref().unwrap_or("");
                 let version = port.version.as_deref().unwrap_or("");
 
-                csv.push_str(&format!(
+                let _ = writeln!(
+                    csv,
                     "{},{},{},{:?},{},{}\n",
                     Self::escape_csv(&result.host),
                     port.port,
@@ -24,7 +27,7 @@ impl CsvExporter {
                     port.state,
                     Self::escape_csv(service),
                     Self::escape_csv(version),
-                ));
+                );
             }
         }
 
@@ -40,7 +43,8 @@ impl CsvExporter {
             let service = finding.service.as_deref().unwrap_or("");
             let remediation = finding.remediation.as_deref().unwrap_or("");
 
-            csv.push_str(&format!(
+            let _ = writeln!(
+                csv,
                 "{},{},{},{},{},{},{}\n",
                 finding.severity,
                 Self::escape_csv(&finding.title),
@@ -49,7 +53,7 @@ impl CsvExporter {
                 Self::escape_csv(service),
                 Self::escape_csv(&finding.description),
                 Self::escape_csv(remediation),
-            ));
+            );
         }
 
         csv
@@ -64,7 +68,8 @@ impl CsvExporter {
             let os = host.os.as_deref().unwrap_or("");
             let os_ver = host.os_version.as_deref().unwrap_or("");
 
-            csv.push_str(&format!(
+            let _ = writeln!(
+                csv,
                 "{},{},{},{},{},{}\n",
                 Self::escape_csv(&host.ip),
                 Self::escape_csv(hostname),
@@ -72,7 +77,7 @@ impl CsvExporter {
                 Self::escape_csv(os_ver),
                 host.open_services(),
                 host.scan_time_ms,
-            ));
+            );
         }
 
         csv

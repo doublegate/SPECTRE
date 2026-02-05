@@ -69,7 +69,7 @@ pub struct TargetQueue {
 
 impl TargetQueue {
     /// Create a new empty target queue
-    pub fn new() -> Self {
+    pub const fn new() -> Self {
         Self {
             heap: BinaryHeap::new(),
             counter: 0,
@@ -121,41 +121,46 @@ impl TargetQueue {
     }
 
     /// Record that a target was completed
-    pub fn record_complete(&mut self) {
+    pub const fn record_complete(&mut self) {
         self.total_completed += 1;
     }
 
     /// Record that a target was skipped
-    pub fn record_skipped(&mut self) {
+    pub const fn record_skipped(&mut self) {
         self.total_skipped += 1;
     }
 
     /// Record that a target errored
-    pub fn record_error(&mut self) {
+    pub const fn record_error(&mut self) {
         self.total_errors += 1;
     }
 
     /// Get total targets added
-    pub fn total_added(&self) -> usize {
+    pub const fn total_added(&self) -> usize {
         self.total_added
     }
 
     /// Get total targets completed
-    pub fn total_completed(&self) -> usize {
+    pub const fn total_completed(&self) -> usize {
         self.total_completed
     }
 
     /// Get total targets skipped
-    pub fn total_skipped(&self) -> usize {
+    pub const fn total_skipped(&self) -> usize {
         self.total_skipped
     }
 
     /// Get total errors
-    pub fn total_errors(&self) -> usize {
+    pub const fn total_errors(&self) -> usize {
         self.total_errors
     }
 
     /// Get progress as a fraction (0.0 - 1.0)
+    #[allow(
+        clippy::cast_precision_loss,
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss
+    )]
     pub fn progress(&self) -> f64 {
         if self.total_added == 0 {
             return 0.0;
@@ -181,7 +186,7 @@ pub struct TargetIterator {
 
 impl TargetIterator {
     /// Create a new target iterator from a queue
-    pub fn new(queue: TargetQueue) -> Self {
+    pub const fn new(queue: TargetQueue) -> Self {
         Self { queue }
     }
 
@@ -205,6 +210,7 @@ impl Iterator for TargetIterator {
 }
 
 #[cfg(test)]
+#[allow(clippy::float_cmp)]
 mod tests {
     use super::*;
 
@@ -320,8 +326,7 @@ mod tests {
         let iter = TargetIterator::new(queue);
         assert_eq!(iter.remaining(), 3);
 
-        let collected: Vec<_> = iter.collect();
-        assert_eq!(collected.len(), 3);
+        assert_eq!(iter.count(), 3);
     }
 
     #[test]

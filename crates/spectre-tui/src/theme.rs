@@ -142,7 +142,6 @@ impl Theme {
     /// Get a theme by name. Returns the dark theme for unrecognized names.
     pub fn by_name(name: &str) -> Self {
         match name.to_lowercase().as_str() {
-            "dark" => Self::dark(),
             "light" => Self::light(),
             "tactical" => Self::tactical(),
             "matrix" => Self::matrix(),

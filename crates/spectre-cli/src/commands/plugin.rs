@@ -90,7 +90,7 @@ pub async fn execute(args: PluginArgs, config_path: Option<PathBuf>) -> Result<(
             } else {
                 println!("  Permissions:");
                 for perm in &perms {
-                    println!("    - {}", perm);
+                    println!("    - {perm}");
                 }
             }
 
@@ -139,7 +139,7 @@ pub async fn execute(args: PluginArgs, config_path: Option<PathBuf>) -> Result<(
             } else {
                 println!("{} Plugin failed", "ERROR".red().bold());
                 if let Some(error) = result.error {
-                    println!("  {}", error);
+                    println!("  {error}");
                 }
             }
         },
@@ -156,9 +156,10 @@ fn get_plugin_dir(config_path: &Option<PathBuf>) -> PathBuf {
         }
     }
 
-    directories::ProjectDirs::from("com", "spectre", "spectre")
-        .map(|dirs: directories::ProjectDirs| dirs.data_dir().join("plugins"))
-        .unwrap_or_else(|| PathBuf::from("plugins"))
+    directories::ProjectDirs::from("com", "spectre", "spectre").map_or_else(
+        || PathBuf::from("plugins"),
+        |dirs: directories::ProjectDirs| dirs.data_dir().join("plugins"),
+    )
 }
 
 #[cfg(test)]

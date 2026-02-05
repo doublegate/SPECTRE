@@ -122,12 +122,12 @@ impl Identity {
     }
 
     /// Get the key type
-    pub fn key_type(&self) -> &KeyType {
+    pub const fn key_type(&self) -> &KeyType {
         &self.key_type
     }
 
     /// Get the creation timestamp
-    pub fn created_at(&self) -> &DateTime<Utc> {
+    pub const fn created_at(&self) -> &DateTime<Utc> {
         &self.created_at
     }
 
@@ -214,7 +214,7 @@ impl Identity {
     /// Import an identity from data
     pub fn import(data: &[u8]) -> crate::Result<Self> {
         // Try JSON first
-        if let Ok(identity) = serde_json::from_slice::<Identity>(data) {
+        if let Ok(identity) = serde_json::from_slice::<Self>(data) {
             return Ok(identity);
         }
 
@@ -265,7 +265,7 @@ impl Identity {
             crate::SpectreError::Comms(CommsError::IdentityNotFound(id.to_string()))
         })?;
 
-        let identity: Identity = serde_json::from_str(&content)?;
+        let identity: Self = serde_json::from_str(&content)?;
         Ok(identity)
     }
 
@@ -323,7 +323,7 @@ impl Identity {
 
             if path.extension().is_some_and(|ext| ext == "json") {
                 if let Ok(content) = std::fs::read_to_string(&path) {
-                    if let Ok(identity) = serde_json::from_str::<Identity>(&content) {
+                    if let Ok(identity) = serde_json::from_str::<Self>(&content) {
                         identities.push(IdentitySummary {
                             id: identity.id,
                             name: identity.name,

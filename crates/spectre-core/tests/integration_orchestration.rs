@@ -144,9 +144,7 @@ fn test_adaptive_timing_adjustment() {
 
     assert!(
         slow_delay >= fast_delay,
-        "Delay should increase after packet loss: fast={:?}, slow={:?}",
-        fast_delay,
-        slow_delay
+        "Delay should increase after packet loss: fast={fast_delay:?}, slow={slow_delay:?}"
     );
 }
 

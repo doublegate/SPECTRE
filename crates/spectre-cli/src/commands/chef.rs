@@ -1,6 +1,6 @@
 //! CyberChef-MCP integration command
 //!
-//! This module provides the CLI interface for data transformation using CyberChef via MCP.
+//! This module provides the CLI interface for data transformation using `CyberChef` via MCP.
 
 use std::path::PathBuf;
 
@@ -22,7 +22,7 @@ pub struct ChefArgs {
     #[command(subcommand)]
     pub command: Option<ChefCommands>,
 
-    /// Operation to perform (e.g., From_Base64, To_Hex)
+    /// Operation to perform (e.g., `From_Base64`, `To_Hex`)
     #[arg(value_name = "OPERATION")]
     pub operation: Option<String>,
 
@@ -227,7 +227,7 @@ pub async fn execute(args: ChefArgs, config_path: Option<PathBuf>) -> Result<()>
     let result = chef
         .execute(&operation, &input, &op_args)
         .await
-        .context(format!("Operation '{}' failed", operation))?;
+        .context(format!("Operation '{operation}' failed"))?;
 
     // Output result
     output_result(&result, args.output, args.output_file.as_deref())?;
@@ -258,7 +258,7 @@ async fn execute_health_check(config: &spectre_core::config::Config) -> Result<(
         },
         Err(e) => {
             println!("CyberChef-MCP Status: Disconnected");
-            println!("  Error: {}", e);
+            println!("  Error: {e}");
             println!("\nRun 'spectre chef setup --start' to start the container.");
             Ok(())
         },
@@ -297,7 +297,7 @@ async fn execute_setup(args: SetupArgs, config: &spectre_core::config::Config) -
 
     if args.status || (!args.pull && !args.start && !args.stop && !args.remove) {
         let status = docker.container_status().await?;
-        println!("Container Status: {}", status);
+        println!("Container Status: {status}");
     }
 
     Ok(())
@@ -337,7 +337,7 @@ async fn execute_help(args: HelpArgs, config: &spectre_core::config::Config) -> 
         for arg in &help.args {
             println!("  --{}: {} ({})", arg.name, arg.description, arg.arg_type);
             if let Some(default) = &arg.default {
-                println!("      Default: {}", default);
+                println!("      Default: {default}");
             }
         }
     }
@@ -345,7 +345,7 @@ async fn execute_help(args: HelpArgs, config: &spectre_core::config::Config) -> 
     if !help.examples.is_empty() {
         println!("\nExamples:");
         for example in &help.examples {
-            println!("  {}", example);
+            println!("  {example}");
         }
     }
 
@@ -358,13 +358,13 @@ async fn execute_recipe(args: RecipeArgs, config: &spectre_core::config::Config)
         RecipeCommands::Create { name, operations } => {
             let recipe = spectre_core::chef::Recipe::new(&name, operations);
             recipe.save(config)?;
-            println!("Recipe '{}' created successfully.", name);
+            println!("Recipe '{name}' created successfully.");
         },
         RecipeCommands::List => {
             let recipes = spectre_core::chef::Recipe::list(config)?;
             println!("Saved Recipes:");
             for recipe in recipes {
-                println!("  - {}", recipe);
+                println!("  - {recipe}");
             }
         },
         RecipeCommands::Show { name } => {
@@ -377,7 +377,7 @@ async fn execute_recipe(args: RecipeArgs, config: &spectre_core::config::Config)
         },
         RecipeCommands::Delete { name } => {
             spectre_core::chef::Recipe::delete(&name, config)?;
-            println!("Recipe '{}' deleted.", name);
+            println!("Recipe '{name}' deleted.");
         },
     }
 
@@ -412,7 +412,7 @@ async fn get_input(input: &Option<String>, file: Option<&std::path::Path>) -> Re
     } else if let Some(path) = file {
         tokio::fs::read(path)
             .await
-            .context(format!("Failed to read input file: {:?}", path))
+            .context(format!("Failed to read input file: {}", path.display()))
     } else {
         // Read from stdin
         use tokio::io::AsyncReadExt;
@@ -429,7 +429,7 @@ fn parse_operation_args(args: &[String]) -> Result<std::collections::HashMap<Str
     for arg in args {
         let parts: Vec<&str> = arg.splitn(2, '=').collect();
         if parts.len() != 2 {
-            anyhow::bail!("Invalid argument format '{}', expected key=value", arg);
+            anyhow::bail!("Invalid argument format '{arg}', expected key=value");
         }
         map.insert(parts[0].to_string(), parts[1].to_string());
     }

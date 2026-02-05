@@ -25,7 +25,7 @@ pub enum CampaignPhase {
 
 impl CampaignPhase {
     /// Get the next phase in the campaign lifecycle
-    pub fn next(&self) -> Option<CampaignPhase> {
+    pub const fn next(&self) -> Option<Self> {
         match self {
             Self::Planning => Some(Self::Recon),
             Self::Recon => Some(Self::Analysis),
@@ -37,7 +37,7 @@ impl CampaignPhase {
     }
 
     /// Get the previous phase
-    pub fn previous(&self) -> Option<CampaignPhase> {
+    pub const fn previous(&self) -> Option<Self> {
         match self {
             Self::Planning => None,
             Self::Recon => Some(Self::Planning),
@@ -50,7 +50,7 @@ impl CampaignPhase {
     }
 
     /// Get all phases in order
-    pub fn all() -> Vec<CampaignPhase> {
+    pub fn all() -> Vec<Self> {
         vec![
             Self::Planning,
             Self::Recon,
@@ -63,7 +63,7 @@ impl CampaignPhase {
     }
 
     /// Check if this is an active (non-terminal) phase
-    pub fn is_active(&self) -> bool {
+    pub const fn is_active(&self) -> bool {
         !matches!(self, Self::Planning | Self::Complete | Self::Archived)
     }
 }

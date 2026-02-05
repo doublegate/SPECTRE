@@ -67,6 +67,7 @@ mod tests {
     // integration tests. Here we verify module compilation and imports.
 
     #[test]
+    #[allow(clippy::no_effect_underscore_binding)]
     fn test_run_function_exists() {
         // Verify the run function is accessible from the module
         // by confirming we can reference it as a value

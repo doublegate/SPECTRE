@@ -28,8 +28,8 @@ impl WorkflowTemplates {
 
     /// List all template names
     pub fn list(&self) -> Vec<&str> {
-        let mut names: Vec<_> = self.templates.keys().map(|s| s.as_str()).collect();
-        names.sort();
+        let mut names: Vec<_> = self.templates.keys().map(String::as_str).collect();
+        names.sort_unstable();
         names
     }
 

@@ -64,7 +64,7 @@ impl<K: Eq + Hash + Clone, V: Clone> LruCache<K, V> {
     }
 
     /// Get the capacity
-    pub fn capacity(&self) -> usize {
+    pub const fn capacity(&self) -> usize {
         self.capacity
     }
 

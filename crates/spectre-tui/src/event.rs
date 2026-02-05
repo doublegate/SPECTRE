@@ -107,7 +107,7 @@ mod tests {
     #[test]
     fn test_app_event_clone() {
         let tick = AppEvent::Tick;
-        let cloned = tick.clone();
+        let cloned = Clone::clone(&tick);
         assert!(matches!(cloned, AppEvent::Tick));
     }
 

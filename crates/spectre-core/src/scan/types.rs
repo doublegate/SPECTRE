@@ -165,16 +165,16 @@ impl<'de> Deserialize<'de> for Target {
 
         // Try parsing as IP first
         if let Ok(ip) = s.parse::<IpAddr>() {
-            return Ok(Target::Ip(ip));
+            return Ok(Self::Ip(ip));
         }
 
         // Try parsing as CIDR
         if let Ok(cidr) = s.parse::<ipnetwork::IpNetwork>() {
-            return Ok(Target::Cidr(cidr));
+            return Ok(Self::Cidr(cidr));
         }
 
         // Treat as hostname
-        Ok(Target::Hostname(s))
+        Ok(Self::Hostname(s))
     }
 }
 

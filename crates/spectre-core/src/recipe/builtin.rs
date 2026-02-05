@@ -26,7 +26,7 @@ impl BuiltinRecipes {
     }
 
     /// Get the count of built-in recipes
-    pub fn count() -> usize {
+    pub const fn count() -> usize {
         8
     }
 

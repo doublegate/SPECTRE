@@ -167,16 +167,17 @@ impl Recipe {
             )))
         })?;
 
-        let recipe: Recipe = serde_json::from_str(&content)?;
+        let recipe: Self = serde_json::from_str(&content)?;
         Ok(recipe)
     }
 
     /// Load a recipe by name from config directory
     pub fn load(name: &str, config: &Config) -> crate::Result<Self> {
         let recipe_dir = config.chef.recipe_dir.clone().unwrap_or_else(|| {
-            directories::ProjectDirs::from("com", "spectre", "spectre")
-                .map(|dirs| dirs.config_dir().join("recipes"))
-                .unwrap_or_else(|| PathBuf::from("~/.config/spectre/recipes"))
+            directories::ProjectDirs::from("com", "spectre", "spectre").map_or_else(
+                || PathBuf::from("~/.config/spectre/recipes"),
+                |dirs| dirs.config_dir().join("recipes"),
+            )
         });
 
         let path = recipe_dir.join(format!("{}.json", name));
@@ -186,9 +187,10 @@ impl Recipe {
     /// Save the recipe
     pub fn save(&self, config: &Config) -> crate::Result<()> {
         let recipe_dir = config.chef.recipe_dir.clone().unwrap_or_else(|| {
-            directories::ProjectDirs::from("com", "spectre", "spectre")
-                .map(|dirs| dirs.config_dir().join("recipes"))
-                .unwrap_or_else(|| PathBuf::from("~/.config/spectre/recipes"))
+            directories::ProjectDirs::from("com", "spectre", "spectre").map_or_else(
+                || PathBuf::from("~/.config/spectre/recipes"),
+                |dirs| dirs.config_dir().join("recipes"),
+            )
         });
 
         std::fs::create_dir_all(&recipe_dir)?;
@@ -203,9 +205,10 @@ impl Recipe {
     /// List all saved recipes
     pub fn list(config: &Config) -> crate::Result<Vec<String>> {
         let recipe_dir = config.chef.recipe_dir.clone().unwrap_or_else(|| {
-            directories::ProjectDirs::from("com", "spectre", "spectre")
-                .map(|dirs| dirs.config_dir().join("recipes"))
-                .unwrap_or_else(|| PathBuf::from("~/.config/spectre/recipes"))
+            directories::ProjectDirs::from("com", "spectre", "spectre").map_or_else(
+                || PathBuf::from("~/.config/spectre/recipes"),
+                |dirs| dirs.config_dir().join("recipes"),
+            )
         });
 
         if !recipe_dir.exists() {
@@ -229,9 +232,10 @@ impl Recipe {
     /// Delete a recipe
     pub fn delete(name: &str, config: &Config) -> crate::Result<()> {
         let recipe_dir = config.chef.recipe_dir.clone().unwrap_or_else(|| {
-            directories::ProjectDirs::from("com", "spectre", "spectre")
-                .map(|dirs| dirs.config_dir().join("recipes"))
-                .unwrap_or_else(|| PathBuf::from("~/.config/spectre/recipes"))
+            directories::ProjectDirs::from("com", "spectre", "spectre").map_or_else(
+                || PathBuf::from("~/.config/spectre/recipes"),
+                |dirs| dirs.config_dir().join("recipes"),
+            )
         });
 
         let path = recipe_dir.join(format!("{}.json", name));

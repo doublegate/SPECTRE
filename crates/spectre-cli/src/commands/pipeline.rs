@@ -58,7 +58,7 @@ pub async fn execute(args: PipelineArgs, _config_path: Option<PathBuf>) -> Resul
             let data = if let Some(text) = input {
                 PipelineData::Text(text)
             } else if let Some(path) = input_file {
-                let content = std::fs::read_to_string(&path)?;
+                let content = tokio::fs::read_to_string(&path).await?;
                 PipelineData::Text(content)
             } else {
                 PipelineData::Empty
@@ -93,7 +93,7 @@ pub async fn execute(args: PipelineArgs, _config_path: Option<PathBuf>) -> Resul
             let output = result.to_text();
             if !output.is_empty() {
                 println!("\n{}", "Output:".bold());
-                println!("{}", output);
+                println!("{output}");
             }
         },
 
@@ -152,7 +152,7 @@ fn build_pipeline(name: &str, continue_on_error: bool) -> Result<Pipeline> {
             .continue_on_error(continue_on_error)
             .build(),
         _ => {
-            anyhow::bail!("Unknown pipeline template: {}", name);
+            anyhow::bail!("Unknown pipeline template: {name}");
         },
     };
 

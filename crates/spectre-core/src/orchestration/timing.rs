@@ -66,7 +66,7 @@ pub struct AdaptiveTiming {
 impl AdaptiveTiming {
     /// Create a new adaptive timing controller
     pub fn new(initial_timing: TimingTemplate) -> Self {
-        let (min_delay, max_delay, current_delay) = Self::timing_bounds(&initial_timing);
+        let (min_delay, max_delay, current_delay) = Self::timing_bounds(initial_timing);
         Self {
             current_timing: initial_timing,
             response_window: VecDeque::with_capacity(100),
@@ -81,7 +81,7 @@ impl AdaptiveTiming {
     }
 
     /// Get delay bounds for a timing template
-    fn timing_bounds(timing: &TimingTemplate) -> (Duration, Duration, Duration) {
+    const fn timing_bounds(timing: TimingTemplate) -> (Duration, Duration, Duration) {
         match timing {
             TimingTemplate::Paranoid => (
                 Duration::from_secs(5),
@@ -117,7 +117,7 @@ impl AdaptiveTiming {
     }
 
     /// Enable or disable adaptive timing
-    pub fn set_enabled(&mut self, enabled: bool) {
+    pub const fn set_enabled(&mut self, enabled: bool) {
         self.enabled = enabled;
     }
 
@@ -196,17 +196,17 @@ impl AdaptiveTiming {
     }
 
     /// Get the current recommended delay between probes
-    pub fn current_delay(&self) -> Duration {
+    pub const fn current_delay(&self) -> Duration {
         self.current_delay
     }
 
     /// Get the current timing template
-    pub fn current_timing(&self) -> TimingTemplate {
+    pub const fn current_timing(&self) -> TimingTemplate {
         self.current_timing
     }
 
     /// Get the current metrics
-    pub fn metrics(&self) -> &TimingMetrics {
+    pub const fn metrics(&self) -> &TimingMetrics {
         &self.metrics
     }
 
@@ -214,7 +214,7 @@ impl AdaptiveTiming {
     pub fn reset(&mut self) {
         self.response_window.clear();
         self.metrics = TimingMetrics::default();
-        let (_, _, default_delay) = Self::timing_bounds(&self.current_timing);
+        let (_, _, default_delay) = Self::timing_bounds(self.current_timing);
         self.current_delay = default_delay;
         info!("Adaptive timing reset");
     }
@@ -234,6 +234,7 @@ impl AdaptiveTiming {
 }
 
 #[cfg(test)]
+#[allow(clippy::float_cmp)]
 mod tests {
     use super::*;
 

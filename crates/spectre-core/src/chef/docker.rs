@@ -83,6 +83,7 @@ impl DockerManager {
 
     /// Start the CyberChef-MCP container
     #[instrument(skip(self))]
+    #[allow(clippy::default_trait_access)]
     pub async fn start_container(&self) -> crate::Result<()> {
         info!("Starting CyberChef-MCP container");
 

@@ -99,8 +99,8 @@ impl RecipeStore {
 
     /// List all recipe names
     pub fn list(&self) -> Vec<&str> {
-        let mut names: Vec<_> = self.index.keys().map(|s| s.as_str()).collect();
-        names.sort();
+        let mut names: Vec<_> = self.index.keys().map(String::as_str).collect();
+        names.sort_unstable();
         names
     }
 
@@ -160,7 +160,7 @@ impl RecipeStore {
                             );
                         },
                         Err(e) => {
-                            warn!(path = %path.display(), error = %e, "Failed to parse recipe")
+                            warn!(path = %path.display(), error = %e, "Failed to parse recipe");
                         },
                     },
                     Err(e) => warn!(path = %path.display(), error = %e, "Failed to read recipe"),

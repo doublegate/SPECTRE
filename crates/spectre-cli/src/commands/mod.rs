@@ -113,8 +113,8 @@ pub enum Commands {
 }
 
 /// Get custom styles for colored output
-fn get_styles() -> clap::builder::Styles {
-    use clap::builder::styling::*;
+const fn get_styles() -> clap::builder::Styles {
+    use clap::builder::styling::{AnsiColor, Styles};
 
     Styles::styled()
         .header(AnsiColor::Green.on_default().bold())

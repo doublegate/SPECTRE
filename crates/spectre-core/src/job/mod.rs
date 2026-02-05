@@ -99,7 +99,7 @@ impl ScanJob {
     }
 
     /// Set the job priority
-    pub fn with_priority(mut self, priority: i32) -> Self {
+    pub const fn with_priority(mut self, priority: i32) -> Self {
         self.priority = priority;
         self
     }
@@ -132,6 +132,11 @@ impl ScanJob {
     }
 
     /// Update progress
+    #[allow(
+        clippy::cast_precision_loss,
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss
+    )]
     pub fn update_progress(&mut self, completed: usize, total: usize) {
         self.targets_completed = completed;
         self.targets_total = total;
@@ -158,7 +163,7 @@ impl ScanJob {
     }
 
     /// Check if the job is in a terminal state
-    pub fn is_terminal(&self) -> bool {
+    pub const fn is_terminal(&self) -> bool {
         matches!(
             self.state,
             JobState::Complete | JobState::Failed | JobState::Cancelled

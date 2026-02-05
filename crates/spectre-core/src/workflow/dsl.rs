@@ -53,7 +53,7 @@ impl WorkflowDef {
     }
 
     /// Get step count
-    pub fn step_count(&self) -> usize {
+    pub const fn step_count(&self) -> usize {
         self.steps.len()
     }
 }
@@ -129,13 +129,13 @@ impl StepDef {
     }
 
     /// Set retries
-    pub fn with_retries(mut self, retries: u32) -> Self {
+    pub const fn with_retries(mut self, retries: u32) -> Self {
         self.retries = retries;
         self
     }
 
     /// Set continue on error
-    pub fn with_continue_on_error(mut self) -> Self {
+    pub const fn with_continue_on_error(mut self) -> Self {
         self.continue_on_error = true;
         self
     }

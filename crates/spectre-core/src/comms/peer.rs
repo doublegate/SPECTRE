@@ -31,6 +31,7 @@ pub struct Peer {
 
 impl Peer {
     /// Create a new peer
+    #[allow(clippy::needless_pass_by_value)] // Public API: callers always have Vec<u8>
     #[instrument(skip(public_key), fields(alias = ?alias, trust = trust))]
     pub fn new(
         public_key: Vec<u8>,
@@ -77,7 +78,7 @@ impl Peer {
     }
 
     /// Get the trust level
-    pub fn trust(&self) -> u8 {
+    pub const fn trust(&self) -> u8 {
         self.trust
     }
 
@@ -97,12 +98,12 @@ impl Peer {
     }
 
     /// Get the creation timestamp
-    pub fn created_at(&self) -> &DateTime<Utc> {
+    pub const fn created_at(&self) -> &DateTime<Utc> {
         &self.created_at
     }
 
     /// Get the last seen timestamp
-    pub fn last_seen(&self) -> Option<&DateTime<Utc>> {
+    pub const fn last_seen(&self) -> Option<&DateTime<Utc>> {
         self.last_seen.as_ref()
     }
 
@@ -165,7 +166,7 @@ impl Peer {
         let content = std::fs::read_to_string(&path)
             .map_err(|_| crate::SpectreError::Comms(CommsError::PeerNotFound(id.to_string())))?;
 
-        let peer: Peer = serde_json::from_str(&content)?;
+        let peer: Self = serde_json::from_str(&content)?;
         Ok(peer)
     }
 
@@ -200,7 +201,7 @@ impl Peer {
 
             if path.extension().is_some_and(|ext| ext == "json") {
                 if let Ok(content) = std::fs::read_to_string(&path) {
-                    if let Ok(peer) = serde_json::from_str::<Peer>(&content) {
+                    if let Ok(peer) = serde_json::from_str::<Self>(&content) {
                         peers.push(PeerSummary {
                             id: peer.id,
                             alias: peer.alias,

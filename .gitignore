@@ -208,6 +208,9 @@ docker-compose.*.yml
 # =============================================================================
 # Testing
 # =============================================================================
+# Proptest regression files
+**/proptest-regressions/
+
 # Coverage reports
 coverage/
 *.lcov

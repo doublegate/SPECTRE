@@ -84,6 +84,11 @@ impl CheckpointStore {
     }
 
     /// Save a checkpoint to disk
+    #[allow(
+        clippy::cast_precision_loss,
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss
+    )]
     pub fn save(&self, checkpoint: &Checkpoint) -> crate::Result<()> {
         std::fs::create_dir_all(&self.store_dir)?;
 
@@ -149,11 +154,11 @@ impl CheckpointStore {
                     Ok(content) => match serde_json::from_str::<Checkpoint>(&content) {
                         Ok(cp) => checkpoints.push(cp),
                         Err(e) => {
-                            warn!(path = %path.display(), error = %e, "Failed to parse checkpoint")
+                            warn!(path = %path.display(), error = %e, "Failed to parse checkpoint");
                         },
                     },
                     Err(e) => {
-                        warn!(path = %path.display(), error = %e, "Failed to read checkpoint")
+                        warn!(path = %path.display(), error = %e, "Failed to read checkpoint");
                     },
                 }
             }

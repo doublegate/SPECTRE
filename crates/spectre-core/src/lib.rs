@@ -54,6 +54,12 @@
 #![allow(clippy::doc_markdown)]
 #![allow(clippy::uninlined_format_args)]
 #![allow(clippy::unused_async)]
+#![allow(clippy::struct_excessive_bools)] // Config structs with multiple boolean options
+#![allow(clippy::cast_possible_truncation)] // Intentional numeric casts
+#![allow(clippy::cast_precision_loss)] // Intentional float conversions for metrics
+#![allow(clippy::cast_sign_loss)] // Checked conversions
+#![allow(clippy::cast_possible_wrap)]
+#![allow(clippy::option_if_let_else)] // Nursery lint: if-let-else is often more readable // Handled cases
 
 pub mod campaign;
 pub mod chef;

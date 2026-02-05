@@ -11,6 +11,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - GUI application with Tauri 2.0 — Phase 5
 - MCP server implementation — Phase 6
 
+## [0.4.1] - 2026-02-04
+
+### Changed
+
+#### Technical Debt Remediation — Comprehensive Code Quality Pass
+
+**Clippy pedantic/nursery compliance** (569 warnings resolved to 0):
+
+- **Blocking I/O fixes**: Replaced 3 `std::fs` calls with `tokio::fs` in async functions (`campaign.rs:183,195`, `pipeline.rs:61`) to prevent executor thread starvation
+- **String allocation optimization**: Replaced 98 `format_push_string` instances across `export/csv.rs`, `report/html.rs`, `report/markdown.rs`, and `results/output.rs` with `std::fmt::Write` / `write!()` patterns to eliminate intermediate `String` allocations
+- **`use_self` pattern**: Applied `Self::` instead of explicit type names across 108 instances in enum/struct impl blocks throughout spectre-core
+- **`const fn` promotion**: Added `const` qualifier to simple getters, constructors, and state-check methods across campaign/state, job/state, orchestration, workflow, recipe, and perf modules
+- **Lock scope tightening**: Addressed `significant_drop_tightening` warnings in `job/manager.rs` with targeted `#[allow]` annotations (lock scopes are minimal by design due to async RwLock semantics)
+- **Redundant closure elimination**: Simplified 22 closures to method references (e.g., `|s| s.as_str()` → `String::as_str`)
+- **Primitive sort optimization**: Replaced 7 `.sort()` calls on `Vec<u16>` with `.sort_unstable()` for better performance
+- **Match arm consolidation**: Combined 12 identical match arm bodies using `|` patterns
+- **Debug formatting cleanup**: Replaced 11 `{:?}` format specifiers with `{}`/`.display()` where `Display` is available
+- **Cast safety annotations**: Added justified `#[allow(clippy::cast_*)]` on 67 instances in statistics/metrics code with explanatory comments
+- **Misc pedantic fixes**: `if_not_else` (6), `semicolon_if_nothing_returned` (6), `needless_raw_string_hashes` (2), `default_trait_access` (2), `needless_pass_by_value` (2), `needless_continue` (2), `explicit_iter_loop` (2), `or_fun_call` (2), `trivially_copy_pass_by_ref` (2), `case_sensitive_file_extension_comparisons` (2), `unnested_or_patterns` (2), `needless_collect` (1), `branches_sharing_code` (1), `redundant_clone` (1)
+
+**Documentation coverage**: Added `///` doc comments to previously undocumented public items across CLI arg structs, module re-exports, and core library types
+
+**Property-based testing**: Added `proptest` to dev-dependencies; added property-based tests for `scan/parser.rs` (target/port parsing round-trips) and `target/scope.rs` (scope enforcement invariants)
+
+**CI enhancement**: Added `cargo-tarpaulin` coverage tracking job to `.github/workflows/ci.yml`
+
+### Technical Details
+- 91 files changed, +731 insertions, -490 deletions
+- 864 tests total (8 new proptest tests): 43 CLI + 538 core unit + 235 TUI + 3 doc-tests + 45 integration
+- Zero warnings at all clippy lint levels: standard (`-D warnings`), pedantic (`-W clippy::pedantic`), nursery (`-W clippy::nursery`)
+- Zero `cargo doc` warnings with `RUSTDOCFLAGS="-D warnings"`
+- New dev-dependency: `proptest` (property-based testing framework)
+- No API or behavioral changes — pure code quality improvements
+
 ## [0.4.0] - 2026-02-04
 
 ### Added
@@ -556,7 +590,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/doublegate/SPECTRE/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/doublegate/SPECTRE/compare/v0.4.1...HEAD
+[0.4.1]: https://github.com/doublegate/SPECTRE/compare/v0.4.0...v0.4.1
 [0.4.0]: https://github.com/doublegate/SPECTRE/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/doublegate/SPECTRE/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/doublegate/SPECTRE/compare/v0.1.2...v0.2.0

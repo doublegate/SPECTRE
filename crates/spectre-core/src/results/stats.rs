@@ -34,6 +34,11 @@ pub struct ResultStats {
 
 impl ResultStats {
     /// Compute statistics from scan results
+    #[allow(
+        clippy::cast_precision_loss,
+        clippy::cast_possible_truncation,
+        clippy::cast_sign_loss
+    )]
     pub fn from_results(results: &[ScanResult]) -> Self {
         let total_hosts = results.len();
         let mut hosts_up = 0;

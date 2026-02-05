@@ -77,7 +77,7 @@ impl Finding {
     }
 
     /// Set the affected port
-    pub fn with_port(mut self, port: u16) -> Self {
+    pub const fn with_port(mut self, port: u16) -> Self {
         self.port = Some(port);
         self
     }

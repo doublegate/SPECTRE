@@ -149,8 +149,7 @@ impl Scanner for StubScanner {
                 let version = if config.service_detection && service.is_some() {
                     match port {
                         22 => Some("OpenSSH 8.9".to_string()),
-                        80 => Some("nginx 1.24".to_string()),
-                        443 => Some("nginx 1.24".to_string()),
+                        80 | 443 => Some("nginx 1.24".to_string()),
                         _ => None,
                     }
                 } else {

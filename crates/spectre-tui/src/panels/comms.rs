@@ -282,8 +282,7 @@ impl CommsPanel {
 
                 let latency = peer
                     .latency_ms
-                    .map(|ms| format!("{}ms", ms))
-                    .unwrap_or_else(|| "--".to_string());
+                    .map_or_else(|| "--".to_string(), |ms| format!("{}ms", ms));
 
                 Row::new(vec![
                     Cell::from(peer.name.as_str()),

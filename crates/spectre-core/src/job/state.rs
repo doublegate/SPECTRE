@@ -36,42 +36,28 @@ pub enum JobState {
 
 impl JobState {
     /// Check if a transition to the given state is valid
-    pub fn can_transition_to(&self, target: &JobState) -> bool {
+    pub const fn can_transition_to(&self, target: &Self) -> bool {
         matches!(
             (self, target),
-            (JobState::Created, JobState::Queued)
-                | (JobState::Queued, JobState::Running)
-                | (JobState::Queued, JobState::Cancelled)
-                | (JobState::Running, JobState::Paused)
-                | (JobState::Running, JobState::Complete)
-                | (JobState::Running, JobState::Failed)
-                | (JobState::Running, JobState::Cancelled)
-                | (JobState::Paused, JobState::Running)
-                | (JobState::Paused, JobState::Cancelled)
+            (Self::Created, Self::Queued)
+                | (Self::Queued | Self::Paused, Self::Running)
+                | (Self::Queued | Self::Running | Self::Paused, Self::Cancelled)
+                | (Self::Running, Self::Paused | Self::Complete | Self::Failed)
         )
     }
 
     /// Check if this is a terminal state
-    pub fn is_terminal(&self) -> bool {
-        matches!(
-            self,
-            JobState::Complete | JobState::Failed | JobState::Cancelled
-        )
+    pub const fn is_terminal(&self) -> bool {
+        matches!(self, Self::Complete | Self::Failed | Self::Cancelled)
     }
 
     /// Get all valid next states from the current state
-    pub fn valid_transitions(&self) -> Vec<JobState> {
+    pub fn valid_transitions(&self) -> Vec<Self> {
         match self {
-            JobState::Created => vec![JobState::Queued],
-            JobState::Queued => vec![JobState::Running, JobState::Cancelled],
-            JobState::Running => vec![
-                JobState::Paused,
-                JobState::Complete,
-                JobState::Failed,
-                JobState::Cancelled,
-            ],
-            JobState::Paused => vec![JobState::Running, JobState::Cancelled],
-            JobState::Complete | JobState::Failed | JobState::Cancelled => vec![],
+            Self::Created => vec![Self::Queued],
+            Self::Queued | Self::Paused => vec![Self::Running, Self::Cancelled],
+            Self::Running => vec![Self::Paused, Self::Complete, Self::Failed, Self::Cancelled],
+            Self::Complete | Self::Failed | Self::Cancelled => vec![],
         }
     }
 }

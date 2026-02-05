@@ -29,11 +29,12 @@ pub fn execute(args: CompletionsArgs) -> Result<()> {
 
     if let Some(output_path) = args.output {
         std::fs::write(&output_path, &completions)?;
-        println!("Completions written to: {:?}", output_path);
+        let path = output_path.display();
+        println!("Completions written to: {path}");
         println!();
         print_install_instructions(args.shell, Some(&output_path));
     } else {
-        println!("{}", completions);
+        println!("{completions}");
         eprintln!();
         print_install_instructions(args.shell, None);
     }
@@ -43,20 +44,19 @@ pub fn execute(args: CompletionsArgs) -> Result<()> {
 
 /// Print installation instructions for each shell
 fn print_install_instructions(shell: Shell, output_path: Option<&std::path::Path>) {
-    let file_ref = output_path
-        .map(|p| p.display().to_string())
-        .unwrap_or_else(|| "<output_file>".to_string());
+    let file_ref =
+        output_path.map_or_else(|| "<output_file>".to_string(), |p| p.display().to_string());
 
-    eprintln!("Installation instructions for {}:", shell);
+    eprintln!("Installation instructions for {shell}:");
     eprintln!();
 
     match shell {
         Shell::Bash => {
             eprintln!("  # Add to ~/.bashrc:");
-            eprintln!("  source {}", file_ref);
+            eprintln!("  source {file_ref}");
             eprintln!();
             eprintln!("  # Or install system-wide:");
-            eprintln!("  sudo cp {} /etc/bash_completion.d/spectre", file_ref);
+            eprintln!("  sudo cp {file_ref} /etc/bash_completion.d/spectre");
         },
         Shell::Zsh => {
             eprintln!("  # Add to ~/.zshrc (before compinit):");
@@ -65,22 +65,22 @@ fn print_install_instructions(shell: Shell, output_path: Option<&std::path::Path
             eprintln!();
             eprintln!("  # Then copy completion file:");
             eprintln!("  mkdir -p ~/.zsh/completions");
-            eprintln!("  cp {} ~/.zsh/completions/_spectre", file_ref);
+            eprintln!("  cp {file_ref} ~/.zsh/completions/_spectre");
         },
         Shell::Fish => {
             eprintln!("  # Copy to fish completions directory:");
-            eprintln!("  cp {} ~/.config/fish/completions/spectre.fish", file_ref);
+            eprintln!("  cp {file_ref} ~/.config/fish/completions/spectre.fish");
         },
         Shell::PowerShell => {
             eprintln!("  # Add to your PowerShell profile:");
-            eprintln!("  . {}", file_ref);
+            eprintln!("  . {file_ref}");
             eprintln!();
             eprintln!("  # To find your profile location:");
             eprintln!("  echo $PROFILE");
         },
         Shell::Elvish => {
             eprintln!("  # Add to ~/.elvish/rc.elv:");
-            eprintln!("  eval (cat {})", file_ref);
+            eprintln!("  eval (cat {file_ref})");
         },
         _ => {
             eprintln!("  See your shell's documentation for completion installation.");
