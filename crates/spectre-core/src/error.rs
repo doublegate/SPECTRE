@@ -69,6 +69,26 @@ pub enum SpectreError {
     /// Target error
     #[error("Target error: {0}")]
     Target(#[from] TargetError),
+
+    /// Orchestration error
+    #[error("Orchestration error: {0}")]
+    Orchestration(#[from] OrchestrationError),
+
+    /// Workflow error
+    #[error("Workflow error: {0}")]
+    Workflow(#[from] WorkflowError),
+
+    /// Recipe error
+    #[error("Recipe error: {0}")]
+    Recipe(#[from] RecipeError),
+
+    /// Report error
+    #[error("Report error: {0}")]
+    Report(#[from] ReportError),
+
+    /// Export error
+    #[error("Export error: {0}")]
+    Export(#[from] ExportError),
 }
 
 /// Configuration-related errors
@@ -350,6 +370,123 @@ pub enum PluginError {
     /// Resource limit exceeded
     #[error("Resource limit exceeded: {0}")]
     ResourceLimit(String),
+}
+
+/// Orchestration errors
+#[derive(Error, Debug)]
+pub enum OrchestrationError {
+    /// Scan chain error
+    #[error("Scan chain error: {0}")]
+    ChainError(String),
+
+    /// Template not found
+    #[error("Scan template not found: {0}")]
+    TemplateNotFound(String),
+
+    /// Invalid schedule expression
+    #[error("Invalid schedule: {0}")]
+    InvalidSchedule(String),
+
+    /// Checkpoint error
+    #[error("Checkpoint error: {0}")]
+    CheckpointError(String),
+
+    /// Profile error
+    #[error("Profile error: {0}")]
+    ProfileError(String),
+}
+
+/// Workflow errors
+#[derive(Error, Debug)]
+pub enum WorkflowError {
+    /// Parse error in workflow definition
+    #[error("Workflow parse error: {0}")]
+    ParseError(String),
+
+    /// Step execution error
+    #[error("Workflow step '{step}' failed: {message}")]
+    StepError {
+        /// Step name
+        step: String,
+        /// Error message
+        message: String,
+    },
+
+    /// Variable not found
+    #[error("Variable not found: {0}")]
+    VariableNotFound(String),
+
+    /// Condition evaluation error
+    #[error("Condition error: {0}")]
+    ConditionError(String),
+
+    /// Template not found
+    #[error("Workflow template not found: {0}")]
+    TemplateNotFound(String),
+
+    /// Persistence error
+    #[error("Workflow persistence error: {0}")]
+    PersistenceError(String),
+}
+
+/// Recipe errors
+#[derive(Error, Debug)]
+pub enum RecipeError {
+    /// Recipe not found
+    #[error("Recipe not found: {0}")]
+    NotFound(String),
+
+    /// Invalid recipe format
+    #[error("Invalid recipe format: {0}")]
+    InvalidFormat(String),
+
+    /// Validation error
+    #[error("Recipe validation error: {0}")]
+    ValidationError(String),
+
+    /// Storage error
+    #[error("Recipe storage error: {0}")]
+    StorageError(String),
+
+    /// Version error
+    #[error("Recipe version error: {0}")]
+    VersionError(String),
+}
+
+/// Report errors
+#[derive(Error, Debug)]
+pub enum ReportError {
+    /// Template error
+    #[error("Report template error: {0}")]
+    TemplateError(String),
+
+    /// Generation error
+    #[error("Report generation error: {0}")]
+    GenerationError(String),
+
+    /// Invalid report configuration
+    #[error("Invalid report configuration: {0}")]
+    InvalidConfig(String),
+}
+
+/// Export errors
+#[derive(Error, Debug)]
+pub enum ExportError {
+    /// Format error
+    #[error("Export format error: {0}")]
+    FormatError(String),
+
+    /// Template error
+    #[error("Export template error: {0}")]
+    TemplateError(String),
+
+    /// Scheduling error
+    #[error("Export scheduling error: {0}")]
+    SchedulingError(String),
+
+    /// IO error during export
+    #[error("Export IO error: {0}")]
+    IoError(String),
 }
 
 impl From<toml::de::Error> for SpectreError {

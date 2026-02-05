@@ -13,7 +13,7 @@ A unified offensive security toolkit combining wire-speed secure communications,
   <a href="https://github.com/doublegate/SPECTRE"><img src="https://img.shields.io/github/stars/doublegate/SPECTRE?style=flat-square" alt="GitHub Stars"></a>
   <a href="https://github.com/doublegate/SPECTRE/fork"><img src="https://img.shields.io/github/forks/doublegate/SPECTRE?style=flat-square" alt="GitHub Forks"></a>
   <a href="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml"><img src="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
-  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.3.0-blue.svg" alt="Version"></a>
+  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.4.0-blue.svg" alt="Version"></a>
   <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.88%2B-orange.svg" alt="Rust"></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-22%2B-green.svg" alt="Node.js"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT%2FGPLv3%2FApache--2.0-green.svg" alt="License"></a>
@@ -48,14 +48,14 @@ Modern offensive security requires seamless tool integration. SPECTRE eliminates
 
 | Metric                 | Value                                                                   |
 | ---------------------- | ----------------------------------------------------------------------- |
-| **Combined Tests**     | 6,582 (SPECTRE: 505 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 563) |
-| **SPECTRE Codebase**   | ~20,800 lines Rust (75 source files across 5 crates)                     |
-| **Component Code**     | ~180,000 (Rust) + ~40,000 (TypeScript/JavaScript)                        |
-| **Languages**          | Rust 2024, TypeScript, JavaScript                                        |
+| **Combined Tests**     | 6,933 (SPECTRE: 856 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 563) |
+| **SPECTRE Codebase**   | ~31,000 lines Rust (118 source files across 5 crates)                     |
+| **Component Code**     | ~180,000 (Rust) + ~40,000 (TypeScript/JavaScript)                         |
+| **Languages**          | Rust 2024, TypeScript, JavaScript                                         |
 | **Network Throughput** | 10+ Gbps (WRAITH), 10M+ pps (ProRT-IP)                                   |
-| **Data Operations**    | 463 via CyberChef MCP                                                    |
-| **Interface Modes**    | CLI (implemented), TUI (implemented), GUI, MCP Server                    |
-| **Platforms**          | Linux, Windows, macOS, Docker                                            |
+| **Data Operations**    | 463 via CyberChef MCP                                                     |
+| **Interface Modes**    | CLI (implemented), TUI (implemented), GUI, MCP Server                     |
+| **Platforms**          | Linux, Windows, macOS, Docker                                             |
 
 ---
 
@@ -320,10 +320,16 @@ SPECTRE follows a modular microservices architecture where each component operat
 | **Results Aggregation** | Findings, JSON/XML/greppable output, stats       | Rust (serde, quick-xml)          | **Implemented** |
 | **Data Pipeline**       | Composable stages, builder API, metrics          | Rust (async-trait, tokio)        | **Implemented** |
 | **Campaign Management** | SQLite persistence, phases, artifacts            | Rust (rusqlite, sha2)            | **Implemented** |
-| **Plugin System**       | Lua 5.4 sandbox, manifest, permissions           | Rust (mlua)                      | **Implemented** |
+| **Plugin System**       | Lua 5.4 sandbox, manifest, permissions, registry | Rust (mlua)                      | **Implemented** |
 | **TUI Framework**       | Real-time dashboard (60 FPS, 4-panel, 5 themes)  | Rust (ratatui 0.30, crossterm)   | **Implemented** |
-| **GUI Application**     | Visual campaign planning                         | Tauri 2.0, React, TypeScript     | Planned         |
-| **MCP Server**          | AI-assisted operations                           | Rust, MCP Protocol               | Planned         |
+| **Scan Orchestration**  | Chaining, templates, scheduling, adaptive timing  | Rust (tokio, async-trait)        | **Implemented** |
+| **Workflow Engine**     | YAML/JSON/TOML DSL, executor, variables, loops    | Rust (serde, tokio)              | **Implemented** |
+| **Recipe Management**   | Storage, versioning, search, built-in library     | Rust (serde, toml)               | **Implemented** |
+| **Report Generation**   | HTML and Markdown reports, executive summaries     | Rust (templates)                 | **Implemented** |
+| **Export System**        | CSV, custom templates, incremental export         | Rust (serde)                     | **Implemented** |
+| **Performance Layer**   | LRU cache, connection pool, metrics collection    | Rust (tokio)                     | **Implemented** |
+| **GUI Application**     | Visual campaign planning                          | Tauri 2.0, React, TypeScript     | Planned         |
+| **MCP Server**          | AI-assisted operations                            | Rust, MCP Protocol               | Planned         |
 
 ---
 
@@ -577,7 +583,7 @@ SPECTRE releases follow an operational codename convention:
 | v0.1.0  | **Operation BLACKOUT**  | Foundation — CLI skeleton, component integration  | CLI MVP             |
 | v0.2.0  | **Operation NIGHTFALL** | Data pipeline, scan-to-analysis automation        | CLI + Data Pipeline |
 | v0.3.0  | **Operation PHANTOM**   | Campaign orchestration, multi-target coordination | TUI MVP             |
-| v0.4.0  | **Operation ECLIPSE**   | AI-assisted targeting, threat intel integration   | MCP Server          |
+| v0.4.0  | **Operation SPECTER**   | Advanced features, workflows, reporting           | Advanced Engine     |
 | v0.5.0  | **Operation SHADOW**    | Visual campaign planning, collaboration           | GUI MVP             |
 | v1.0.0  | **Operation GENESIS**   | Production release — full platform capability     | All 4 Interfaces    |
 
@@ -615,13 +621,16 @@ SPECTRE releases follow an operational codename convention:
 - [x] 5 built-in themes (dark, light, tactical, matrix, hacker) with runtime switching
 - [x] 235 unit tests passing, zero clippy warnings
 
-### Phase 4: AI Integration — Operation ECLIPSE
+### Phase 4: Advanced Features — Operation SPECTER (Complete)
 
-- [ ] MCP Server implementation
-- [ ] All scan types as MCP tools
-- [ ] CyberChef operations passthrough
-- [ ] AI-assisted target prioritization
-- [ ] Natural language campaign definition
+- [x] Advanced scan orchestration: chaining, conditional execution, templates, scheduling, profiles, adaptive timing, checkpoint/resume
+- [x] Workflow automation: YAML/JSON/TOML DSL, parser, async executor with variables, conditionals, loops, retry logic
+- [x] Recipe management: file-based storage, import/export, versioning, search, validation, built-in library
+- [x] Report generation: HTML and Markdown generators, executive summaries, risk scoring, severity breakdown
+- [x] Export formats: CSV exporter (results/hosts/findings), custom template engine, incremental export tracking
+- [x] Performance optimization: LRU cache, connection pool with async mutex, performance metrics (timing + counters)
+- [x] Advanced plugin system: registry with dependency resolution, event hooks (10 lifecycle events), template scaffolding (5 types)
+- [x] 45 integration tests across 6 test suites, 351 new unit tests
 
 ### Phase 5: Visual Interface — Operation SHADOW
 
@@ -677,57 +686,76 @@ SPECTRE/
 │   │       └── output/         # Output formatting
 │   │           ├── table.rs        # Table output (comfy-table)
 │   │           └── json.rs         # JSON output (serde_json)
-│   ├── spectre-core/       # Core orchestration library (38 files, 224 tests)
+│   ├── spectre-core/       # Core orchestration library (81 files, 530 unit + 45 integration tests)
 │   │   ├── Cargo.toml
-│   │   └── src/
-│   │       ├── lib.rs          # Library root (12 public modules)
-│   │       ├── error.rs        # Error types (SpectreError, 10+ variants)
-│   │       ├── logging.rs      # Tracing setup
-│   │       ├── config/         # Configuration system
-│   │       │   ├── mod.rs          # Config structs (serde)
-│   │       │   └── loader.rs       # File discovery, merging
-│   │       ├── scan/           # Scanning interface
-│   │       │   ├── mod.rs          # Module exports
-│   │       │   ├── traits.rs       # Scanner trait
-│   │       │   ├── types.rs        # ScanType, ScanResult, etc.
-│   │       │   └── parser.rs       # Port/target parsing
-│   │       ├── chef/           # CyberChef integration
-│   │       │   ├── mod.rs          # Chef trait
-│   │       │   ├── mcp.rs          # MCP client adapter
-│   │       │   └── docker.rs       # Container management
-│   │       ├── comms/          # WRAITH integration
-│   │       │   ├── mod.rs          # Module exports
-│   │       │   ├── identity.rs     # Identity generation/storage
-│   │       │   └── peer.rs         # Peer management
-│   │       ├── target/         # Target management (40 tests)
-│   │       │   ├── mod.rs          # EnhancedTarget, priority, status
-│   │       │   ├── queue.rs        # TargetQueue (BinaryHeap priority)
-│   │       │   ├── scope.rs        # ScopeEnforcer (allow/block lists)
-│   │       │   └── file.rs         # File-based target loading
-│   │       ├── job/            # Job orchestration (35 tests)
-│   │       │   ├── mod.rs          # ScanJob state machine
-│   │       │   ├── manager.rs      # JobManager with concurrency control
-│   │       │   ├── state.rs        # Job state transitions
-│   │       │   └── events.rs       # Event broadcasting (tokio channels)
-│   │       ├── results/        # Results aggregation (23 tests)
-│   │       │   ├── mod.rs          # Finding model, host grouping
-│   │       │   ├── finding.rs      # Finding struct, severity levels
-│   │       │   ├── output.rs       # JSON, XML, greppable formatters
-│   │       │   └── stats.rs        # ResultStats, port/service summaries
-│   │       ├── pipeline/       # Data pipeline (17 tests)
-│   │       │   ├── mod.rs          # Pipeline execution, metrics
-│   │       │   ├── stage.rs        # Composable pipeline stages
-│   │       │   └── builder.rs      # PipelineBuilder fluent API
-│   │       ├── campaign/       # Campaign management (28 tests)
-│   │       │   ├── mod.rs          # Campaign struct, phase tracking
-│   │       │   ├── state.rs        # CampaignPhase state machine
-│   │       │   ├── artifact.rs     # Artifact storage, SHA-256 hashing
-│   │       │   └── storage.rs      # CampaignStore (SQLite via rusqlite)
-│   │       └── plugin/         # Plugin system (30 tests)
-│   │           ├── mod.rs          # Plugin loading, execution
-│   │           ├── sandbox.rs      # Lua 5.4 sandbox (mlua)
-│   │           ├── api.rs          # spectre.* Lua API
-│   │           └── manifest.rs     # plugin.toml manifest, permissions
+│   │   ├── src/
+│   │   │   ├── lib.rs          # Library root (18 public modules)
+│   │   │   ├── error.rs        # Error types (SpectreError, 20+ variants)
+│   │   │   ├── logging.rs      # Tracing setup
+│   │   │   ├── config/         # Configuration system
+│   │   │   ├── scan/           # Scanning interface (8 scan types)
+│   │   │   ├── chef/           # CyberChef integration (Docker MCP)
+│   │   │   ├── comms/          # WRAITH integration (identity, peers)
+│   │   │   ├── target/         # Target management (priority queue, scope)
+│   │   │   ├── job/            # Job orchestration (state machine, events)
+│   │   │   ├── results/        # Results aggregation (JSON/XML/grep output)
+│   │   │   ├── pipeline/       # Data pipeline (composable stages)
+│   │   │   ├── campaign/       # Campaign management (SQLite persistence)
+│   │   │   ├── plugin/         # Plugin system (Lua sandbox, registry, hooks, templates)
+│   │   │   │   ├── mod.rs          # Plugin loading, discovery
+│   │   │   │   ├── sandbox.rs      # Lua 5.4 sandbox (mlua)
+│   │   │   │   ├── api.rs          # spectre.* Lua API
+│   │   │   │   ├── manifest.rs     # plugin.toml manifest, permissions
+│   │   │   │   ├── registry.rs     # Plugin registry, dependency resolution
+│   │   │   │   ├── hooks.rs        # Event hooks (10 lifecycle events)
+│   │   │   │   └── template.rs     # Plugin scaffolding (5 types)
+│   │   │   ├── orchestration/  # Scan orchestration (Phase 4)
+│   │   │   │   ├── mod.rs          # Module exports
+│   │   │   │   ├── chain.rs        # Scan chaining with step conditions
+│   │   │   │   ├── template.rs     # Scan templates and library
+│   │   │   │   ├── schedule.rs     # Cron-based scan scheduling
+│   │   │   │   ├── profile.rs      # User-defined scan profiles
+│   │   │   │   ├── timing.rs       # Adaptive timing adjustment
+│   │   │   │   └── checkpoint.rs   # Checkpoint/resume for scans
+│   │   │   ├── workflow/       # Workflow automation (Phase 4)
+│   │   │   │   ├── mod.rs          # Module exports
+│   │   │   │   ├── dsl.rs          # Workflow DSL types
+│   │   │   │   ├── parser.rs       # YAML/JSON/TOML parser
+│   │   │   │   ├── executor.rs     # Async workflow executor
+│   │   │   │   ├── variables.rs    # Variable store and substitution
+│   │   │   │   ├── template.rs     # Built-in workflow templates
+│   │   │   │   └── persistence.rs  # Workflow save/load
+│   │   │   ├── recipe/         # Recipe management (Phase 4)
+│   │   │   │   ├── mod.rs          # Module exports
+│   │   │   │   ├── storage.rs      # File-based recipe storage
+│   │   │   │   ├── format.rs       # Import/export (JSON/YAML/TOML)
+│   │   │   │   ├── search.rs       # Recipe search and browsing
+│   │   │   │   ├── validate.rs     # Recipe validation
+│   │   │   │   └── builtin.rs      # Built-in recipe library
+│   │   │   ├── report/         # Report generation (Phase 4)
+│   │   │   │   ├── mod.rs          # Module exports, ReportData
+│   │   │   │   ├── template.rs     # Report template config
+│   │   │   │   ├── html.rs         # HTML report generator
+│   │   │   │   ├── markdown.rs     # Markdown report generator
+│   │   │   │   └── summary.rs      # Executive summary builder
+│   │   │   ├── export/         # Export formats (Phase 4)
+│   │   │   │   ├── mod.rs          # Module exports
+│   │   │   │   ├── csv.rs          # CSV exporter (results/hosts/findings)
+│   │   │   │   ├── template.rs     # Custom export template engine
+│   │   │   │   ├── scheduler.rs    # Export scheduling
+│   │   │   │   └── incremental.rs  # Incremental export tracking
+│   │   │   └── perf/           # Performance optimization (Phase 4)
+│   │   │       ├── mod.rs          # Module exports
+│   │   │       ├── cache.rs        # LRU cache implementation
+│   │   │       ├── pool.rs         # Connection pool (async mutex)
+│   │   │       └── metrics.rs      # Performance metrics collection
+│   │   └── tests/              # Integration tests (Phase 4)
+│   │       ├── integration_orchestration.rs  # Scan orchestration tests (9)
+│   │       ├── integration_workflow.rs       # Workflow engine tests (9)
+│   │       ├── integration_report.rs         # Report generation tests (7)
+│   │       ├── integration_export.rs         # Export format tests (8)
+│   │       ├── integration_plugin.rs         # Plugin system tests (6)
+│   │       └── integration_perf.rs           # Performance layer tests (6)
 │   ├── spectre-tui/        # TUI dashboard (18 files, 235 tests)
 │   │   ├── Cargo.toml
 │   │   └── src/
@@ -896,6 +924,6 @@ SPECTRE builds on the shoulders of giants:
 
 **SPECTRE** — _Unified Offensive Security_
 
-**Version:** 0.3.0 | **License:** Multi-license | **Language:** Rust + TypeScript | **Status:** Active Development
+**Version:** 0.4.0 | **License:** Multi-license | **Language:** Rust + TypeScript | **Status:** Active Development
 
 **Last Updated:** 2026-02-04

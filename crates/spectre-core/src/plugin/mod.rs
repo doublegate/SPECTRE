@@ -8,15 +8,21 @@
 //! - `spectre.*` Lua API for plugin interaction
 
 mod api;
+pub mod hooks;
 pub mod manifest;
+pub mod registry;
 mod sandbox;
+pub mod template;
 
 use std::path::{Path, PathBuf};
 
 use tracing::{debug, info, instrument, warn};
 
+pub use hooks::{HookContext, HookEvent, HookManager, HookRegistration};
 pub use manifest::{PluginManifest, PluginPermission};
+pub use registry::{PluginRegistry, RegistryEntry};
 pub use sandbox::PluginSandbox;
+pub use template::{PluginTemplateGenerator, PluginTemplateType};
 
 /// A discovered plugin
 #[derive(Debug, Clone)]

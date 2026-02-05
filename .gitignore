@@ -307,6 +307,28 @@ plugins/cache/
 plugins/tmp/
 # Plugin logs
 plugins/*.log
+# Plugin registry state
+plugins/registry.json
+
+# =============================================================================
+# Workflow & Recipe Data
+# =============================================================================
+# Workflow execution state
+workflows/*.state
+workflows/tmp/
+# Recipe cache
+recipes/cache/
+# Export state
+exports/*.state
+exports/tmp/
+
+# =============================================================================
+# Reports (generated)
+# =============================================================================
+# Generated reports (may contain sensitive findings)
+reports/
+*.report.html
+*.report.md
 
 # =============================================================================
 # Sprint Planning (to-dos/)

@@ -10,7 +10,88 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Planned
 - GUI application with Tauri 2.0 — Phase 5
 - MCP server implementation — Phase 6
-- Advanced features, workflows — Phase 4
+
+## [0.4.0] - 2026-02-04
+
+### Added
+
+#### Phase 4 Complete: Operation SPECTER — Advanced Features
+
+**6 new modules** (43 new source files) and **3 plugin extensions** in `spectre-core`:
+
+- **Scan Orchestration** (`orchestration/`, 7 files):
+  - `ScanChain` and `ScanChainBuilder` for chaining multiple scans with step conditions
+  - `StepCondition` enum (Always, PortOpen, ServiceDetected, HostUp, Custom) for conditional scan execution
+  - `ScanTemplate` with built-in library: quick-recon, full-audit, stealth-enum, web-focused, infrastructure
+  - `ScanSchedule` with cron-like expression parsing (minute/hour/day-of-month/month/day-of-week)
+  - `ScanProfile` and `ScanProfileStore` for user-defined scan configurations
+  - `AdaptiveTiming` with loss-rate monitoring and automatic timing template adjustment
+  - `Checkpoint` system for persisting and resuming interrupted scans
+
+- **Workflow Automation** (`workflow/`, 7 files):
+  - `WorkflowDefinition` DSL with steps, variables, conditionals, loops, retry logic
+  - `WorkflowParser` supporting YAML, JSON, and TOML input formats
+  - Async `WorkflowExecutor` with step-by-step execution, variable capture, progress tracking
+  - `VariableStore` with string interpolation and `{{variable}}` template substitution
+  - `StepCondition` evaluation against scan results for conditional branching
+  - Built-in workflow templates: recon-to-report, vuln-scan-chain, full-campaign
+  - `WorkflowPersistence` for save/load/list/delete of workflow definitions
+
+- **Recipe Management** (`recipe/`, 6 files):
+  - `Recipe` struct with operations, metadata, versioning, and tags
+  - `RecipeStorage` for file-based recipe persistence with JSON serialization
+  - `RecipeFormat` supporting JSON, YAML, and TOML import/export
+  - `RecipeSearch` with name matching, tag filtering, and operation type queries
+  - `RecipeValidator` with structural, semantic, and operation name validation
+  - Built-in recipe library: base64-decode, hex-to-ascii, url-decode, hash-identify, extract-urls, defang-urls
+
+- **Report Generation** (`report/`, 5 files):
+  - `ReportData` with `from_results()` for automatic summary, risk scoring, and findings aggregation
+  - `ReportTemplate` with configurable title, author, sections, and CSS customization
+  - `HtmlReportGenerator` producing standalone HTML with embedded CSS, severity color-coding, sortable tables
+  - `MarkdownReportGenerator` with structured headers, findings tables, and statistics sections
+  - `ExecutiveSummary` with risk score calculation (0-100), risk rating (Critical/High/Medium/Low), severity breakdown, top affected hosts
+
+- **Export Formats** (`export/`, 5 files):
+  - `CsvExporter` with three export modes: scan results, host summary, and findings
+  - `ExportTemplate` engine with `{{variable}}` substitution for custom export formats
+  - `ExportScheduler` for periodic automated exports with configurable intervals
+  - `IncrementalExport` tracking export state (last timestamp, count, hash) for delta exports
+  - State persistence for incremental export checkpoints
+
+- **Performance Optimization** (`perf/`, 4 files):
+  - Generic `LruCache<K, V>` with configurable capacity and O(1) get/insert via HashMap + VecDeque
+  - `ConnectionPool<T>` with async acquire/release, configurable max connections, idle limits, and timeouts
+  - `PerfMetrics` with async-safe timing stats (min/avg/max/p95/p99) and counter operations
+  - `MetricStats` computation with percentile calculation
+
+- **Advanced Plugin System** (`plugin/` extensions, 3 new files):
+  - `PluginRegistry` with register/unregister/search-by-tag/search-by-name, dependency resolution via DFS (circular dependency detection), semver version comparison, JSON persistence
+  - `HookManager` with 10 lifecycle events (PreScan, PostScan, PreAnalysis, PostAnalysis, PreReport, PostReport, PreExport, PostExport, OnError, OnComplete), priority-ordered hook execution, per-plugin enable/disable
+  - `PluginTemplateGenerator` for scaffolding 5 plugin types (Basic, Scanner, Report, Workflow, Analysis) with generated `plugin.toml` manifest and type-specific `init.lua` script
+
+- **Integration Tests** (6 test files, 45 tests):
+  - `integration_orchestration.rs` (9 tests): Scan chain builder, template library, scheduling, profile store, checkpoint save/load, adaptive timing, step conditions
+  - `integration_workflow.rs` (9 tests): YAML/JSON parsing, execution, variable propagation, conditional skipping, loop execution, template execution, persistence, variable substitution
+  - `integration_report.rs` (7 tests): Executive summary, HTML pipeline, Markdown pipeline, empty data, template sections, risk scoring, top affected hosts
+  - `integration_export.rs` (8 tests): CSV results/hosts/findings, custom template rendering, incremental export flow, state persistence, reset, variable substitution
+  - `integration_plugin.rs` (6 tests): Registry lifecycle, persistence, hook system, hook context data flow, template generation, version comparison
+  - `integration_perf.rs` (6 tests): LRU cache, async metrics, connection pool, pool exhaustion, multiple metrics
+
+### Changed
+- Workspace version: 0.3.0 -> 0.4.0
+- `spectre-core/src/lib.rs`: Added 6 new module declarations (orchestration, workflow, recipe, report, export, perf) — now 18 public modules
+- `spectre-core/src/error.rs`: Added 5 new error variants (OrchestrationError, WorkflowError, RecipeError, ReportError, ExportError) — now 20+ total
+- `spectre-core/src/plugin/mod.rs`: Added 3 new submodules (registry, hooks, template) with public re-exports
+
+### Technical Details
+- 118 Rust source files, ~31,000 lines of code
+- 856 tests total: 43 (spectre-cli) + 530 (spectre-core unit) + 235 (spectre-tui) + 3 (spectre-mcp doc-tests) + 45 (integration tests)
+- Zero clippy warnings with `-D warnings`
+- All formatting passes `cargo fmt --all --check`
+- New module test breakdown: orchestration (49), workflow (40), recipe (47), report (30), export (38), perf (31), plugin/registry (18), plugin/hooks (12), plugin/template (10), integration (45)
+- No new workspace dependencies — all new modules built using existing deps (serde, tokio, chrono, etc.)
+- Minimum supported Rust version: 1.88
 
 ## [0.3.0] - 2026-02-04
 
@@ -469,13 +550,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 | v0.1.0 | **Operation BLACKOUT** | Foundation - CLI skeleton, component integration |
 | v0.2.0 | **Operation NIGHTFALL** | Data pipeline, scan-to-analysis automation |
 | v0.3.0 | **Operation PHANTOM** | Campaign orchestration, multi-target coordination |
-| v0.4.0 | **Operation ECLIPSE** | AI-assisted targeting, threat intel integration |
+| v0.4.0 | **Operation SPECTER** | Advanced features, workflows, reporting |
 | v0.5.0 | **Operation SHADOW** | Visual campaign planning, collaboration |
 | v1.0.0 | **Operation GENESIS** | Production release - full platform capability |
 
 ---
 
-[Unreleased]: https://github.com/doublegate/SPECTRE/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/doublegate/SPECTRE/compare/v0.4.0...HEAD
+[0.4.0]: https://github.com/doublegate/SPECTRE/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/doublegate/SPECTRE/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/doublegate/SPECTRE/compare/v0.1.2...v0.2.0
 [0.1.2]: https://github.com/doublegate/SPECTRE/compare/v0.1.1...v0.1.2

@@ -16,6 +16,12 @@
 //! - [`pipeline`] - Composable data pipeline with typed stages
 //! - [`campaign`] - Campaign state management with SQLite persistence
 //! - [`plugin`] - Lua 5.4 plugin system with sandboxing
+//! - [`orchestration`] - Advanced scan orchestration (chaining, templates, scheduling)
+//! - [`workflow`] - Workflow automation with DSL and execution engine
+//! - [`recipe`] - Recipe management with storage, versioning, and search
+//! - [`report`] - Report generation (HTML, Markdown)
+//! - [`export`] - Export formats (CSV, custom templates, incremental)
+//! - [`perf`] - Performance optimization (caching, pooling, metrics)
 //!
 //! # Example
 //!
@@ -54,13 +60,19 @@ pub mod chef;
 pub mod comms;
 pub mod config;
 pub mod error;
+pub mod export;
 pub mod job;
 pub mod logging;
+pub mod orchestration;
+pub mod perf;
 pub mod pipeline;
 pub mod plugin;
+pub mod recipe;
+pub mod report;
 pub mod results;
 pub mod scan;
 pub mod target;
+pub mod workflow;
 
 /// Re-export commonly used types
 pub use error::{Result, SpectreError};

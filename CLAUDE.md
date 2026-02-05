@@ -17,8 +17,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Phase 1:** Operation BLACKOUT (v0.1.x) - Foundation/CLI skeleton **COMPLETE**
 **Phase 2:** Operation NIGHTFALL (v0.2.x) - Core Orchestration **COMPLETE**
 **Phase 3:** Operation PHANTOM (v0.3.x) - TUI Dashboard **COMPLETE**
+**Phase 4:** Operation SPECTER (v0.4.x) - Advanced Features **COMPLETE**
 
-**SPECTRE Tests:** 505 (43 CLI + 224 core + 235 TUI + 3 doc-tests) | **Code:** ~20,800 lines Rust (75 files)
+**SPECTRE Tests:** 856 (43 CLI + 530 core + 235 TUI + 3 doc-tests + 45 integration) | **Code:** ~31,000 lines Rust (118 files)
 
 **Repository:** [github.com/doublegate/SPECTRE](https://github.com/doublegate/SPECTRE)
 
@@ -96,20 +97,27 @@ crates/
 │       ├── commands/       # 12 subcommands: scan, chef, send, receive, identity, peer,
 │       │                   # status, config, completions, campaign, pipeline, plugin
 │       └── output/         # table (comfy-table) and json (serde_json) formatters
-├── spectre-core/       # Core orchestration library (38 files, 224 tests)
-│   └── src/
-│       ├── config/         # TOML config with file discovery and env var support
-│       ├── scan/           # Scanner trait, port/target parsing, 8 scan types
-│       ├── chef/           # Chef trait, MCP client, Docker management (bollard)
-│       ├── comms/          # Identity generation/storage, peer management
-│       ├── target/         # Priority queue, scope enforcer, CIDR expansion, DNS (40 tests)
-│       ├── job/            # State machine, concurrency control, events (35 tests)
-│       ├── results/        # Finding model, JSON/XML/greppable output, stats (23 tests)
-│       ├── pipeline/       # Composable stages, builder API, metrics (17 tests)
-│       ├── campaign/       # SQLite persistence, phases, artifacts (28 tests)
-│       ├── plugin/         # Lua 5.4 sandbox, manifest, permissions (30 tests)
-│       ├── error.rs        # SpectreError enum (13 variants, thiserror)
-│       └── logging.rs      # tracing-subscriber with env-filter
+├── spectre-core/       # Core orchestration library (81 files, 530 unit + 45 integration tests)
+│   ├── src/
+│   │   ├── config/         # TOML config with file discovery and env var support
+│   │   ├── scan/           # Scanner trait, port/target parsing, 8 scan types
+│   │   ├── chef/           # Chef trait, MCP client, Docker management (bollard)
+│   │   ├── comms/          # Identity generation/storage, peer management
+│   │   ├── target/         # Priority queue, scope enforcer, CIDR expansion, DNS
+│   │   ├── job/            # State machine, concurrency control, events
+│   │   ├── results/        # Finding model, JSON/XML/greppable output, stats
+│   │   ├── pipeline/       # Composable stages, builder API, metrics
+│   │   ├── campaign/       # SQLite persistence, phases, artifacts
+│   │   ├── plugin/         # Lua 5.4 sandbox, manifest, permissions, registry, hooks, templates
+│   │   ├── orchestration/  # Scan chaining, templates, scheduling, profiles, adaptive timing, checkpoint
+│   │   ├── workflow/       # YAML/JSON/TOML DSL, parser, async executor, variables, loops
+│   │   ├── recipe/         # Storage, import/export, versioning, search, validation, built-in library
+│   │   ├── report/         # HTML and Markdown generators, executive summary, risk scoring
+│   │   ├── export/         # CSV exporter, custom templates, incremental export tracking
+│   │   ├── perf/           # LRU cache, connection pool, performance metrics
+│   │   ├── error.rs        # SpectreError enum (20+ variants, thiserror)
+│   │   └── logging.rs      # tracing-subscriber with env-filter
+│   └── tests/              # Integration tests (45 tests across 6 files)
 ├── spectre-tui/        # TUI dashboard (18 files, 235 tests)
 │   └── src/
 │       ├── lib.rs          # Module declarations, re-exports
@@ -250,7 +258,7 @@ Development is organized into 7 phases (56 sprints total):
 | 1 | Operation BLACKOUT | v0.1.x | Foundation - CLI skeleton, component integration **COMPLETE** |
 | 2 | Operation NIGHTFALL | v0.2.x | Core orchestration - target, job, results, pipeline, campaign, plugins **COMPLETE** |
 | 3 | Operation PHANTOM | v0.3.x | TUI dashboard - 4-panel layout, 5 themes, command input, vim-style nav **COMPLETE** |
-| 4 | Operation SPECTER | v0.4.x | Advanced features, workflows, plugins |
+| 4 | Operation SPECTER | v0.4.x | Advanced features - orchestration, workflows, recipes, reports, exports, perf, plugins **COMPLETE** |
 | 5 | Operation SHADOW | v0.5.x | GUI application (Tauri 2.0) |
 | 6 | Operation WRAITH | v0.6.x | MCP server implementation |
 | 7 | Operation GENESIS | v1.0.0 | Production release |
