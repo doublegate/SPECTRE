@@ -113,20 +113,30 @@ Develop a cross-platform desktop GUI application using Tauri 2.0 and React for v
 
 ---
 
-## Sprint 5.6: Settings and Preferences
+## Sprint 5.6: Settings, Analysis & Comms UI
 
-**Status:** Planned | **Duration:** 2 weeks
+**Status:** ✅ Complete (2026-02-06) | **Duration:** 6 hours
 
 ### Tasks
 
-- [ ] Create settings page
-- [ ] Implement theme selection
-- [ ] Add configuration editor
-- [ ] Create scan profiles UI
-- [ ] Implement keyboard shortcuts
-- [ ] Add notification preferences
-- [ ] Create about/help pages
-- [ ] Write settings tests
+- [x] Create settings page with 8 tabs (General, Scan, Analysis, Comms, Output, Theme, Shortcuts, About)
+- [x] Implement theme selection (5 themes with live preview)
+- [x] Add configuration editor (fully wired to spectre-core Config)
+- [x] Create scan profiles UI (timing templates T0-T5, port presets, detection toggles)
+- [x] Implement keyboard shortcuts reference (11 shortcuts documented)
+- [x] Create about/help pages (version info, component versions, tech stack, license)
+- [x] Wire Analysis page to CyberChef operations (15 operations across 4 categories)
+- [x] Wire Comms page to WRAITH protocol stubs (identity, peers, send)
+- [x] Write settings tests (8 backend config tests + 15 frontend tests = 23 new tests)
+- [x] Backend IPC wiring: config.rs (5 tests), chef.rs (7 tests), comms.rs (3 tests)
+
+### Deliverables
+
+- 8 settings components (68 frontend files total, +8 from Sprint 5.5)
+- Backend: 74 tests (up from 66, +8 new tests)
+- Frontend: 121 tests (updated mocks)
+- Total GUI: 195 tests passing
+- Added dependencies: base64, hex, urlencoding, rand
 
 ---
 

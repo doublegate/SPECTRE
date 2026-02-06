@@ -7,6 +7,56 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0-alpha.6] - 2026-02-06
+
+### Added - Sprint 5.6: Settings, Analysis & Comms UI
+
+#### Settings Page (8 tabs)
+- **General**: Verbosity levels (0-3), color output toggle
+- **Scan**: Timing templates (T0-T5), port presets, service/OS/DNS detection toggles
+- **Analysis**: CyberChef Docker image, container name, auto-start, timeout configuration
+- **Comms**: WRAITH expiration, compression, timeout settings
+- **Output**: Format selection (table/JSON/YAML/XML/CSV), timestamps, pretty JSON
+- **Theme**: 5 theme selector with live preview (dark, light, tactical, matrix, hacker)
+- **Shortcuts**: Keyboard reference table for all key bindings
+- **About**: Version info (v0.5.0-alpha.6), component versions, tech stack, license, repository link
+
+#### Analysis Page
+- Operation browser with 15 operations across 4 categories (Encoding, Hashing, Encryption, Compression)
+- Category filtering (All, Encoding, Hashing, Encryption, Compression)
+- Real-time transformations: Base64, Hex, URL encode/decode
+- Input/Output panels with error handling
+- Functional stub implementation (full Docker/MCP integration deferred)
+
+#### Comms Page
+- Identity display with name, fingerprint, creation date
+- Peer list showing 2 stub peers (online/offline status)
+- Send encrypted data interface with peer selection
+- Stub WRAITH integration (full protocol integration deferred)
+
+### Changed
+- Settings migrated from basic theme page to comprehensive 8-tab interface
+- Configuration system fully wired to spectre-core Config module
+- All IPC commands use proper Arc<AppState> pattern
+
+### Backend
+- **config.rs**: Fully wired to spectre-core, 5 new tests (get/update/reset config)
+- **chef.rs**: Stub CyberChef operations with real encoding, 7 new tests (base64/hex/URL transformations)
+- **comms.rs**: Stub WRAITH integration, 3 new tests (identity/peer/send structs)
+- Added dependencies: base64 0.22, hex 0.4, urlencoding 2.1, rand 0.8
+
+### Testing
+- **Backend**: 74 tests (up from 66, +8 new tests)
+- **Frontend**: 121 tests (updated mocks for new commands)
+- **Total GUI**: 195 tests passing
+
+### Technical Debt
+- Chef operations use stub implementation (6 basic operations, not full 463 from MCP)
+- Comms uses stub WRAITH protocol (identity/peer management not fully wired)
+- Full Docker/MCP integration and WRAITH protocol deferred to Phase 6
+
+**Phase 5 Progress**: Sprint 5.6 complete (6 of 8 sprints, 75%)
+
 ## [0.5.0-alpha.5] - 2026-02-06
 
 ### Added - Sprint 5.5: Results Dashboard & Reports

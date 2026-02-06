@@ -37,9 +37,12 @@ pub fn run() {
             // Chef
             commands::chef::execute_chef,
             commands::chef::list_chef_operations,
+            commands::chef::get_chef_status,
             // Comms
             commands::comms::get_identity,
+            commands::comms::generate_identity,
             commands::comms::list_peers,
+            commands::comms::add_peer,
             commands::comms::send_data,
             // Campaign
             commands::campaign::create_campaign,
@@ -51,7 +54,8 @@ pub fn run() {
             commands::campaign::archive_campaign,
             // Config
             commands::config::get_config,
-            commands::config::set_config,
+            commands::config::update_config,
+            commands::config::reset_config,
             // Results
             commands::results::get_dashboard_stats,
             commands::results::get_findings,

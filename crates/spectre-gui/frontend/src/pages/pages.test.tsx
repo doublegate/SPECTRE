@@ -49,6 +49,39 @@ vi.mock("@tauri-apps/api/core", () => ({
     if (cmd === "list_campaigns") {
       return Promise.resolve([]);
     }
+    if (cmd === "get_config") {
+      return Promise.resolve({
+        general: { verbosity: 0, color: true },
+        scan: {
+          default_ports: "common",
+          default_timing: 3,
+          service_detection: false,
+          os_detection: false,
+          resolve_dns: true,
+        },
+        chef: {
+          docker_image: "doublegate/cyberchef-mcp:latest",
+          container_name: "spectre-cyberchef",
+          auto_start: true,
+          timeout: 30,
+        },
+        comms: { default_expiration: 0, compress: false, timeout: 30 },
+        output: { format: "table", timestamps: true, pretty_json: true },
+      });
+    }
+    if (cmd === "list_chef_operations") {
+      return Promise.resolve([]);
+    }
+    if (cmd === "get_identity") {
+      return Promise.resolve({
+        name: "test",
+        fingerprint: "0x123",
+        created: "2026-02-06",
+      });
+    }
+    if (cmd === "list_peers") {
+      return Promise.resolve([]);
+    }
     return Promise.reject("Unknown command");
   }),
 }));
@@ -136,11 +169,13 @@ describe("Comms", () => {
     expect(screen.getByText("Secure Communications")).toBeInTheDocument();
   });
 
-  it("renders identity, peers, and transfer sections", () => {
+  it("renders identity, peers, and transfer sections", async () => {
     renderWithRouter(<Comms />);
     expect(screen.getByText("Identity")).toBeInTheDocument();
-    expect(screen.getByText("Peers")).toBeInTheDocument();
-    expect(screen.getByText("Transfer History")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Trusted Peers")).toBeInTheDocument();
+    });
+    expect(screen.getByText("Send Encrypted Data")).toBeInTheDocument();
   });
 });
 
@@ -184,12 +219,15 @@ describe("Settings", () => {
     expect(screen.getByText("Settings")).toBeInTheDocument();
   });
 
-  it("renders theme options", () => {
+  it("renders all setting tabs", () => {
     renderWithRouter(<Settings />);
-    expect(screen.getByText("Dark")).toBeInTheDocument();
-    expect(screen.getByText("Light")).toBeInTheDocument();
-    expect(screen.getByText("Tactical")).toBeInTheDocument();
-    expect(screen.getByText("Matrix")).toBeInTheDocument();
-    expect(screen.getByText("Hacker")).toBeInTheDocument();
+    expect(screen.getByText("General")).toBeInTheDocument();
+    expect(screen.getByText("Scan")).toBeInTheDocument();
+    expect(screen.getByText("Analysis")).toBeInTheDocument();
+    expect(screen.getByText("Comms")).toBeInTheDocument();
+    expect(screen.getByText("Output")).toBeInTheDocument();
+    expect(screen.getByText("Theme")).toBeInTheDocument();
+    expect(screen.getByText("Shortcuts")).toBeInTheDocument();
+    expect(screen.getByText("About")).toBeInTheDocument();
   });
 });
