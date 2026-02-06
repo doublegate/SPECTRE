@@ -109,3 +109,98 @@ jobs:
             ${{ matrix.artifact }}.tar.gz
             ${{ matrix.artifact }}.zip
           fail_on_unmatched_files: false
+
+  # Build GUI installers
+  build-gui:
+    name: Build GUI Installers (${{ matrix.platform.name }})
+    strategy:
+      fail-fast: false
+      matrix:
+        platform:
+          - name: Linux x86_64
+            os: ubuntu-latest
+            rust: stable
+            target: x86_64-unknown-linux-gnu
+          - name: macOS x86_64
+            os: macos-13
+            rust: stable
+            target: x86_64-apple-darwin
+          - name: macOS ARM64
+            os: macos-latest
+            rust: stable
+            target: aarch64-apple-darwin
+          - name: Windows x86_64
+            os: windows-latest
+            rust: stable
+            target: x86_64-pc-windows-msvc
+    runs-on: ${{ matrix.platform.os }}
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          submodules: false
+
+      - name: Initialize submodules
+        run: git submodule update --init --depth 1 components/prtip components/wraith-protocol components/cyberchef-mcp
+
+      - name: Install system dependencies (Linux)
+        if: matrix.platform.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libwebkit2gtk-4.1-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libssl-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            libpcap-dev
+
+      - name: Install system dependencies (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install libpcap
+
+      - name: Install system dependencies (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          # Download Npcap SDK for ProRT-IP
+          Invoke-WebRequest -Uri "https://npcap.com/dist/npcap-sdk-1.13.zip" -OutFile "npcap-sdk.zip"
+          Expand-Archive -Path "npcap-sdk.zip" -DestinationPath "npcap-sdk"
+          echo "LIB=${{ github.workspace }}\npcap-sdk\Lib\x64" >> $env:GITHUB_ENV
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ matrix.platform.rust }}
+          targets: ${{ matrix.platform.target }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: "crates/spectre-gui -> target"
+          key: ${{ matrix.platform.target }}
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
+          cache-dependency-path: crates/spectre-gui/frontend/pnpm-lock.yaml
+
+      - name: Install frontend dependencies
+        run: |
+          cd crates/spectre-gui/frontend
+          pnpm install --frozen-lockfile
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          projectPath: crates/spectre-gui
+          tauriScript: pnpm tauri
+          args: --target ${{ matrix.platform.target }}

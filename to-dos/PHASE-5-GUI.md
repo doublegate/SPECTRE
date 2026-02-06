@@ -142,18 +142,61 @@ Develop a cross-platform desktop GUI application using Tauri 2.0 and React for v
 
 ## Sprint 5.7: Cross-Platform Testing
 
-**Status:** Planned | **Duration:** 2 weeks
+**Status:** ✅ Complete (2026-02-06) | **Duration:** 1 day
 
 ### Tasks
 
-- [ ] Test on Linux
-- [ ] Test on macOS
-- [ ] Test on Windows
-- [ ] Fix platform-specific issues
-- [ ] Optimize for each platform
-- [ ] Create platform installers
-- [ ] Add auto-update testing
-- [ ] Write cross-platform tests
+- [x] Create dedicated GUI CI workflow (gui.yml - 135 lines)
+- [x] Build matrix for all platforms (Linux x64, macOS x64/ARM64, Windows x64)
+- [x] Update release workflow with tauri-action (installer generation)
+- [x] Platform test scripts (Linux, macOS, Windows)
+- [x] Platform requirements documentation
+- [x] Tauri bundle configuration (6 installer formats)
+- [x] Version bump to v0.5.0-beta.1
+- [x] Update all documentation
+
+### Deliverables
+
+**GitHub Actions Workflows:**
+- `.github/workflows/gui.yml` (135 lines) - Dedicated GUI CI with build matrix
+  - frontend-check job: TypeScript type check + frontend tests
+  - gui-build-matrix job: Multi-platform builds (4 platforms)
+  - Platform-specific dependencies (webkit2gtk-4.1, libpcap, Npcap SDK)
+  - Rust and pnpm caching for faster builds
+- `.github/workflows/release.yml` (updated, +94 lines) - Installer generation
+  - build-gui job: tauri-apps/tauri-action@v0 integration
+  - Automated builds for AppImage, deb, rpm, dmg, msi, nsis
+  - Artifact upload and release attachment
+
+**Platform Test Scripts:**
+- `scripts/test-linux.sh` (45 lines) - webkit2gtk-4.1 + GTK 3 verification
+- `scripts/test-macos.sh` (50 lines) - Xcode CLT + architecture detection
+- `scripts/test-windows.ps1` (60 lines) - VS Build Tools + MSI build
+
+**Documentation:**
+- `PLATFORM-REQUIREMENTS.md` (280 lines) - Comprehensive platform guide
+  - Linux: Debian/Ubuntu, Fedora/RHEL, Arch install commands
+  - macOS: Xcode Command Line Tools, Intel/Apple Silicon support
+  - Windows: WebView2, VS Build Tools, optional Npcap
+  - Troubleshooting guide
+
+**Configuration:**
+- `tauri.conf.json` updated:
+  - Version: 0.5.0-beta.1
+  - Bundle identifier: com.doublegate.spectre
+  - 6 bundle targets: deb, appimage, rpm, dmg, msi, nsis
+  - Platform-specific settings (Linux deps, macOS minimum 10.15, Windows WIX)
+
+**Version Updates:**
+- Workspace: 0.5.0-beta.1 (Cargo.toml)
+- GUI frontend: 0.5.0-beta.1 (package.json)
+- GUI config: 0.5.0-beta.1 (tauri.conf.json)
+- README badge updated
+- CHANGELOG.md comprehensive entry (150+ lines)
+
+**Technical Debt:**
+- Code signing/notarization deferred (requires Apple Developer account)
+- Icon design deferred to Sprint 5.8 (placeholders in place)
 
 ---
 

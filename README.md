@@ -13,7 +13,7 @@ A unified offensive security toolkit combining wire-speed secure communications,
   <a href="https://github.com/doublegate/SPECTRE"><img src="https://img.shields.io/github/stars/doublegate/SPECTRE?style=flat-square" alt="GitHub Stars"></a>
   <a href="https://github.com/doublegate/SPECTRE/fork"><img src="https://img.shields.io/github/forks/doublegate/SPECTRE?style=flat-square" alt="GitHub Forks"></a>
   <a href="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml"><img src="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
-  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.5.0--alpha.6-blue.svg" alt="Version"></a>
+  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.5.0--beta.1-blue.svg" alt="Version"></a>
   <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.92%2B-orange.svg" alt="Rust"></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-22%2B-green.svg" alt="Node.js"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT%2FGPLv3%2FApache--2.0-green.svg" alt="License"></a>
@@ -584,6 +584,29 @@ Claude: I'll execute this multi-step workflow:
 - **libpcap** (Linux/macOS) or **Npcap** (Windows) for raw packet access
 
 ### Installation
+
+#### Pre-built Binaries (Recommended for End Users)
+
+Download the latest release for your platform from [GitHub Releases](https://github.com/doublegate/SPECTRE/releases):
+
+**Linux:**
+- `spectre-gui-linux.AppImage` (self-contained, no installation required)
+- `spectre-gui-linux.deb` (Debian/Ubuntu)
+- `spectre-gui-linux.rpm` (Fedora/RHEL/CentOS)
+
+**macOS:**
+- `spectre-gui-macos-x86_64.dmg` (Intel Macs)
+- `spectre-gui-macos-aarch64.dmg` (Apple Silicon M1/M2/M3)
+
+**Windows:**
+- `spectre-gui-windows.msi` (Windows Installer)
+- `spectre-gui-windows.exe` (Nullsoft installer)
+
+**Platform Requirements:**
+
+See [Platform Requirements](crates/spectre-gui/PLATFORM-REQUIREMENTS.md) for detailed system dependencies.
+
+#### Building from Source
 
 **Clone SPECTRE and submodules:**
 

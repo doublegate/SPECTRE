@@ -1,8 +1,8 @@
 {
   "$schema": "https://raw.githubusercontent.com/tauri-apps/tauri/dev/crates/tauri-utils/schema.json",
   "productName": "SPECTRE",
-  "version": "0.5.0-alpha.4",
-  "identifier": "com.spectre.gui",
+  "version": "0.5.0-beta.1",
+  "identifier": "com.doublegate.spectre",
   "build": {
     "devUrl": "http://localhost:1420",
     "beforeBuildCommand": "sh -c 'cd frontend && pnpm build'",
@@ -29,7 +29,8 @@
   },
   "bundle": {
     "active": true,
-    "targets": "all",
+    "targets": ["deb", "appimage", "rpm", "dmg", "msi", "nsis"],
+    "identifier": "com.doublegate.spectre",
     "icon": [
       "icons/32x32.png",
       "icons/128x128.png",
@@ -37,9 +38,34 @@
       "icons/icon.icns",
       "icons/icon.ico"
     ],
+    "resources": [],
+    "externalBin": [],
+    "copyright": "Copyright © 2026 DoubleGate. All rights reserved.",
+    "category": "Security",
+    "shortDescription": "Unified offensive security platform",
+    "longDescription": "SPECTRE integrates ProRT-IP, CyberChef-MCP, and WRAITH-Protocol into a unified GUI for network reconnaissance, data analysis, and secure communications.",
+    "license": "MIT",
+    "licenseFile": "../../../LICENSE",
     "linux": {
+      "deb": {
+        "depends": ["libwebkit2gtk-4.1-0", "libgtk-3-0"]
+      },
       "appimage": {
         "bundleMediaFramework": false
+      }
+    },
+    "macOS": {
+      "minimumSystemVersion": "10.15",
+      "hardenedRuntime": true,
+      "entitlements": null,
+      "exceptionDomain": null
+    },
+    "windows": {
+      "certificateThumbprint": null,
+      "digestAlgorithm": "sha256",
+      "timestampUrl": "",
+      "wix": {
+        "language": "en-US"
       }
     }
   }

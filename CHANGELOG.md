@@ -7,6 +7,143 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0-beta.1] - 2026-02-06
+
+### Added - Sprint 5.7: Cross-Platform Testing
+
+#### GitHub Actions Workflows
+
+**`.github/workflows/gui.yml` (135 lines):**
+- Dedicated GUI CI/CD workflow with path filtering (`crates/spectre-gui/**`)
+- **frontend-check** job: TypeScript type checking and frontend tests
+- **gui-build-matrix** job: Multi-platform builds
+  - Linux x86_64 (ubuntu-latest)
+  - macOS x86_64 (macos-13)
+  - macOS ARM64 (macos-latest)
+  - Windows x86_64 (windows-latest)
+- Platform-specific system dependencies:
+  - Linux: webkit2gtk-4.1, GTK 3, libayatana-appindicator3, librsvg2, libpcap
+  - macOS: libpcap via Homebrew
+  - Windows: Npcap SDK for ProRT-IP
+- Rust and pnpm caching with Swatinem/rust-cache@v2 and pnpm/action-setup@v4
+- Frontend build before Rust build (Tauri requirement)
+- Tests run on all platforms with verbose output
+
+**`.github/workflows/release.yml` (updated, +94 lines):**
+- **build-gui** job: Automated installer generation using `tauri-apps/tauri-action@v0`
+- Build matrix for 4 platforms (Linux x64, macOS x64/ARM64, Windows x64)
+- Installer formats:
+  - Linux: AppImage, .deb, .rpm
+  - macOS: .dmg (Intel and Apple Silicon)
+  - Windows: .msi, .exe (NSIS)
+- Automatic release asset attachment with GITHUB_TOKEN
+- Platform-specific dependency installation
+- pnpm 9 + Node.js 22 setup with caching
+
+#### Platform Test Scripts
+
+**`crates/spectre-gui/scripts/test-linux.sh` (45 lines):**
+- Checks webkit2gtk-4.1 and GTK 3 with pkg-config
+- Builds frontend with pnpm
+- Runs cargo build and test for spectre-gui
+- Optional AppImage build if Tauri CLI installed
+- Provides installation commands for missing dependencies
+
+**`crates/spectre-gui/scripts/test-macos.sh` (50 lines):**
+- Verifies Xcode Command Line Tools installation
+- Auto-detects architecture (Intel x86_64 or Apple Silicon ARM64)
+- Builds for detected architecture
+- Tests on current platform
+- Optional DMG build if Tauri CLI installed
+
+**`crates/spectre-gui/scripts/test-windows.ps1` (60 lines):**
+- Checks Visual Studio Build Tools with vswhere
+- Builds frontend and GUI for x86_64-pc-windows-msvc
+- Runs tests with proper exit code handling
+- Optional MSI build if Tauri CLI installed
+- Color-coded PowerShell output
+
+#### Documentation
+
+**`crates/spectre-gui/PLATFORM-REQUIREMENTS.md` (280 lines):**
+- Comprehensive platform requirements documentation
+- Linux section:
+  - System dependencies: webkit2gtk-4.1, GTK 3.24+, libayatana-appindicator3, librsvg2, libpcap
+  - Installation commands for Debian/Ubuntu, Fedora/RHEL, Arch Linux
+- macOS section:
+  - Minimum OS: macOS 10.15 (Catalina)
+  - Xcode Command Line Tools + libpcap
+  - Intel and Apple Silicon support
+- Windows section:
+  - Minimum OS: Windows 10 1809+
+  - WebView2 Runtime (bundled)
+  - Visual C++ Build Tools for development
+  - Optional Npcap for network scanning
+- Troubleshooting guide for common issues
+- End-user vs. developer requirements
+
+### Changed
+
+**`crates/spectre-gui/tauri.conf.json`:**
+- Version updated: 0.5.0-alpha.4 → 0.5.0-beta.1
+- Bundle identifier standardized: com.spectre.gui → com.doublegate.spectre
+- Bundle targets expanded: "all" → ["deb", "appimage", "rpm", "dmg", "msi", "nsis"]
+- Added comprehensive bundle metadata:
+  - Copyright: "Copyright © 2026 DoubleGate. All rights reserved."
+  - Category: "Security"
+  - Short/long descriptions
+  - License: "MIT" with licenseFile reference
+- Linux deb dependencies: libwebkit2gtk-4.1-0, libgtk-3-0
+- macOS minimumSystemVersion: "10.15", hardenedRuntime: true
+- Windows WIX language: "en-US", digestAlgorithm: "sha256"
+
+**Version Numbers:**
+- Workspace: 0.5.0-alpha.4 → 0.5.0-beta.1 (`Cargo.toml`)
+- GUI frontend: 0.5.0-alpha.4 → 0.5.0-beta.1 (`package.json`)
+- GUI config: 0.5.0-alpha.4 → 0.5.0-beta.1 (`tauri.conf.json`)
+
+### Technical Details
+
+**CI/CD Pipeline:**
+- 4 new workflow jobs: frontend-check, gui-build-matrix (4 platforms)
+- Caching strategy: Rust cargo cache + pnpm node_modules cache
+- Build matrix uses fail-fast: false (allow partial success)
+- Submodule initialization: shallow clone (depth 1) for speed
+- Frontend tests run in dedicated job for fast feedback
+
+**Installer Formats:**
+- Linux: AppImage (self-contained), deb (Debian/Ubuntu), rpm (Fedora/RHEL)
+- macOS: dmg disk image (universal or architecture-specific)
+- Windows: msi (Windows Installer), nsis (Nullsoft installer)
+
+**Platform Support Matrix:**
+- Linux: x86_64-unknown-linux-gnu
+- macOS: x86_64-apple-darwin (Intel), aarch64-apple-darwin (Apple Silicon)
+- Windows: x86_64-pc-windows-msvc
+
+### Testing
+
+**Test Scripts:**
+- 3 platform-specific test scripts (155 total lines)
+- Executable permissions set on .sh scripts
+- Comprehensive dependency verification
+- Optional bundle builds if Tauri CLI installed
+
+### Technical Debt
+
+**Deferred:**
+- Code signing and notarization (macOS): Requires Apple Developer account and certificates
+- Windows code signing: Requires certificate thumbprint
+- Icon assets: Currently using placeholder icons (design deferred to Sprint 5.8)
+
+**Future Enhancements:**
+- Automated notarization workflow for macOS
+- Windows Authenticode signing
+- Linux package repository publishing (apt/yum/AUR)
+
+**Phase 5 Progress**: Sprint 5.7 complete (7 of 8 sprints, 87.5%)
+**Next Sprint**: 5.8 - Polish & Release (v0.5.0)
+
 ## [0.5.0-alpha.6] - 2026-02-06
 
 ### Added - Sprint 5.6: Settings, Analysis & Comms UI
