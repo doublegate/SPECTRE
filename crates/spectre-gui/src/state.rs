@@ -1,9 +1,11 @@
+use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
 
 use spectre_core::campaign::CampaignStore;
 use spectre_core::config::Config;
 use tokio::sync::{Mutex, RwLock};
+use tokio::task::JoinHandle;
 
 /// Shared application state managed by Tauri.
 ///
@@ -14,6 +16,8 @@ pub struct AppState {
     pub config: RwLock<Config>,
     /// Campaign persistent storage
     pub campaign_store: Arc<Mutex<Option<CampaignStore>>>,
+    /// Active scan task handles (scan_id -> task handle)
+    pub active_scans: Mutex<HashMap<String, JoinHandle<()>>>,
 }
 
 impl AppState {
@@ -22,6 +26,7 @@ impl AppState {
         Arc::new(Self {
             config: RwLock::new(config),
             campaign_store: Arc::new(Mutex::new(None)),
+            active_scans: Mutex::new(HashMap::new()),
         })
     }
 
@@ -64,6 +69,7 @@ impl Default for AppState {
         Self {
             config: RwLock::new(Config::default()),
             campaign_store: Arc::new(Mutex::new(None)),
+            active_scans: Mutex::new(HashMap::new()),
         }
     }
 }

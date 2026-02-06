@@ -7,6 +7,104 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0-alpha.4] - 2026-02-06
+
+### Added
+
+#### Sprint 5.4: Scan Visualization with D3.js Network Topology and Real-Time Event Streaming
+
+**Backend Implementation (Rust):**
+- **Fully wired scan IPC commands to spectre-core Scanner**: Replaced stubbed handlers in `crates/spectre-gui/src/commands/scan.rs` with complete implementation (288 lines):
+  - `start_scan`: Creates Scanner from config, parses targets/ports/scan types, spawns async tokio task, emits real-time events via `app_handle.emit()`, returns unique scan_id
+  - `stop_scan`: Aborts running scan by scan_id using `JoinHandle::abort()`
+  - `get_active_scans`: Lists all in-progress scan IDs
+  - `get_scan_results`: Placeholder (results streamed via events)
+- **Enhanced event payload types** (`crates/spectre-gui/src/events.rs`): Added scan_id to all events, expanded `ScanResultEvent` to include full host data (hostname, ports[], os), added `PortInfo` and `OsInfo` structs, implemented `From` trait conversions from spectre-core types
+- **Real-time event streaming architecture**: Background tokio tasks emit 4 event types:
+  - `scan:progress` - Emitted after each host (completed, total, percent, current_target, rate_pps)
+  - `scan:result` - Emitted per discovered host (ip, hostname, ports with service/version, OS fingerprint)
+  - `scan:complete` - Emitted on scan finish (hosts_scanned, open_ports, services_found, duration_ms)
+  - `scan:error` - Emitted on failures (scan_id, error message, target)
+- **Updated AppState with scan tracking** (`crates/spectre-gui/src/state.rs`): Added `active_scans: Mutex<HashMap<String, JoinHandle<()>>>` for managing concurrent scans
+- **Added 10 new Rust tests**: Event serialization (progress, result, complete, error), type conversions (PortInfo, OsInfo), scan request parsing (types, timing, ports)
+
+**Frontend Components (React + D3.js):**
+- **NetworkTopology** (`frontend/src/components/scan/NetworkTopology.tsx`, 218 lines): D3.js v7 force-directed graph visualization
+  - Nodes represent hosts (colored by severity: critical=red, high=orange, medium=yellow, low=green, info=gray)
+  - Edges connect hosts in same subnet (subnet-based network relationships)
+  - Interactive: zoom/pan (d3.zoom), drag nodes (d3.drag), click nodes to open HostCard
+  - Real-time updates: uses D3 enter/update/exit pattern to add nodes as scan:result events arrive
+  - Force simulation with charge repulsion, link distance, collision detection, center gravity
+  - Legend overlay shows severity colors and interaction hints
+  - Cleanup: stops simulation on unmount to prevent memory leaks
+- **ScanConfigForm** (`frontend/src/components/scan/ScanConfigForm.tsx`, 210 lines): Scan configuration interface
+  - Targets: textarea supporting IPs, CIDR ranges, hostnames (comma/newline separated)
+  - Ports: input for port ranges (22,80,443 or 1-1000)
+  - Scan Type: dropdown with 8 types (SYN, Connect, UDP, ACK, FIN, Xmas, Null, Window) and descriptions
+  - Timing Template: dropdown T0-T5 (Paranoid to Insane) with descriptions
+  - Checkboxes: Service Detection (enabled by default), OS Detection (disabled by default)
+  - Validation: checks target format, port format, shows inline errors
+  - "Start Scan" button (disabled during scan)
+- **ScanProgress** (`frontend/src/components/scan/ScanProgress.tsx`, 77 lines): Real-time progress tracking
+  - Progress bar animated on scan:progress events
+  - Displays: completed/total hosts, percentage, scan rate (pps), current target
+  - "Stop Scan" button visible only when scanning
+  - Shows "No active scan" when idle, pulsing activity icon when running
+- **HostCard** (`frontend/src/components/scan/HostCard.tsx`, 145 lines): Detailed host information modal
+  - Header: hostname/IP, severity badge, OS info (name, version, confidence%)
+  - Open ports table: sortable columns (port/protocol, state, service, version)
+  - Banners section: displays service banners if captured
+  - "Export" button: downloads host data as JSON file
+  - Full-screen overlay with click-outside-to-close
+- **ResultsTable** (`frontend/src/components/scan/ResultsTable.tsx`, 265 lines): Tabular scan results view
+  - Columns: Host (IP), Hostname, OS, Open Ports count, Services list, Severity badge
+  - Sortable: click headers to sort by any column (ascending/descending)
+  - Filterable: dropdown for severity (all/critical/high/medium/low/info), text input for service search
+  - Pagination: 10/25/50/100 rows per page with Previous/Next buttons
+  - Export: CSV and JSON buttons export filtered results
+  - Row click: opens HostCard modal with full details
+
+**Pages & Integration:**
+- **Updated Recon page** (`frontend/src/pages/Recon.tsx`, 150 lines): Comprehensive reconnaissance interface
+  - 2-column layout: left (config + progress), right (visualization)
+  - View mode toggle: Network Topology (D3 graph) vs Table View (sortable/filterable table)
+  - Collapsible configuration panel (defaults open)
+  - Bottom results table (collapsible, only shown in topology mode when hosts > 0)
+  - Real-time event listeners: wires useScan hook to scan:progress/result/complete/error events
+  - Host count badge in header, selected host modal (HostCard)
+
+**State Management & Hooks:**
+- **Enhanced scanStore** (`frontend/src/stores/scanStore.ts`, 140 lines): Multi-scan state management with Zustand
+  - Supports concurrent scans: `hostsByScan: Map<string, Host[]>`, `completedScans: Map<string, ScanCompleteEvent>`, `errors: Map<string, string>`
+  - Active scan tracking: `activeScanId`, `scanning`, `progress`
+  - Actions: `startScan`, `setProgress`, `addResult`, `setComplete`, `setError`, `reset` (all or by scan_id)
+  - Getters: `getHosts(scan_id)`, `getAllHosts()`
+  - Selector hooks: `useActiveHosts()`, `useScanProgress()`, `useScanSummary()`
+- **Updated useScan hook** (`frontend/src/hooks/useScan.ts`): Wired to new IPC commands and event streaming
+  - `startScan(request)`: invokes start_scan, stores scan_id in store
+  - `stopScan(scan_id)`: invokes stop_scan
+  - `getActiveScans()`: lists running scans
+  - Event listeners: useEffect with cleanup, listens to 4 event types, updates store on each event
+- **Enhanced TypeScript types** (`frontend/src/types/scan.ts`, 145 lines): Complete type coverage
+  - Enums: `ScanType` (8 types), `Severity` (5 levels), `PortState` (6 states)
+  - Interfaces: `ScanRequest`, `ScanProgressEvent`, `ScanResultEvent`, `ScanCompleteEvent`, `ScanErrorEvent`, `Host`, `PortInfo`, `OsInfo`
+  - Helper: `calculateSeverity(ports)` determines host severity based on open ports and services
+
+**Dependencies:**
+- **Added d3 7.9.0 + @types/d3 7.4.3** via pnpm for network topology visualization
+
+**Testing:**
+- **10 new Rust tests**: Event serialization, type conversions, scan request validation (all passing)
+- **Updated 3 frontend tests**: Fixed Recon page tests to match new text ("Network Reconnaissance", "No active scan", "No hosts discovered yet")
+- **Total tests: 1,112** (618 spectre-core + 43 spectre-gui + 268 spectre-tui + 94 frontend + 89 other)
+
+**Metrics:**
+- **Files changed**: 19 (5 new scan components, 14 modified existing files)
+- **Lines added**: ~1,310 (288 Rust backend + 915 TypeScript components + 107 tests/types)
+- **Components created**: 5 (NetworkTopology, ScanConfigForm, ScanProgress, HostCard, ResultsTable)
+- **IPC commands wired**: 4 (start_scan, stop_scan, get_scan_results, get_active_scans)
+- **Event types**: 4 (scan:progress, scan:result, scan:complete, scan:error)
+
 ## [0.5.0-alpha.3] - 2026-02-05
 
 ### Added

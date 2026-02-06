@@ -11,22 +11,24 @@ describe("scanStore", () => {
     const state = useScanStore.getState();
     expect(state.scanning).toBe(false);
     expect(state.progress).toBeNull();
-    expect(state.results).toEqual([]);
-    expect(state.summary).toBeNull();
-    expect(state.error).toBeNull();
+    expect(state.activeScanId).toBeNull();
+    expect(state.hostsByScan.size).toBe(0);
+    expect(state.completedScans.size).toBe(0);
+    expect(state.errors.size).toBe(0);
   });
 
-  it("startScanning resets and sets scanning true", () => {
-    useScanStore.getState().setError("old error");
-    useScanStore.getState().startScanning();
+  it("startScan sets scanning true and active scan ID", () => {
+    useScanStore.getState().startScan("scan_123");
     const state = useScanStore.getState();
     expect(state.scanning).toBe(true);
-    expect(state.error).toBeNull();
-    expect(state.results).toEqual([]);
+    expect(state.activeScanId).toBe("scan_123");
+    expect(state.progress).toBeNull();
   });
 
-  it("setProgress updates progress", () => {
+  it("setProgress updates progress for active scan", () => {
+    useScanStore.getState().startScan("scan_123");
     const progress: ScanProgressEvent = {
+      scan_id: "scan_123",
       completed: 50,
       total: 100,
       percent: 50.0,
@@ -36,46 +38,74 @@ describe("scanStore", () => {
     expect(useScanStore.getState().progress).toEqual(progress);
   });
 
-  it("addResult appends to results", () => {
+  it("addResult appends hosts for scan ID", () => {
     const result: ScanResultEvent = {
+      scan_id: "scan_123",
       host: "192.168.1.1",
-      port: 80,
-      protocol: "tcp",
-      state: "open",
-      service: "http",
+      hostname: "host1",
+      ports: [
+        {
+          port: 80,
+          protocol: "tcp",
+          state: "open",
+          service: "http",
+          version: "nginx",
+          banner: undefined,
+        },
+      ],
+      os: undefined,
     };
     useScanStore.getState().addResult(result);
-    useScanStore.getState().addResult({ ...result, port: 443, service: "https" });
-    expect(useScanStore.getState().results).toHaveLength(2);
-    expect(useScanStore.getState().results[0].port).toBe(80);
-    expect(useScanStore.getState().results[1].port).toBe(443);
+    const hosts = useScanStore.getState().getHosts("scan_123");
+    expect(hosts).toHaveLength(1);
+    expect(hosts[0].ip).toBe("192.168.1.1");
+    expect(hosts[0].ports).toHaveLength(1);
   });
 
   it("setComplete stops scanning and sets summary", () => {
-    useScanStore.getState().startScanning();
+    useScanStore.getState().startScan("scan_123");
     const summary: ScanCompleteEvent = {
+      scan_id: "scan_123",
       hosts_scanned: 10,
       open_ports: 5,
+      services_found: 3,
       duration_ms: 3000,
     };
     useScanStore.getState().setComplete(summary);
     expect(useScanStore.getState().scanning).toBe(false);
-    expect(useScanStore.getState().summary).toEqual(summary);
+    expect(useScanStore.getState().completedScans.get("scan_123")).toEqual(summary);
   });
 
   it("setError stops scanning and sets error", () => {
-    useScanStore.getState().startScanning();
-    useScanStore.getState().setError("Scan failed");
+    useScanStore.getState().startScan("scan_123");
+    useScanStore.getState().setError("Scan failed", "scan_123");
     expect(useScanStore.getState().scanning).toBe(false);
-    expect(useScanStore.getState().error).toBe("Scan failed");
+    expect(useScanStore.getState().errors.get("scan_123")).toBe("Scan failed");
   });
 
   it("reset clears all state", () => {
-    useScanStore.getState().startScanning();
-    useScanStore.getState().setError("err");
+    useScanStore.getState().startScan("scan_123");
+    useScanStore.getState().setError("err", "scan_123");
     useScanStore.getState().reset();
     const state = useScanStore.getState();
     expect(state.scanning).toBe(false);
-    expect(state.error).toBeNull();
+    expect(state.activeScanId).toBeNull();
+    expect(state.hostsByScan.size).toBe(0);
+    expect(state.errors.size).toBe(0);
+  });
+
+  it("reset with scan ID clears only that scan", () => {
+    useScanStore.getState().startScan("scan_123");
+    const result: ScanResultEvent = {
+      scan_id: "scan_123",
+      host: "192.168.1.1",
+      hostname: undefined,
+      ports: [],
+      os: undefined,
+    };
+    useScanStore.getState().addResult(result);
+
+    useScanStore.getState().reset("scan_123");
+    expect(useScanStore.getState().getHosts("scan_123")).toHaveLength(0);
   });
 });

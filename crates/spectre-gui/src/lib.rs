@@ -32,6 +32,7 @@ pub fn run() {
             commands::scan::start_scan,
             commands::scan::stop_scan,
             commands::scan::get_scan_results,
+            commands::scan::get_active_scans,
             // Chef
             commands::chef::execute_chef,
             commands::chef::list_chef_operations,

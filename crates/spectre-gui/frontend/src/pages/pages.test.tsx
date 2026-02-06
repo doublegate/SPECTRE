@@ -73,17 +73,17 @@ describe("Targets", () => {
 describe("Recon", () => {
   it("renders reconnaissance heading", () => {
     renderWithRouter(<Recon />);
-    expect(screen.getByText("Reconnaissance")).toBeInTheDocument();
+    expect(screen.getByText("Network Reconnaissance")).toBeInTheDocument();
   });
 
   it("shows idle status by default", () => {
     renderWithRouter(<Recon />);
-    expect(screen.getByText(/Idle/)).toBeInTheDocument();
+    expect(screen.getByText(/No active scan/)).toBeInTheDocument();
   });
 
-  it("shows empty results message", () => {
+  it("shows empty topology message", () => {
     renderWithRouter(<Recon />);
-    expect(screen.getByText(/No scan results yet/)).toBeInTheDocument();
+    expect(screen.getByText(/No hosts discovered yet/)).toBeInTheDocument();
   });
 });
 

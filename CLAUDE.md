@@ -18,9 +18,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Phase 2:** Operation NIGHTFALL (v0.2.x) - Core Orchestration **COMPLETE**
 **Phase 3:** Operation PHANTOM (v0.3.x) - TUI Dashboard **COMPLETE**
 **Phase 4:** Operation SPECTER (v0.4.x) - Advanced Features **COMPLETE**
-**Phase 5:** Operation SHADOW (v0.5.x) - GUI Application (Tauri 2.0) **IN PROGRESS** (Sprint 5.3 complete)
+**Phase 5:** Operation SHADOW (v0.5.x) - GUI Application (Tauri 2.0) **IN PROGRESS** (Sprint 5.4 complete)
 
-**SPECTRE Tests:** 1,112 (44 CLI + 618 core + 39 GUI Rust + 93 GUI frontend + 268 TUI + 5 doc-tests + 45 integration) | **Code:** ~39,400 lines Rust + TypeScript (132 Rust files + 45 frontend files)
+**SPECTRE Tests:** 1,112 (44 CLI + 618 core + 43 GUI Rust + 94 GUI frontend + 268 TUI + 5 doc-tests + 45 integration) | **Code:** ~40,700 lines Rust + TypeScript (136 Rust files + 49 frontend files)
 
 **Repository:** [github.com/doublegate/SPECTRE](https://github.com/doublegate/SPECTRE)
 
@@ -141,7 +141,7 @@ crates/
 │       ├── scan_state.rs   # Scan progress tracking, ETA, filtering, sorting
 │       ├── panels/         # Recon, Analysis, Comms, Campaign panel renderers
 │       └── widgets/        # HelpOverlay, StatusBar shared widgets
-├── spectre-gui/        # GUI application — Tauri 2.10 + React 19 + Tailwind CSS 4 + Zustand (13 Rust files, 32 tests + 49 frontend files, 81 tests)
+├── spectre-gui/        # GUI application — Tauri 2.10 + React 19 + Tailwind CSS 4 + Zustand + D3.js 7 (13 Rust files, 43 tests + 54 frontend files, 94 tests)
 │   ├── Cargo.toml          # Binary+library crate (staticlib, cdylib, rlib)
 │   ├── build.rs            # tauri_build::build()
 │   ├── tauri.conf.json     # Tauri config (1280x800 window, CSP, bundle)
@@ -149,22 +149,29 @@ crates/
 │   ├── icons/              # App icons (RGBA PNG, ico, icns)
 │   ├── src/
 │   │   ├── main.rs         # Desktop entry point
-│   │   ├── lib.rs          # Tauri Builder, plugins, 21 IPC handlers
-│   │   ├── state.rs        # AppState (RwLock<Config>)
-│   │   ├── events.rs       # Event payloads (scan progress/result/complete/error)
+│   │   ├── lib.rs          # Tauri Builder, plugins, 22 IPC handlers
+│   │   ├── state.rs        # AppState (RwLock<Config>, active_scans tracking)
+│   │   ├── events.rs       # Event payloads (scan progress/result/complete/error with full host data)
 │   │   └── commands/       # IPC command handlers (10 modules)
 │   │       ├── status.rs       # get_version, get_status (fully wired)
-│   │       ├── scan.rs         # start_scan, stop_scan, get_scan_results (stubs)
+│   │       ├── scan.rs         # start_scan, stop_scan, get_scan_results, get_active_scans (FULLY WIRED)
 │   │       ├── chef.rs         # execute_chef, list_chef_operations (stubs)
 │   │       ├── comms.rs        # get_identity, list_peers, send_data (stubs)
-│   │       ├── campaign.rs     # create/list/get/advance campaign (stubs)
+│   │       ├── campaign.rs     # create/list/get/advance/export/import/archive campaign (FULLY WIRED)
 │   │       ├── config.rs       # get_config, set_config (stubs)
 │   │       ├── results.rs      # get_dashboard_stats, get_findings (stubs)
 │   │       ├── report.rs       # generate_report, export_data (stubs)
-│   │       └── target.rs       # parse_targets (stub)
-│   └── frontend/           # React 19 + Vite 6 + TypeScript
+│   │       └── target.rs       # parse_targets (FULLY WIRED)
+│   └── frontend/           # React 19 + Vite 6 + TypeScript + D3.js 7
 │       ├── package.json, vite.config.ts, tsconfig.json, index.html
-│       └── src/            # main.tsx, App.tsx, styles.css, App.test.tsx
+│       └── src/
+│           ├── components/
+│           │   ├── scan/       # NetworkTopology (D3), ScanConfigForm, ScanProgress, HostCard, ResultsTable
+│           │   └── campaign/   # CampaignCard, ObjectiveList, PhaseTimeline, TargetInput, CreateWizard
+│           ├── pages/          # Dashboard, Recon (FULL), Campaigns (FULL), Settings, Analysis, Comms, Reports
+│           ├── stores/         # scanStore (multi-scan), campaignStore, uiStore
+│           ├── hooks/          # useScan (event listeners), useCampaign, useIpc
+│           └── types/          # scan.ts (complete), campaign.ts, config.ts
 └── spectre-mcp/        # MCP server (planned - Phase 6)
 ```
 

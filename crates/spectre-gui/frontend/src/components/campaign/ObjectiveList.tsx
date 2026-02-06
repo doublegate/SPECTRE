@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CheckCircle2, Circle, Plus, X } from "lucide-react";
+import { Circle, Plus, X } from "lucide-react";
 
 interface ObjectiveListProps {
   objectives: string[];

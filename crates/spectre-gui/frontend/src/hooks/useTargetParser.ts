@@ -28,7 +28,7 @@ export function useTargetParser() {
     }
   };
 
-  const parseFile = async (filePath: string): Promise<ParsedTarget[]> => {
+  const parseFile = async (_filePath: string): Promise<ParsedTarget[]> => {
     setLoading(true);
     setError(null);
 

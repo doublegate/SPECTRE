@@ -6,8 +6,9 @@ import type { ScanRequest, ScanProgressEvent, ScanResultEvent, ScanCompleteEvent
 
 export function useScan() {
   const startScan = useIpc<string, { request: ScanRequest }>("start_scan");
-  const stopScan = useIpc<string>("stop_scan");
-  const getScanResults = useIpc<unknown[]>("get_scan_results");
+  const stopScan = useIpc<string, { scan_id: string }>("stop_scan");
+  const getScanResults = useIpc<unknown[], { scan_id: string }>("get_scan_results");
+  const getActiveScans = useIpc<string[]>("get_active_scans");
   const store = useScanStore();
 
   useEffect(() => {
@@ -33,7 +34,7 @@ export function useScan() {
 
     listeners.push(
       listen<ScanErrorEvent>("scan:error", (event) => {
-        store.setError(event.payload.error);
+        store.setError(event.payload.error, event.payload.scan_id);
       }),
     );
 
@@ -44,9 +45,18 @@ export function useScan() {
   }, []);
 
   return {
-    startScan: startScan.execute,
-    stopScan: stopScan.execute,
+    startScan: async (request: ScanRequest) => {
+      const scanId = await startScan.execute({ request });
+      if (scanId) {
+        store.startScan(scanId);
+      }
+      return scanId;
+    },
+    stopScan: async (scanId: string) => {
+      return await stopScan.execute({ scan_id: scanId });
+    },
     getScanResults: getScanResults.execute,
+    getActiveScans: getActiveScans.execute,
     loading: startScan.loading,
     error: startScan.error,
   };
