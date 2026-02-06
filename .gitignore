@@ -292,6 +292,10 @@ vgcore.*
 # Frontend node_modules and build output
 crates/spectre-gui/frontend/node_modules/
 crates/spectre-gui/frontend/dist/
+crates/spectre-gui/frontend/.vite/
+crates/spectre-gui/frontend/coverage/
+crates/spectre-gui/frontend/.pnpm-store/
+crates/spectre-gui/frontend/pnpm-lock.yaml.bak
 # Tauri build artifacts and auto-generated schemas
 crates/spectre-gui/WixTools/
 crates/spectre-gui/gen/

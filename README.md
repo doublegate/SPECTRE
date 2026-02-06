@@ -13,7 +13,7 @@ A unified offensive security toolkit combining wire-speed secure communications,
   <a href="https://github.com/doublegate/SPECTRE"><img src="https://img.shields.io/github/stars/doublegate/SPECTRE?style=flat-square" alt="GitHub Stars"></a>
   <a href="https://github.com/doublegate/SPECTRE/fork"><img src="https://img.shields.io/github/forks/doublegate/SPECTRE?style=flat-square" alt="GitHub Forks"></a>
   <a href="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml"><img src="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
-  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.5.0--alpha.4-blue.svg" alt="Version"></a>
+  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.5.0--alpha.5-blue.svg" alt="Version"></a>
   <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.92%2B-orange.svg" alt="Rust"></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-22%2B-green.svg" alt="Node.js"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT%2FGPLv3%2FApache--2.0-green.svg" alt="License"></a>
@@ -48,8 +48,8 @@ Modern offensive security requires seamless tool integration. SPECTRE eliminates
 
 | Metric                 | Value                                                                   |
 | ---------------------- | ----------------------------------------------------------------------- |
-| **Combined Tests**     | 7,315 (SPECTRE: 1,112 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 689) |
-| **SPECTRE Codebase**   | ~40,700 lines Rust + TypeScript (136 Rust files + 49 frontend files)        |
+| **Combined Tests**     | 7,382 (SPECTRE: 1,179 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 689) |
+| **SPECTRE Codebase**   | ~43,000 lines Rust + TypeScript (136 Rust files + 60 frontend files)        |
 | **Component Code**     | ~180,000 (Rust) + ~40,000 (TypeScript/JavaScript)                           |
 | **Languages**          | Rust 2024, TypeScript, JavaScript                                           |
 | **Network Throughput** | 10+ Gbps (WRAITH), 10M+ pps (ProRT-IP)                                     |
@@ -192,21 +192,46 @@ The GUI automatically detects your display server (Wayland vs X11) and GPU vendo
 - **Intel/AMD GPUs:** Uses native Wayland when available, falls back to X11 if needed
 - **Manual Overrides:** Respected if you set `GDK_BACKEND` environment variable
 
-**Capabilities:**
+**Implemented Features (v0.5.0-alpha.5):**
 
-- Campaign planning workspace with drag-and-drop workflow builder
-- Network topology visualization from scan results
-- Real-time collaboration for multi-operator teams
-- Visual recipe editor for CyberChef operations
-- Report generation with exportable formats (PDF, HTML, JSON)
+**Dashboard & Real-Time Monitoring:**
+- Real-time statistics with severity charts and service distribution
+- Activity timeline with relative timestamps and status icons
+- SeverityChart: Interactive pie chart showing Critical/High/Medium/Low/Info distribution (Recharts)
+- ServicesChart: Bar chart displaying top 10 discovered services
+
+**Reports & Data Export:**
+- Sortable, filterable, paginated findings table with search functionality
+- 5 export formats: CSV, JSON, XML, HTML (templated), Markdown (templated)
+- FindingDetail modal with CVE links, risk descriptions, remediation advice
+- Secure preview with DOMPurify sanitization and syntax highlighting
+
+**Campaign Planning:**
+- 4-step wizard with target parsing and phase timeline
+- CRUD operations: create, list, view, advance, export, import, archive
+- ObjectiveList, PhaseTimeline, TargetInput components
+- Campaign state persistence with SQLite backend
+
+**Scan Visualization:**
+- D3.js network topology with force-directed layout
+- Real-time event streaming with host/port/service nodes
+- ScanProgress bars, HostCard details, ResultsTable views
+
+**Security & Performance:**
+- HTML sanitization with DOMPurify for safe HTML previews
+- Secure iframe sandboxing for rendered content
+- 30-second auto-refresh for dashboard statistics
+- Multi-scan support with Zustand state management
 
 **Technology Stack:**
 
-- Tauri 2.10 framework (Rust backend)
-- React 19 + TypeScript frontend (Vite 6)
-- Tailwind CSS 4 for styling
-- Zustand state management
-- WebSocket real-time updates
+- Tauri 2.10 framework (Rust backend with 22 IPC handlers)
+- React 19 + TypeScript frontend (Vite 6 dev server)
+- Tailwind CSS 4 for styling + 12 shadcn/ui components
+- Zustand state management (scanStore, campaignStore, dashboardStore)
+- D3.js 7 for network topology visualization
+- Recharts 2 for statistical charts
+- React Router 7 for navigation
 
 **Troubleshooting:**
 
@@ -595,11 +620,39 @@ spectre send document.pdf --peer <peer-id> --encrypt
 # TUI: Launch dashboard
 spectre tui
 
-# GUI: Launch web interface
-spectre --gui
+# GUI: Development mode (auto-detects Wayland/X11)
+cd crates/spectre-gui
+./dev.sh
+
+# GUI: Production build
+cargo build --release -p spectre-gui
+./target/release/spectre-gui
 
 # MCP: Start server for AI integration
 spectre-mcp serve
+```
+
+### GUI Development Quick Start
+
+The GUI requires both frontend and backend development servers:
+
+```bash
+# Terminal 1: Start frontend dev server
+cd crates/spectre-gui/frontend
+pnpm install
+pnpm dev
+
+# Terminal 2: Start Tauri (auto-detects display server and GPU)
+cd crates/spectre-gui
+./dev.sh
+```
+
+**Manual Display Server Overrides:**
+
+```bash
+./dev.sh --force-x11      # Force X11 backend (NVIDIA GPUs)
+./dev.sh --force-wayland  # Force Wayland backend
+./dev.sh --verbose        # Enable debug logging
 ```
 
 ---

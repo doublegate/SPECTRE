@@ -18,9 +18,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Phase 2:** Operation NIGHTFALL (v0.2.x) - Core Orchestration **COMPLETE**
 **Phase 3:** Operation PHANTOM (v0.3.x) - TUI Dashboard **COMPLETE**
 **Phase 4:** Operation SPECTER (v0.4.x) - Advanced Features **COMPLETE**
-**Phase 5:** Operation SHADOW (v0.5.x) - GUI Application (Tauri 2.0) **IN PROGRESS** (Sprint 5.4 complete)
+**Phase 5:** Operation SHADOW (v0.5.x) - GUI Application (Tauri 2.0) **IN PROGRESS** (Sprint 5.5 complete)
 
-**SPECTRE Tests:** 1,112 (44 CLI + 618 core + 43 GUI Rust + 94 GUI frontend + 268 TUI + 5 doc-tests + 45 integration) | **Code:** ~40,700 lines Rust + TypeScript (136 Rust files + 49 frontend files)
+**SPECTRE Tests:** 1,179 (44 CLI + 618 core + 66 GUI Rust + 117 GUI frontend + 268 TUI + 5 doc-tests + 45 integration + 20 benchmark) | **Code:** ~43,000 lines Rust + TypeScript (136 Rust files + 60 frontend files)
 
 **Repository:** [github.com/doublegate/SPECTRE](https://github.com/doublegate/SPECTRE)
 
@@ -141,7 +141,7 @@ crates/
 │       ├── scan_state.rs   # Scan progress tracking, ETA, filtering, sorting
 │       ├── panels/         # Recon, Analysis, Comms, Campaign panel renderers
 │       └── widgets/        # HelpOverlay, StatusBar shared widgets
-├── spectre-gui/        # GUI application — Tauri 2.10 + React 19 + Tailwind CSS 4 + Zustand + D3.js 7 (13 Rust files, 43 tests + 54 frontend files, 94 tests)
+├── spectre-gui/        # GUI application — Tauri 2.10 + React 19 + Tailwind CSS 4 + Zustand + D3.js 7 + Recharts 2 (13 Rust files, 66 tests + 60 frontend files, 117 tests)
 │   ├── Cargo.toml          # Binary+library crate (staticlib, cdylib, rlib)
 │   ├── build.rs            # tauri_build::build()
 │   ├── tauri.conf.json     # Tauri config (1280x800 window, CSP, bundle)
@@ -159,19 +159,22 @@ crates/
 │   │       ├── comms.rs        # get_identity, list_peers, send_data (stubs)
 │   │       ├── campaign.rs     # create/list/get/advance/export/import/archive campaign (FULLY WIRED)
 │   │       ├── config.rs       # get_config, set_config (stubs)
-│   │       ├── results.rs      # get_dashboard_stats, get_findings (stubs)
-│   │       ├── report.rs       # generate_report, export_data (stubs)
+│   │       ├── results.rs      # get_dashboard_stats, get_findings (FULLY WIRED)
+│   │       ├── report.rs       # generate_report, export_data (FULLY WIRED)
 │   │       └── target.rs       # parse_targets (FULLY WIRED)
-│   └── frontend/           # React 19 + Vite 6 + TypeScript + D3.js 7
+│   └── frontend/           # React 19 + Vite 6 + TypeScript + D3.js 7 + Recharts 2
 │       ├── package.json, vite.config.ts, tsconfig.json, index.html
 │       └── src/
 │           ├── components/
+│           │   ├── ui/         # 12 shadcn/ui components (card, dialog, badge, button, input, select, table, separator, checkbox, radio-group, label, tabs)
 │           │   ├── scan/       # NetworkTopology (D3), ScanConfigForm, ScanProgress, HostCard, ResultsTable
-│           │   └── campaign/   # CampaignCard, ObjectiveList, PhaseTimeline, TargetInput, CreateWizard
-│           ├── pages/          # Dashboard, Recon (FULL), Campaigns (FULL), Settings, Analysis, Comms, Reports
-│           ├── stores/         # scanStore (multi-scan), campaignStore, uiStore
-│           ├── hooks/          # useScan (event listeners), useCampaign, useIpc
-│           └── types/          # scan.ts (complete), campaign.ts, config.ts
+│           │   ├── campaign/   # CampaignCard, ObjectiveList, PhaseTimeline, TargetInput, CreateWizard
+│           │   ├── dashboard/  # StatCard, SeverityChart, ServicesChart, ActivityTimeline (NEW - Sprint 5.5)
+│           │   └── reports/    # FindingsTable, FindingDetail, ExportPanel, ReportPreview (NEW - Sprint 5.5)
+│           ├── pages/          # Dashboard (COMPLETE), Recon (COMPLETE), Campaigns (COMPLETE), Reports (COMPLETE), Settings, Analysis, Comms
+│           ├── stores/         # scanStore (multi-scan), campaignStore, dashboardStore, uiStore
+│           ├── hooks/          # useScan (event listeners), useCampaign, useDashboard, useIpc
+│           └── types/          # scan.ts (complete), campaign.ts (complete), dashboard.ts (complete), config.ts
 └── spectre-mcp/        # MCP server (planned - Phase 6)
 ```
 
