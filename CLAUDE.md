@@ -231,7 +231,7 @@ This project uses military operational formatting for campaign documentation:
 
 ## Requirements
 
-- **Rust 1.88+** (WRAITH, ProRT-IP, SPECTRE CLI)
+- **Rust 1.92+** (WRAITH, ProRT-IP, SPECTRE CLI)
 - **Node.js 22+** (CyberChef-MCP)
 - **Docker** (recommended for CyberChef-MCP)
 - **Linux kernel 6.2+** (recommended for AF_XDP/io_uring performance)
