@@ -89,6 +89,8 @@ jobs:
           pnpm build
 
       - uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: "v1"
       - name: Clippy
         run: cargo clippy --workspace --all-targets -- -D warnings
 
@@ -108,6 +110,8 @@ jobs:
         run: git submodule update --init --depth 1 components/prtip components/wraith-protocol components/cyberchef-mcp
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: "v1"
 
       # Linux dependencies (including Tauri dependencies)
       - name: Install Linux dependencies
@@ -211,6 +215,8 @@ jobs:
           pnpm build
 
       - uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: "v1"
       - name: Build documentation
         run: cargo doc --workspace --no-deps
         env:
@@ -272,6 +278,8 @@ jobs:
           pnpm build
 
       - uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: "v1"
       - name: Check MSRV
         run: cargo check --workspace
 
@@ -319,6 +327,8 @@ jobs:
           pnpm build
 
       - uses: Swatinem/rust-cache@v2
+        with:
+          prefix-key: "v1"
       - name: Install cargo-tarpaulin
         run: cargo install cargo-tarpaulin
       - name: Generate coverage

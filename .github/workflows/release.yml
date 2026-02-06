@@ -34,7 +34,7 @@ jobs:
             cross: true
             features: vendored-openssl
           - target: x86_64-apple-darwin
-            os: macos-14-large
+            os: macos-13
             artifact: spectre-macos-x86_64
           - target: aarch64-apple-darwin
             os: macos-14
@@ -122,7 +122,7 @@ jobs:
             rust: stable
             target: x86_64-unknown-linux-gnu
           - name: macOS x86_64
-            os: macos-14-large
+            os: macos-13
             rust: stable
             target: x86_64-apple-darwin
           - name: macOS ARM64
@@ -181,6 +181,7 @@ jobs:
         with:
           workspaces: "crates/spectre-gui -> target"
           key: ${{ matrix.platform.target }}
+          prefix-key: "v1"
 
       - uses: pnpm/action-setup@v4
         with:
