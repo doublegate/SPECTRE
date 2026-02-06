@@ -40,7 +40,9 @@ pub struct GenerateIdentityRequest {
 /// Note: Full WRAITH integration requires identity management system.
 /// For Sprint 5.6, returns stub identity if available.
 #[command]
-pub async fn get_identity(_state: State<'_, Arc<AppState>>) -> Result<Option<IdentityInfo>, String> {
+pub async fn get_identity(
+    _state: State<'_, Arc<AppState>>,
+) -> Result<Option<IdentityInfo>, String> {
     // Stub: In production, would load from identity storage
     Ok(Some(IdentityInfo {
         name: "default".to_string(),
@@ -87,10 +89,7 @@ pub async fn list_peers(_state: State<'_, Arc<AppState>>) -> Result<Vec<PeerInfo
 
 /// Add a trusted peer.
 #[command]
-pub async fn add_peer(
-    _state: State<'_, Arc<AppState>>,
-    peer: PeerInfo,
-) -> Result<(), String> {
+pub async fn add_peer(_state: State<'_, Arc<AppState>>, peer: PeerInfo) -> Result<(), String> {
     tracing::info!(name = %peer.name, "Adding peer (stub)");
     // Stub: In production, would save to peer storage
     Ok(())
@@ -104,7 +103,11 @@ pub async fn send_data(
 ) -> Result<String, String> {
     tracing::info!(peer = %request.peer, bytes = request.data.len(), "Sending data (stub)");
     // Stub: In production, would send via WRAITH protocol
-    Ok(format!("Queued {} bytes to peer {}", request.data.len(), request.peer))
+    Ok(format!(
+        "Queued {} bytes to peer {}",
+        request.data.len(),
+        request.peer
+    ))
 }
 
 #[cfg(test)]

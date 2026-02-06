@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::sync::Arc;
 
+use base64::{engine::general_purpose, Engine as _};
 use serde::{Deserialize, Serialize};
 use tauri::{command, State};
 
@@ -52,16 +53,17 @@ pub async fn execute_chef(
     // Basic transformations for common operations (stub implementation)
     let output = match request.operation.as_str() {
         "From_Base64" => {
-            let decoded = base64::decode(&request.input)
+            let decoded = general_purpose::STANDARD
+                .decode(&request.input)
                 .map_err(|e| format!("Base64 decode error: {}", e))?;
             String::from_utf8(decoded).map_err(|e| format!("UTF-8 error: {}", e))?
-        }
-        "To_Base64" => base64::encode(&request.input),
+        },
+        "To_Base64" => general_purpose::STANDARD.encode(&request.input),
         "From_Hex" => {
-            let decoded = hex::decode(&request.input)
-                .map_err(|e| format!("Hex decode error: {}", e))?;
+            let decoded =
+                hex::decode(&request.input).map_err(|e| format!("Hex decode error: {}", e))?;
             String::from_utf8(decoded).map_err(|e| format!("UTF-8 error: {}", e))?
-        }
+        },
         "To_Hex" => hex::encode(&request.input),
         "URL_Decode" => urlencoding::decode(&request.input)
             .map_err(|e| format!("URL decode error: {}", e))?
@@ -198,14 +200,16 @@ mod tests {
 
     #[test]
     fn test_base64_decode() {
-        let decoded = base64::decode("SGVsbG8=").expect("base64 decode failed");
+        let decoded = general_purpose::STANDARD
+            .decode("SGVsbG8=")
+            .expect("base64 decode failed");
         let text = String::from_utf8(decoded).expect("utf8 conversion failed");
         assert_eq!(text, "Hello");
     }
 
     #[test]
     fn test_base64_encode() {
-        let encoded = base64::encode("Hello");
+        let encoded = general_purpose::STANDARD.encode("Hello");
         assert_eq!(encoded, "SGVsbG8=");
     }
 

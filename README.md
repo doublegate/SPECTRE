@@ -13,7 +13,7 @@ A unified offensive security toolkit combining wire-speed secure communications,
   <a href="https://github.com/doublegate/SPECTRE"><img src="https://img.shields.io/github/stars/doublegate/SPECTRE?style=flat-square" alt="GitHub Stars"></a>
   <a href="https://github.com/doublegate/SPECTRE/fork"><img src="https://img.shields.io/github/forks/doublegate/SPECTRE?style=flat-square" alt="GitHub Forks"></a>
   <a href="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml"><img src="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
-  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.5.0--alpha.5-blue.svg" alt="Version"></a>
+  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.5.0--alpha.6-blue.svg" alt="Version"></a>
   <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.92%2B-orange.svg" alt="Rust"></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-22%2B-green.svg" alt="Node.js"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT%2FGPLv3%2FApache--2.0-green.svg" alt="License"></a>
@@ -48,8 +48,8 @@ Modern offensive security requires seamless tool integration. SPECTRE eliminates
 
 | Metric                 | Value                                                                   |
 | ---------------------- | ----------------------------------------------------------------------- |
-| **Combined Tests**     | 7,382 (SPECTRE: 1,179 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 689) |
-| **SPECTRE Codebase**   | ~43,000 lines Rust + TypeScript (136 Rust files + 60 frontend files)        |
+| **Combined Tests**     | 7,378 (SPECTRE: 1,175 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 689) |
+| **SPECTRE Codebase**   | ~45,000 lines Rust + TypeScript (136 Rust files + 60 frontend files)        |
 | **Component Code**     | ~180,000 (Rust) + ~40,000 (TypeScript/JavaScript)                           |
 | **Languages**          | Rust 2024, TypeScript, JavaScript                                           |
 | **Network Throughput** | 10+ Gbps (WRAITH), 10M+ pps (ProRT-IP)                                     |
@@ -192,7 +192,7 @@ The GUI automatically detects your display server (Wayland vs X11) and GPU vendo
 - **Intel/AMD GPUs:** Uses native Wayland when available, falls back to X11 if needed
 - **Manual Overrides:** Respected if you set `GDK_BACKEND` environment variable
 
-**Implemented Features (v0.5.0-alpha.5):**
+**Implemented Features (v0.5.0-alpha.6):**
 
 **Dashboard & Real-Time Monitoring:**
 - Real-time statistics with severity charts and service distribution
@@ -216,6 +216,28 @@ The GUI automatically detects your display server (Wayland vs X11) and GPU vendo
 - D3.js network topology with force-directed layout
 - Real-time event streaming with host/port/service nodes
 - ScanProgress bars, HostCard details, ResultsTable views
+
+**Settings Management (8 tabs):**
+- General: Verbosity levels, color output
+- Scan: Timing templates (T0-T5), port presets, detection toggles
+- Analysis: CyberChef Docker configuration
+- Comms: WRAITH protocol settings
+- Output: Format selection (table/JSON/YAML/XML/CSV), pretty formatting
+- Theme: 5 themes with live preview (dark, light, tactical, matrix, hacker)
+- Shortcuts: Complete keyboard reference
+- About: Version info, component versions, tech stack, license
+
+**Analysis Operations:**
+- CyberChef integration with 15 operations across 4 categories
+- Real-time transformations: Base64, Hex, URL encode/decode
+- Category filtering (Encoding, Hashing, Encryption, Compression)
+- Input/Output panels with error handling
+
+**Secure Communications:**
+- Identity management with fingerprint display
+- Peer list with online/offline status
+- Encrypted data transmission interface
+- WRAITH protocol integration
 
 **Security & Performance:**
 - HTML sanitization with DOMPurify for safe HTML previews

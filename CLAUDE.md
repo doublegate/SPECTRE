@@ -20,7 +20,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Phase 4:** Operation SPECTER (v0.4.x) - Advanced Features **COMPLETE**
 **Phase 5:** Operation SHADOW (v0.5.x) - GUI Application (Tauri 2.0) **IN PROGRESS** (Sprint 5.6 complete)
 
-**SPECTRE Tests:** 1,187 (44 CLI + 618 core + 74 GUI Rust + 121 GUI frontend + 268 TUI + 5 doc-tests + 45 integration + 20 benchmark) | **Code:** ~45,000 lines Rust + TypeScript (136 Rust files + 68 frontend files)
+**SPECTRE Tests:** 1,175 (44 CLI + 618 core + 74 GUI Rust + 121 GUI frontend + 268 TUI + 5 doc-tests + 45 integration) | **Code:** ~45,000 lines Rust + TypeScript (136 Rust files + 60 frontend files)
 
 **Repository:** [github.com/doublegate/SPECTRE](https://github.com/doublegate/SPECTRE)
 
@@ -141,7 +141,7 @@ crates/
 │       ├── scan_state.rs   # Scan progress tracking, ETA, filtering, sorting
 │       ├── panels/         # Recon, Analysis, Comms, Campaign panel renderers
 │       └── widgets/        # HelpOverlay, StatusBar shared widgets
-├── spectre-gui/        # GUI application — Tauri 2.10 + React 19 + Tailwind CSS 4 + Zustand + D3.js 7 + Recharts 2 (13 Rust files, 74 tests + 68 frontend files, 121 tests)
+├── spectre-gui/        # GUI application — Tauri 2.10 + React 19 + Tailwind CSS 4 + Zustand + D3.js 7 + Recharts 2 (13 Rust files, 74 tests + 60 frontend files, 121 tests)
 │   ├── Cargo.toml          # Binary+library crate (staticlib, cdylib, rlib)
 │   ├── build.rs            # tauri_build::build()
 │   ├── tauri.conf.json     # Tauri config (1280x800 window, CSP, bundle)
@@ -155,10 +155,10 @@ crates/
 │   │   └── commands/       # IPC command handlers (10 modules)
 │   │       ├── status.rs       # get_version, get_status (fully wired)
 │   │       ├── scan.rs         # start_scan, stop_scan, get_scan_results, get_active_scans (FULLY WIRED)
-│   │       ├── chef.rs         # execute_chef, list_chef_operations (stubs)
-│   │       ├── comms.rs        # get_identity, list_peers, send_data (stubs)
+│   │       ├── chef.rs         # execute_chef, list_chef_operations, get_chef_status (stub with real encoding - Sprint 5.6)
+│   │       ├── comms.rs        # get_identity, list_peers, add_peer, send_data (stub WRAITH - Sprint 5.6)
 │   │       ├── campaign.rs     # create/list/get/advance/export/import/archive campaign (FULLY WIRED)
-│   │       ├── config.rs       # get_config, set_config (stubs)
+│   │       ├── config.rs       # get_config, update_config, reset_config (FULLY WIRED - Sprint 5.6)
 │   │       ├── results.rs      # get_dashboard_stats, get_findings (FULLY WIRED)
 │   │       ├── report.rs       # generate_report, export_data (FULLY WIRED)
 │   │       └── target.rs       # parse_targets (FULLY WIRED)
@@ -169,13 +169,15 @@ crates/
 │           │   ├── ui/         # 12 shadcn/ui components (card, dialog, badge, button, input, select, table, separator, checkbox, radio-group, label, tabs)
 │           │   ├── scan/       # NetworkTopology (D3), ScanConfigForm, ScanProgress, HostCard, ResultsTable
 │           │   ├── campaign/   # CampaignCard, ObjectiveList, PhaseTimeline, TargetInput, CreateWizard
-│           │   ├── dashboard/  # StatCard, SeverityChart, ServicesChart, ActivityTimeline (NEW - Sprint 5.5)
+│           │   ├── dashboard/  # StatCard, SeverityChart, ServicesChart, ActivityTimeline (Sprint 5.5)
 │           │   ├── reports/    # FindingsTable, FindingDetail, ExportPanel, ReportPreview (Sprint 5.5)
-│           │   └── settings/   # 8 settings tab components (GeneralSettings, ScanSettings, ChefSettings, CommsSettings, OutputSettings, ThemeSettings, ShortcutsSettings, AboutSettings - Sprint 5.6)
-│           ├── pages/          # Dashboard, Recon, Campaigns, Reports, Settings (8 tabs), Analysis (chef ops), Comms (WRAITH)
-│           ├── stores/         # scanStore (multi-scan), campaignStore, dashboardStore, settingsStore, uiStore
-│           ├── hooks/          # useScan (event listeners), useCampaign, useDashboard, useSettings, useIpc
-│           └── types/          # scan.ts, campaign.ts, dashboard.ts, settings.ts (NEW), chef.ts (enhanced), comms.ts, config.ts
+│           │   ├── settings/   # 8 settings tabs: General, Scan, Chef, Comms, Output, Theme, Shortcuts, About (Sprint 5.6)
+│           │   ├── analysis/   # OperationBrowser, CategoryFilter, TransformPanel (Sprint 5.6)
+│           │   └── comms/      # IdentityDisplay, PeerList, SendDataPanel (Sprint 5.6)
+│           ├── pages/          # Dashboard (COMPLETE), Recon (COMPLETE), Campaigns (COMPLETE), Reports (COMPLETE), Settings (COMPLETE), Analysis (COMPLETE), Comms (COMPLETE)
+│           ├── stores/         # scanStore (multi-scan), campaignStore, dashboardStore, uiStore
+│           ├── hooks/          # useScan (event listeners), useCampaign, useDashboard, useIpc
+│           └── types/          # scan.ts (complete), campaign.ts (complete), dashboard.ts (complete), config.ts (complete)
 └── spectre-mcp/        # MCP server (planned - Phase 6)
 ```
 
