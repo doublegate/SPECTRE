@@ -19,6 +19,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Unified asset upload step**: Single upload step per build job handles both `.tar.gz` (Unix) and `.zip` (Windows) with `fail_on_unmatched_files: false` so each platform only uploads its own format without failing on the other's missing archive
 - **Added `SPECTRE.sln` to `.gitignore`**: Visual Studio solution files (`.sln`, `.suo`, `.user`, etc.) now excluded from version control
 
+#### Release Workflow Build Fixes (3 Platform Failures)
+
+- **Added `vendored-openssl` feature chain** for musl and aarch64 cross-compilation targets:
+  - `spectre-cli` feature `vendored-openssl` forwards to `spectre-core/vendored-openssl`
+  - `spectre-core` feature `vendored-openssl` forwards to `prtip-scanner/vendored-openssl`
+  - Enables `openssl-src` crate to compile OpenSSL from source when system OpenSSL is unavailable (musl, cross-compiled aarch64)
+  - Matrix entries for `x86_64-unknown-linux-musl` and `aarch64-unknown-linux-gnu` now set `features: vendored-openssl`
+  - Build commands conditionally pass `--features vendored-openssl` via matrix expression: `${{ matrix.features && format('--features {0}', matrix.features) || '' }}`
+- **Fixed Windows Npcap SDK linker failure**: Added `LIB` environment variable pointing to `npcap-sdk\Lib\x64` directory so the MSVC linker can find `Packet.lib` and `wpcap.lib`
+- **Conditional LICENSE packaging**: `cp LICENSE dist/` replaced with `if [ -f LICENSE ]; then cp LICENSE dist/; fi` (Unix) and `if (Test-Path LICENSE) { Copy-Item LICENSE dist/ }` (Windows) to avoid build failures when LICENSE file path varies
+- **Windows PowerShell packaging fix**: Split single `Copy-Item README.md, LICENSE, CHANGELOG.md dist/` into separate `Copy-Item` calls for PowerShell compatibility
+- **Added `CARGO_HOME` env var**: Set to `${{ github.workspace }}/.cargo` for consistent cargo behavior across CI runners
+
 ### Planned
 - GUI application with Tauri 2.0 — Phase 5
 - MCP server implementation — Phase 6

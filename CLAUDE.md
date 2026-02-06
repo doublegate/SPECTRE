@@ -34,6 +34,9 @@ cargo build --release --workspace
 # Build specific crate
 cargo build --release -p spectre-cli
 
+# Build for musl or cross-compilation (vendors OpenSSL from source)
+cargo build --release --target x86_64-unknown-linux-musl --features vendored-openssl
+
 # Pull CyberChef-MCP container
 docker pull doublegate/cyberchef-mcp:latest
 

@@ -11,6 +11,10 @@ description = "SPECTRE core orchestration library"
 keywords = ["security", "scanning", "encryption", "orchestration"]
 categories = ["network-programming"]
 
+[features]
+# Vendor OpenSSL for static linking (required for musl and cross-compilation builds)
+vendored-openssl = ["prtip-scanner/vendored-openssl"]
+
 [dependencies]
 # Async runtime
 tokio = { workspace = true }

@@ -15,6 +15,10 @@ categories = ["command-line-utilities"]
 name = "spectre"
 path = "src/main.rs"
 
+[features]
+# Vendor OpenSSL for static linking (required for musl and cross-compilation builds)
+vendored-openssl = ["spectre-core/vendored-openssl"]
+
 [dependencies]
 # Core library
 spectre-core = { path = "../spectre-core" }

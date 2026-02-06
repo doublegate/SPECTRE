@@ -283,6 +283,9 @@ vgcore.*
 # GitHub Actions local testing
 .act/
 
+# Cargo home override (used in CI release workflow via CARGO_HOME env var)
+.cargo/
+
 # =============================================================================
 # Tauri (GUI)
 # =============================================================================
