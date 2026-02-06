@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
-import { MemoryRouter } from "react-router";
+import { render, screen, waitFor } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
 import { Dashboard } from "./Dashboard";
 import { Targets } from "./Targets";
 import { Recon } from "./Recon";
@@ -26,6 +26,29 @@ vi.mock("@tauri-apps/api/core", () => ({
         config_loaded: true,
       });
     }
+    if (cmd === "get_findings") {
+      return Promise.resolve([]);
+    }
+    if (cmd === "get_dashboard_stats") {
+      return Promise.resolve({
+        total_hosts: 42,
+        total_ports: 256,
+        open_ports: 128,
+        services_found: 64,
+        severity_counts: {
+          critical: 2,
+          high: 5,
+          medium: 7,
+          low: 2,
+          info: 0,
+        },
+        top_services: [],
+        recent_activity: [],
+      });
+    }
+    if (cmd === "list_campaigns") {
+      return Promise.resolve([]);
+    }
     return Promise.reject("Unknown command");
   }),
 }));
@@ -39,18 +62,22 @@ function renderWithRouter(component: React.ReactElement) {
 }
 
 describe("Dashboard", () => {
-  it("renders stat cards", () => {
+  it("renders stat cards", async () => {
     renderWithRouter(<Dashboard />);
-    expect(screen.getByText("Hosts Scanned")).toBeInTheDocument();
-    expect(screen.getByText("Open Ports")).toBeInTheDocument();
-    expect(screen.getByText("Services")).toBeInTheDocument();
-    expect(screen.getByText("Findings")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Total Hosts")).toBeInTheDocument();
+      expect(screen.getByText("Open Ports")).toBeInTheDocument();
+      expect(screen.getByText("Services")).toBeInTheDocument();
+      expect(screen.getByText("Findings")).toBeInTheDocument();
+    }, { timeout: 3000 });
   });
 
-  it("renders stat cards", () => {
+  it("renders dashboard layout", async () => {
     renderWithRouter(<Dashboard />);
-    // New implementation uses stat cards
-    // We can just verify the dashboard renders without errors
+    // Wait for data to load before checking layout
+    await waitFor(() => {
+      expect(screen.queryByText("No data available")).not.toBeInTheDocument();
+    }, { timeout: 3000 });
     const dashboard = document.querySelector('.space-y-6');
     expect(dashboard).toBeTruthy();
   });
@@ -135,16 +162,19 @@ describe("Campaigns", () => {
 });
 
 describe("Reports", () => {
-  it("renders reports heading", () => {
+  it("renders reports heading", async () => {
     renderWithRouter(<Reports />);
-    expect(screen.getByText("Reports & Findings")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Reports & Findings")).toBeInTheDocument();
+    }, { timeout: 3000 });
   });
 
-  it("renders empty state when no findings", () => {
+  it("renders empty state when no findings", async () => {
     renderWithRouter(<Reports />);
     // New implementation shows a loading state first, then empty state
-    // We can just verify the page renders without errors
-    expect(screen.getByText("Reports & Findings")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText("Reports & Findings")).toBeInTheDocument();
+    }, { timeout: 3000 });
   });
 });
 

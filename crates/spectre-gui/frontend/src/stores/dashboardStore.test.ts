@@ -17,8 +17,8 @@ describe("dashboardStore", () => {
     expect(state.findings).toEqual([]);
     expect(state.findingsTotal).toBe(0);
     expect(state.findingsPagination).toEqual({ page: 1, per_page: 25 });
-    expect(state.filters).toBeNull();
-    expect(state.sort).toBeNull();
+    expect(state.filters).toBeUndefined();
+    expect(state.sort).toBeUndefined();
   });
 
   it("should set filters", () => {
@@ -66,7 +66,7 @@ describe("dashboardStore", () => {
     useDashboardStore.getState().reset();
 
     const state = useDashboardStore.getState();
-    expect(state.filters).toBeNull();
+    expect(state.filters).toBeUndefined();
     expect(state.stats).toBeNull();
     expect(state.findings).toEqual([]);
     expect(state.findingsPagination).toEqual({ page: 1, per_page: 25 });
