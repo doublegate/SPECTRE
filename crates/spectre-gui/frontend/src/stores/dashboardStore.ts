@@ -23,8 +23,8 @@ interface DashboardState {
   findingsError: string | null;
 
   // Filters and sorting
-  filters: FindingFilters | null;
-  sort: SortOptions | null;
+  filters: FindingFilters | undefined;
+  sort: SortOptions | undefined;
 
   // Actions
   fetchStats: () => Promise<void>;
@@ -33,8 +33,8 @@ interface DashboardState {
     sort?: SortOptions,
     pagination?: Pagination
   ) => Promise<void>;
-  setFilters: (filters: FindingFilters | null) => void;
-  setSort: (sort: SortOptions | null) => void;
+  setFilters: (filters: FindingFilters | undefined) => void;
+  setSort: (sort: SortOptions | undefined) => void;
   setPagination: (pagination: Pagination) => void;
   reset: () => void;
 }
@@ -50,8 +50,8 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
   findingsLoading: false,
   findingsError: null,
 
-  filters: null,
-  sort: null,
+  filters: undefined,
+  sort: undefined,
 
   fetchStats: async () => {
     set({ statsLoading: true, statsError: null });
@@ -128,7 +128,7 @@ export const useDashboardStore = create<DashboardState>((set, get) => ({
       findingsPagination: { page: 1, per_page: 25 },
       findingsLoading: false,
       findingsError: null,
-      filters: null,
-      sort: null,
+      filters: undefined,
+      sort: undefined,
     }),
 }));

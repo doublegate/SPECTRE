@@ -354,7 +354,8 @@ exports/tmp/
 # Reports (generated)
 # =============================================================================
 # Generated reports (may contain sensitive findings)
-reports/
+/reports/
+/output/reports/
 *.report.html
 *.report.md
 

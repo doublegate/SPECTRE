@@ -42,7 +42,7 @@ export function Reports() {
   const handleExport = async (format: ExportFormat, filters: FindingFilters) => {
     try {
       const filteredFindings = findings.filter(f =>
-        filters.severities.includes(f.severity)
+        filters.severities?.includes(f.severity) ?? true
       );
 
       await invoke('export_data', {
