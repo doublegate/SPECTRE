@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+#### CI Workflow Failures for Tauri 2.10 + React Frontend
+
+- **Fixed missing Tauri system dependencies on Linux**: Added `libwebkit2gtk-4.1-dev`, `libgtk-3-dev`, `libayatana-appindicator3-dev`, `librsvg2-dev` to all Linux CI jobs (clippy, test, docs, msrv, coverage). Previously failed with `glib-sys v0.18.1` build errors due to missing `glib-2.0.pc` pkg-config file
+- **Fixed missing frontend build step**: Added pnpm setup and `frontend/dist` build to all CI jobs. Tauri's `generate_context!()` macro requires `frontendDist` directory to exist before Rust compilation, previously caused proc macro panics with "this path doesn't exist" error
+- **Fixed clippy violations in GUI tests**: Replaced 26 `.unwrap()` calls with `.expect("descriptive message")` in `crates/spectre-gui/src/{events,state,commands}/*.rs` test code to satisfy `disallowed_methods` lint
+- **Added frontend type checking job**: New `frontend-typecheck` job runs `pnpm typecheck` (TypeScript compiler with `--noEmit`) to validate frontend code quality
+- **Added frontend test execution**: Test jobs now run `pnpm test` (vitest) to execute 81 frontend unit tests after Rust tests complete
+- **Multi-platform frontend builds**: Node.js 22 + pnpm 9 setup added to all test matrix platforms (ubuntu-latest, macos-latest, windows-latest) to ensure `frontend/dist` availability before Tauri builds
+
 ### Changed
 
 #### Release Workflow Modernization

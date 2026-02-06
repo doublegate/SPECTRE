@@ -55,7 +55,7 @@ mod tests {
         };
         let result = start_scan(request).await;
         assert!(result.is_ok());
-        assert!(result.unwrap().contains("1 target"));
+        assert!(result.expect("Test assertion failed").contains("1 target"));
     }
 
     #[tokio::test]
@@ -68,6 +68,6 @@ mod tests {
     async fn test_get_scan_results_stub() {
         let result = get_scan_results().await;
         assert!(result.is_ok());
-        assert!(result.unwrap().is_empty());
+        assert!(result.expect("Test assertion failed").is_empty());
     }
 }

@@ -66,7 +66,7 @@ mod tests {
             total: 100,
             percent: 50.0,
         };
-        let json = serde_json::to_string(&event).unwrap();
+        let json = serde_json::to_string(&event).expect("Failed to serialize ScanProgressEvent");
         assert!(json.contains("\"completed\":50"));
         assert!(json.contains("\"total\":100"));
     }
@@ -81,7 +81,7 @@ mod tests {
             service: Some("http".to_string()),
             version: None,
         };
-        let json = serde_json::to_string(&event).unwrap();
+        let json = serde_json::to_string(&event).expect("Failed to serialize ScanResultEvent");
         assert!(json.contains("\"host\":\"10.0.0.1\""));
         assert!(json.contains("\"port\":80"));
     }
@@ -93,7 +93,7 @@ mod tests {
             open_ports: 42,
             duration_ms: 15000,
         };
-        let json = serde_json::to_string(&event).unwrap();
+        let json = serde_json::to_string(&event).expect("Failed to serialize ScanCompleteEvent");
         assert!(json.contains("\"hosts_scanned\":256"));
     }
 
@@ -103,14 +103,15 @@ mod tests {
             message: "Scan started".to_string(),
             level: "info".to_string(),
         };
-        let json = serde_json::to_string(&event).unwrap();
+        let json = serde_json::to_string(&event).expect("Failed to serialize StatusEvent");
         assert!(json.contains("\"level\":\"info\""));
     }
 
     #[test]
     fn test_scan_progress_event_deserialize() {
         let json = r#"{"completed":25,"total":50,"percent":50.0}"#;
-        let event: ScanProgressEvent = serde_json::from_str(json).unwrap();
+        let event: ScanProgressEvent =
+            serde_json::from_str(json).expect("Failed to deserialize ScanProgressEvent");
         assert_eq!(event.completed, 25);
         assert_eq!(event.total, 50);
     }

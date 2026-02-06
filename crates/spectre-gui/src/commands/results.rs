@@ -63,7 +63,7 @@ mod tests {
     async fn test_get_dashboard_stats_stub() {
         let result = get_dashboard_stats().await;
         assert!(result.is_ok());
-        let stats = result.unwrap();
+        let stats = result.expect("Test assertion failed");
         assert_eq!(stats.total_hosts, 0);
     }
 
@@ -71,6 +71,6 @@ mod tests {
     async fn test_get_findings_stub() {
         let result = get_findings().await;
         assert!(result.is_ok());
-        assert!(result.unwrap().is_empty());
+        assert!(result.expect("Test assertion failed").is_empty());
     }
 }

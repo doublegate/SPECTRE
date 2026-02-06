@@ -48,13 +48,13 @@ mod tests {
         };
         let result = generate_report(request).await;
         assert!(result.is_ok());
-        assert_eq!(result.unwrap().format, "html");
+        assert_eq!(result.expect("Test assertion failed").format, "html");
     }
 
     #[tokio::test]
     async fn test_export_data_stub() {
         let result = export_data("csv".to_string()).await;
         assert!(result.is_ok());
-        assert!(result.unwrap().contains("csv"));
+        assert!(result.expect("Test assertion failed").contains("csv"));
     }
 }

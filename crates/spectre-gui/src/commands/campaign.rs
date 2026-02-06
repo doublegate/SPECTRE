@@ -58,27 +58,27 @@ mod tests {
         };
         let result = create_campaign(request).await;
         assert!(result.is_ok());
-        assert!(result.unwrap().contains("TestOp"));
+        assert!(result.expect("Test assertion failed").contains("TestOp"));
     }
 
     #[tokio::test]
     async fn test_list_campaigns_stub() {
         let result = list_campaigns().await;
         assert!(result.is_ok());
-        assert!(result.unwrap().is_empty());
+        assert!(result.expect("Test assertion failed").is_empty());
     }
 
     #[tokio::test]
     async fn test_get_campaign_stub() {
         let result = get_campaign("TestOp".to_string()).await;
         assert!(result.is_ok());
-        assert!(result.unwrap().is_none());
+        assert!(result.expect("Test assertion failed").is_none());
     }
 
     #[tokio::test]
     async fn test_advance_campaign_stub() {
         let result = advance_campaign("TestOp".to_string()).await;
         assert!(result.is_ok());
-        assert!(result.unwrap().contains("advanced"));
+        assert!(result.expect("Test assertion failed").contains("advanced"));
     }
 }

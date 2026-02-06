@@ -40,7 +40,7 @@ mod tests {
     async fn test_get_config_stub() {
         let result = get_config().await;
         assert!(result.is_ok());
-        let config = result.unwrap();
+        let config = result.expect("Test assertion failed");
         assert_eq!(config.scan_timing, 3);
         assert!(!config.chef_docker_image.is_empty());
     }
@@ -49,6 +49,8 @@ mod tests {
     async fn test_set_config_stub() {
         let result = set_config("scan.timing".to_string(), "4".to_string()).await;
         assert!(result.is_ok());
-        assert!(result.unwrap().contains("scan.timing"));
+        assert!(result
+            .expect("Test assertion failed")
+            .contains("scan.timing"));
     }
 }

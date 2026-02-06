@@ -91,14 +91,14 @@ mod tests {
     #[test]
     fn test_version_info_serializable() {
         let info = get_version();
-        let json = serde_json::to_string(&info).unwrap();
+        let json = serde_json::to_string(&info).expect("Test assertion failed");
         assert!(json.contains("SPECTRE"));
     }
 
     #[test]
     fn test_system_status_serializable() {
         let status = get_status();
-        let json = serde_json::to_string(&status).unwrap();
+        let json = serde_json::to_string(&status).expect("Test assertion failed");
         assert!(json.contains("ProRT-IP"));
         assert!(json.contains("CyberChef-MCP"));
         assert!(json.contains("WRAITH-Protocol"));

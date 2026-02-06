@@ -52,14 +52,14 @@ mod tests {
     async fn test_get_identity_stub() {
         let result = get_identity().await;
         assert!(result.is_ok());
-        assert!(result.unwrap().is_none());
+        assert!(result.expect("Test assertion failed").is_none());
     }
 
     #[tokio::test]
     async fn test_list_peers_stub() {
         let result = list_peers().await;
         assert!(result.is_ok());
-        assert!(result.unwrap().is_empty());
+        assert!(result.expect("Test assertion failed").is_empty());
     }
 
     #[tokio::test]
@@ -70,6 +70,6 @@ mod tests {
         };
         let result = send_data(request).await;
         assert!(result.is_ok());
-        assert!(result.unwrap().contains("alpha"));
+        assert!(result.expect("Test assertion failed").contains("alpha"));
     }
 }

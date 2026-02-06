@@ -41,7 +41,7 @@ mod tests {
         };
         let result = parse_targets(input).await;
         assert!(result.is_ok());
-        let parsed = result.unwrap();
+        let parsed = result.expect("Test assertion failed");
         assert_eq!(parsed.len(), 2);
         assert_eq!(parsed[0].original, "10.0.0.1");
     }

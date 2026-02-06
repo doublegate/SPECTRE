@@ -23,6 +23,27 @@ jobs:
       - name: Check formatting
         run: cargo fmt --all --check
 
+  # Frontend type checking
+  frontend-typecheck:
+    name: Frontend Type Check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9
+      - name: Install dependencies
+        run: |
+          cd crates/spectre-gui/frontend
+          pnpm install --frozen-lockfile
+      - name: Type check
+        run: |
+          cd crates/spectre-gui/frontend
+          pnpm typecheck
+
   # Lint with clippy
   clippy:
     name: Clippy
@@ -34,6 +55,37 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy
+
+      # Install Tauri dependencies (GTK, WebKit)
+      - name: Install Tauri dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libssl-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            libpcap-dev
+
+      # Setup Node.js and pnpm for frontend
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      # Build frontend (required before Rust build for Tauri)
+      - name: Build frontend
+        run: |
+          cd crates/spectre-gui/frontend
+          pnpm install --frozen-lockfile
+          pnpm build
+
       - uses: Swatinem/rust-cache@v2
       - name: Clippy
         run: cargo clippy --workspace --all-targets -- -D warnings
@@ -53,12 +105,21 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
 
-      # Linux dependencies
+      # Linux dependencies (including Tauri dependencies)
       - name: Install Linux dependencies
         if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y libpcap-dev
+          sudo apt-get install -y libwebkit2gtk-4.1-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libssl-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            libpcap-dev
 
       # macOS dependencies
       - name: Install macOS dependencies
@@ -76,11 +137,32 @@ jobs:
           Expand-Archive -Path "npcap-sdk.zip" -DestinationPath "npcap-sdk"
           echo "LIB=${{ github.workspace }}\npcap-sdk\Lib\x64" >> $env:GITHUB_ENV
 
+      # Setup Node.js and pnpm for frontend (all platforms)
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      # Build frontend (required before Rust build for Tauri)
+      - name: Build frontend
+        run: |
+          cd crates/spectre-gui/frontend
+          pnpm install --frozen-lockfile
+          pnpm build
+
       - name: Build
         run: cargo build --workspace --verbose
 
       - name: Run tests
         run: cargo test --workspace --verbose
+
+      # Run frontend tests
+      - name: Run frontend tests
+        run: |
+          cd crates/spectre-gui/frontend
+          pnpm test
 
   # Documentation build
   docs:
@@ -91,6 +173,37 @@ jobs:
       - name: Initialize submodules
         run: git submodule update --init --depth 1 components/prtip components/wraith-protocol components/cyberchef-mcp
       - uses: dtolnay/rust-toolchain@stable
+
+      # Install Tauri dependencies
+      - name: Install Tauri dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libssl-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            libpcap-dev
+
+      # Setup Node.js and pnpm for frontend
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      # Build frontend (required before Rust build for Tauri)
+      - name: Build frontend
+        run: |
+          cd crates/spectre-gui/frontend
+          pnpm install --frozen-lockfile
+          pnpm build
+
       - uses: Swatinem/rust-cache@v2
       - name: Build documentation
         run: cargo doc --workspace --no-deps
@@ -119,11 +232,38 @@ jobs:
       - name: Initialize submodules
         run: git submodule update --init --depth 1 components/prtip components/wraith-protocol components/cyberchef-mcp
       - uses: dtolnay/rust-toolchain@1.92.0
-      - uses: Swatinem/rust-cache@v2
+
+      # Install Tauri dependencies
       - name: Install Linux dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libpcap-dev
+          sudo apt-get install -y libwebkit2gtk-4.1-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libssl-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            libpcap-dev
+
+      # Setup Node.js and pnpm for frontend
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      # Build frontend (required before Rust build for Tauri)
+      - name: Build frontend
+        run: |
+          cd crates/spectre-gui/frontend
+          pnpm install --frozen-lockfile
+          pnpm build
+
+      - uses: Swatinem/rust-cache@v2
       - name: Check MSRV
         run: cargo check --workspace
 
@@ -137,11 +277,38 @@ jobs:
       - name: Initialize submodules
         run: git submodule update --init --depth 1 components/prtip components/wraith-protocol components/cyberchef-mcp
       - uses: dtolnay/rust-toolchain@stable
-      - uses: Swatinem/rust-cache@v2
+
+      # Install Tauri dependencies
       - name: Install Linux dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y libpcap-dev
+          sudo apt-get install -y libwebkit2gtk-4.1-dev \
+            build-essential \
+            curl \
+            wget \
+            file \
+            libssl-dev \
+            libgtk-3-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            libpcap-dev
+
+      # Setup Node.js and pnpm for frontend
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: pnpm/action-setup@v2
+        with:
+          version: 9
+
+      # Build frontend (required before Rust build for Tauri)
+      - name: Build frontend
+        run: |
+          cd crates/spectre-gui/frontend
+          pnpm install --frozen-lockfile
+          pnpm build
+
+      - uses: Swatinem/rust-cache@v2
       - name: Install cargo-tarpaulin
         run: cargo install cargo-tarpaulin
       - name: Generate coverage

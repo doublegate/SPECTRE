@@ -43,7 +43,10 @@ mod tests {
     fn test_app_state_default() {
         let state = AppState::default();
         // Should not panic
-        let _config = state.config.try_read().unwrap();
+        let _config = state
+            .config
+            .try_read()
+            .expect("Failed to read config in test");
     }
 
     #[tokio::test]

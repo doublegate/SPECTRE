@@ -56,7 +56,7 @@ mod tests {
         };
         let result = execute_chef(request).await;
         assert!(result.is_ok());
-        let chef_result = result.unwrap();
+        let chef_result = result.expect("Test assertion failed");
         assert_eq!(chef_result.operation, "From_Base64");
         assert!(chef_result.success);
     }
@@ -65,7 +65,7 @@ mod tests {
     async fn test_list_chef_operations_stub() {
         let result = list_chef_operations().await;
         assert!(result.is_ok());
-        let ops = result.unwrap();
+        let ops = result.expect("Test assertion failed");
         assert!(!ops.is_empty());
         assert!(ops.contains(&"From_Base64".to_string()));
     }
