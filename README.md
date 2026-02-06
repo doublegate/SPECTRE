@@ -14,7 +14,7 @@ A unified offensive security toolkit combining wire-speed secure communications,
   <a href="https://github.com/doublegate/SPECTRE/fork"><img src="https://img.shields.io/github/forks/doublegate/SPECTRE?style=flat-square" alt="GitHub Forks"></a>
   <a href="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml"><img src="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
   <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.4.7-blue.svg" alt="Version"></a>
-  <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.88%2B-orange.svg" alt="Rust"></a>
+  <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.92%2B-orange.svg" alt="Rust"></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-22%2B-green.svg" alt="Node.js"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT%2FGPLv3%2FApache--2.0-green.svg" alt="License"></a>
 </p>
@@ -507,7 +507,7 @@ Claude: I'll execute this multi-step workflow:
 
 ### Prerequisites
 
-- **Rust 1.88+** (for WRAITH, ProRT-IP, SPECTRE)
+- **Rust 1.92+** (for WRAITH, ProRT-IP, SPECTRE)
 - **Node.js 22+** (for CyberChef-MCP)
 - **Docker** (recommended for CyberChef-MCP deployment)
 - **Linux kernel 6.2+** (recommended for AF_XDP/io_uring performance)
