@@ -117,7 +117,7 @@ jobs:
         with:
           workspaces: "crates/spectre-gui -> target"
           key: ${{ matrix.platform.target }}
-          prefix-key: "v1"
+          prefix-key: "v2"
 
       - uses: pnpm/action-setup@v4
         with:

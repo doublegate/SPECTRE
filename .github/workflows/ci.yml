@@ -90,7 +90,7 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
         with:
-          prefix-key: "v1"
+          prefix-key: "v2"
       - name: Clippy
         run: cargo clippy --workspace --all-targets -- -D warnings
 
@@ -111,7 +111,7 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
         with:
-          prefix-key: "v1"
+          prefix-key: "v2"
 
       # Linux dependencies (including Tauri dependencies)
       - name: Install Linux dependencies
@@ -216,7 +216,7 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
         with:
-          prefix-key: "v1"
+          prefix-key: "v2"
       - name: Build documentation
         run: cargo doc --workspace --no-deps
         env:
@@ -279,7 +279,7 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
         with:
-          prefix-key: "v1"
+          prefix-key: "v2"
       - name: Check MSRV
         run: cargo check --workspace
 
@@ -328,7 +328,7 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
         with:
-          prefix-key: "v1"
+          prefix-key: "v2"
       - name: Install cargo-tarpaulin
         run: cargo install cargo-tarpaulin
       - name: Generate coverage
