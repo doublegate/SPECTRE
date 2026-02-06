@@ -9,38 +9,13 @@ on:
 env:
   CARGO_TERM_COLOR: always
 
+permissions:
+  contents: write
+
 jobs:
-  # Create release
-  create-release:
-    name: Create Release
-    runs-on: ubuntu-latest
-    outputs:
-      upload_url: ${{ steps.create_release.outputs.upload_url }}
-      version: ${{ steps.get_version.outputs.version }}
-    steps:
-      - uses: actions/checkout@v6
-
-      - name: Get version from tag
-        id: get_version
-        env:
-          TAG_REF: ${{ github.ref }}
-        run: echo "version=${TAG_REF#refs/tags/v}" >> $GITHUB_OUTPUT
-
-      - name: Create Release
-        id: create_release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: ${{ github.ref }}
-          release_name: SPECTRE ${{ steps.get_version.outputs.version }}
-          draft: true
-          prerelease: ${{ contains(github.ref, '-') }}
-
   # Build binaries
   build:
     name: Build (${{ matrix.target }})
-    needs: create-release
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -121,24 +96,10 @@ jobs:
           Copy-Item README.md, LICENSE, CHANGELOG.md dist/
           Compress-Archive -Path dist/* -DestinationPath "${{ matrix.artifact }}.zip"
 
-      - name: Upload Release Asset (Unix)
-        if: runner.os != 'Windows'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload Release Asset
+        uses: softprops/action-gh-release@v2
         with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./${{ matrix.artifact }}.tar.gz
-          asset_name: ${{ matrix.artifact }}.tar.gz
-          asset_content_type: application/gzip
-
-      - name: Upload Release Asset (Windows)
-        if: runner.os == 'Windows'
-        uses: actions/upload-release-asset@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          upload_url: ${{ needs.create-release.outputs.upload_url }}
-          asset_path: ./${{ matrix.artifact }}.zip
-          asset_name: ${{ matrix.artifact }}.zip
-          asset_content_type: application/zip
+          files: |
+            ${{ matrix.artifact }}.tar.gz
+            ${{ matrix.artifact }}.zip
+          fail_on_unmatched_files: false

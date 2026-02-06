@@ -105,6 +105,13 @@ Session.vim
 \#*\#
 .\#*
 
+# Visual Studio
+*.sln
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
 # Sublime Text
 *.sublime-project
 *.sublime-workspace

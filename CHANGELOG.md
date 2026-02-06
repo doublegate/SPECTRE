@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+#### Release Workflow Modernization
+
+- **Replaced deprecated GitHub Actions** in `.github/workflows/release.yml`:
+  - Removed `actions/create-release@v1` (archived/deprecated) and `actions/upload-release-asset@v1` (archived/deprecated)
+  - Replaced with `softprops/action-gh-release@v2` which auto-detects the tag, uploads assets, and preserves existing release notes
+- **Simplified workflow architecture**: Removed the separate `create-release` job — build jobs now upload release assets directly, eliminating the `upload_url` output dependency chain
+- **Added `permissions: contents: write`** at the workflow level for `GITHUB_TOKEN` to create releases
+- **Unified asset upload step**: Single upload step per build job handles both `.tar.gz` (Unix) and `.zip` (Windows) with `fail_on_unmatched_files: false` so each platform only uploads its own format without failing on the other's missing archive
+- **Added `SPECTRE.sln` to `.gitignore`**: Visual Studio solution files (`.sln`, `.suo`, `.user`, etc.) now excluded from version control
+
 ### Planned
 - GUI application with Tauri 2.0 — Phase 5
 - MCP server implementation — Phase 6
