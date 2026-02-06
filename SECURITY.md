@@ -102,6 +102,50 @@ When using SPECTRE:
 - Use secure channels for data transfer
 - Follow your organization's security policies
 
+## Known Limitations
+
+### GHSA-wrw7-89jp-8q8g: glib Unsoundness in GUI Application (Linux Only)
+
+**Status:** Accepted Risk (Upstream Dependency Limitation)
+**Severity:** Medium
+**Affected Component:** spectre-gui (Tauri 2.10.2 on Linux)
+**Platforms:** Linux only (macOS and Windows use different rendering engines)
+
+#### Background
+
+The SPECTRE GUI application (via Tauri 2.10.2) depends on GTK3 bindings which transitively require `glib` v0.18.5. This version contains an unsoundness issue ([GHSA-wrw7-89jp-8q8g](https://github.com/advisories/GHSA-wrw7-89jp-8q8g) / [RUSTSEC-2024-0429](https://rustsec.org/advisories/RUSTSEC-2024-0429)) in the `VariantStrIter` iterator implementation that can cause NULL pointer dereferences and crashes.
+
+#### Impact Assessment
+
+- **Exploitability:** LOW - Primarily causes application crashes rather than remote code execution
+- **Attack Surface:** The vulnerable code path (`glib::VariantStrIter`) is not directly used by SPECTRE
+- **Real-World Risk:** Minimal - requires specific conditions to trigger undefined behavior
+- **Platforms:** Only affects Linux builds (macOS uses Cocoa, Windows uses WebView2)
+
+#### Fix Status
+
+The vulnerability is fixed in `glib` v0.20.0+, but upgrading requires:
+- Migration from GTK3 to GTK4 ecosystem
+- Tauri v3 release (currently in development)
+- Full rebuild of webkit2gtk-rs bindings
+
+**Timeline:** Monitoring Tauri v3 release for GTK4 migration (see [Issue #7335](https://github.com/tauri-apps/tauri/issues/7335))
+
+#### Mitigation
+
+Until upstream dependencies migrate to GTK4:
+1. **Use CLI/TUI interfaces** for mission-critical operations (not affected)
+2. **Test GUI thoroughly** on your target Linux distribution
+3. **Report crashes** if you encounter NULL pointer dereferences
+4. **Monitor updates** - subscribe to SPECTRE releases for Tauri v3 upgrade
+
+#### References
+
+- [GitHub Advisory GHSA-wrw7-89jp-8q8g](https://github.com/advisories/GHSA-wrw7-89jp-8q8g)
+- [RustSec Advisory RUSTSEC-2024-0429](https://rustsec.org/advisories/RUSTSEC-2024-0429)
+- [Tauri Issue #12048](https://github.com/tauri-apps/tauri/issues/12048)
+- [gtk-rs Fix PR #1343](https://github.com/gtk-rs/gtk-rs-core/pull/1343)
+
 ## Scope
 
 This security policy covers:

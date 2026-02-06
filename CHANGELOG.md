@@ -7,6 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Security
+
+#### Known Limitation: glib Unsoundness (GHSA-wrw7-89jp-8q8g)
+
+**Component:** `spectre-gui` (Linux only)
+**Severity:** Medium (CVSS 6.9)
+**Status:** Accepted risk - awaiting upstream Tauri v3 release
+
+The GUI application on Linux transitively depends on `glib` v0.18.5 (via Tauri 2.10.2 → GTK3 bindings), which contains an unsoundness vulnerability in `VariantStrIter::impl_get` ([GHSA-wrw7-89jp-8q8g](https://github.com/advisories/GHSA-wrw7-89jp-8q8g)). This can cause NULL pointer dereferences and application crashes in specific conditions.
+
+**Impact:** LOW exploitability - primarily causes crashes rather than RCE. The vulnerable code path is not directly used by SPECTRE. Only affects Linux builds (macOS/Windows use different rendering engines).
+
+**Fix:** Requires `glib` v0.20.0+, which needs GTK4 migration. Blocked by:
+- Tauri v2.10.2 depends on webkit2gtk v2.0.2
+- webkit2gtk v2.0.2 depends on GTK3 (gtk v0.18.2, marked UNMAINTAINED)
+- GTK3 bindings locked to glib v0.18.x series
+- GTK4 migration requires Tauri v3 (in development, see [tauri-apps/tauri#7335](https://github.com/tauri-apps/tauri/issues/7335))
+
+**Mitigation:** Use CLI/TUI interfaces for critical operations (unaffected). See `SECURITY.md` for details.
+
+**References:**
+- Advisory: [GHSA-wrw7-89jp-8q8g](https://github.com/advisories/GHSA-wrw7-89jp-8q8g)
+- RustSec: [RUSTSEC-2024-0429](https://rustsec.org/advisories/RUSTSEC-2024-0429)
+- Fix PR: [gtk-rs/gtk-rs-core#1343](https://github.com/gtk-rs/gtk-rs-core/pull/1343)
+
 ### Fixed
 
 #### CI Workflow Failures for Tauri 2.10 + React Frontend
