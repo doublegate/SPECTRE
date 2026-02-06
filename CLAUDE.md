@@ -18,8 +18,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Phase 2:** Operation NIGHTFALL (v0.2.x) - Core Orchestration **COMPLETE**
 **Phase 3:** Operation PHANTOM (v0.3.x) - TUI Dashboard **COMPLETE**
 **Phase 4:** Operation SPECTER (v0.4.x) - Advanced Features **COMPLETE**
+**Phase 5:** Operation SHADOW (v0.5.x) - GUI Application (Tauri 2.0) **IN PROGRESS** (Sprint 5.1 complete)
 
-**SPECTRE Tests:** 980 (44 CLI + 618 core + 268 TUI + 5 doc-tests + 45 integration) | **Code:** ~35,000 lines Rust (122 files)
+**SPECTRE Tests:** 1,017 (44 CLI + 618 core + 32 GUI + 268 TUI + 5 doc-tests + 45 integration + 5 frontend) | **Code:** ~36,000 lines Rust + TypeScript (135 Rust files + 8 frontend files)
 
 **Repository:** [github.com/doublegate/SPECTRE](https://github.com/doublegate/SPECTRE)
 
@@ -140,7 +141,30 @@ crates/
 │       ├── scan_state.rs   # Scan progress tracking, ETA, filtering, sorting
 │       ├── panels/         # Recon, Analysis, Comms, Campaign panel renderers
 │       └── widgets/        # HelpOverlay, StatusBar shared widgets
-├── spectre-gui/        # GUI application (planned - Phase 5)
+├── spectre-gui/        # GUI application — Tauri 2.10 + React 19 (13 Rust files, 32 tests + 8 frontend files, 5 tests)
+│   ├── Cargo.toml          # Binary+library crate (staticlib, cdylib, rlib)
+│   ├── build.rs            # tauri_build::build()
+│   ├── tauri.conf.json     # Tauri config (1280x800 window, CSP, bundle)
+│   ├── capabilities/       # IPC security permissions (default.json)
+│   ├── icons/              # App icons (RGBA PNG, ico, icns)
+│   ├── src/
+│   │   ├── main.rs         # Desktop entry point
+│   │   ├── lib.rs          # Tauri Builder, plugins, 21 IPC handlers
+│   │   ├── state.rs        # AppState (RwLock<Config>)
+│   │   ├── events.rs       # Event payloads (scan progress/result/complete/error)
+│   │   └── commands/       # IPC command handlers (10 modules)
+│   │       ├── status.rs       # get_version, get_status (fully wired)
+│   │       ├── scan.rs         # start_scan, stop_scan, get_scan_results (stubs)
+│   │       ├── chef.rs         # execute_chef, list_chef_operations (stubs)
+│   │       ├── comms.rs        # get_identity, list_peers, send_data (stubs)
+│   │       ├── campaign.rs     # create/list/get/advance campaign (stubs)
+│   │       ├── config.rs       # get_config, set_config (stubs)
+│   │       ├── results.rs      # get_dashboard_stats, get_findings (stubs)
+│   │       ├── report.rs       # generate_report, export_data (stubs)
+│   │       └── target.rs       # parse_targets (stub)
+│   └── frontend/           # React 19 + Vite 6 + TypeScript
+│       ├── package.json, vite.config.ts, tsconfig.json, index.html
+│       └── src/            # main.tsx, App.tsx, styles.css, App.test.tsx
 └── spectre-mcp/        # MCP server (planned - Phase 6)
 ```
 
@@ -267,7 +291,7 @@ Development is organized into 7 phases (56 sprints total):
 | 2 | Operation NIGHTFALL | v0.2.x | Core orchestration - target, job, results, pipeline, campaign, plugins **COMPLETE** |
 | 3 | Operation PHANTOM | v0.3.x | TUI dashboard - 4-panel layout, 5 themes, command input, vim-style nav **COMPLETE** |
 | 4 | Operation SPECTER | v0.4.x | Advanced features - orchestration, workflows, recipes, reports, exports, perf, plugins **COMPLETE** |
-| 5 | Operation SHADOW | v0.5.x | GUI application (Tauri 2.0) |
+| 5 | Operation SHADOW | v0.5.x | GUI application (Tauri 2.0) — **Sprint 5.1 complete** |
 | 6 | Operation WRAITH | v0.6.x | MCP server implementation |
 | 7 | Operation GENESIS | v1.0.0 | Production release |
 

@@ -11,6 +11,14 @@ description = "SPECTRE GUI application (Tauri 2.0)"
 keywords = ["gui", "security", "tauri"]
 categories = ["gui"]
 
+[lib]
+name = "spectre_gui"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[[bin]]
+name = "spectre-gui"
+path = "src/main.rs"
+
 [dependencies]
 spectre-core = { path = "../spectre-core" }
 tokio = { workspace = true }
@@ -18,3 +26,19 @@ serde = { workspace = true }
 serde_json = { workspace = true }
 anyhow = { workspace = true }
 tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+chrono = { workspace = true }
+tauri = { workspace = true }
+tauri-plugin-shell = { workspace = true }
+tauri-plugin-window-state = { workspace = true }
+tauri-plugin-store = { workspace = true }
+
+[build-dependencies]
+tauri-build = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]

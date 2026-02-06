@@ -13,7 +13,7 @@ A unified offensive security toolkit combining wire-speed secure communications,
   <a href="https://github.com/doublegate/SPECTRE"><img src="https://img.shields.io/github/stars/doublegate/SPECTRE?style=flat-square" alt="GitHub Stars"></a>
   <a href="https://github.com/doublegate/SPECTRE/fork"><img src="https://img.shields.io/github/forks/doublegate/SPECTRE?style=flat-square" alt="GitHub Forks"></a>
   <a href="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml"><img src="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
-  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.4.7-blue.svg" alt="Version"></a>
+  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.5.0--alpha.1-blue.svg" alt="Version"></a>
   <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.92%2B-orange.svg" alt="Rust"></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-22%2B-green.svg" alt="Node.js"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT%2FGPLv3%2FApache--2.0-green.svg" alt="License"></a>
@@ -48,14 +48,14 @@ Modern offensive security requires seamless tool integration. SPECTRE eliminates
 
 | Metric                 | Value                                                                   |
 | ---------------------- | ----------------------------------------------------------------------- |
-| **Combined Tests**     | 7,183 (SPECTRE: 980 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 689) |
-| **SPECTRE Codebase**   | ~35,000 lines Rust (122 source files across 5 crates)                     |
-| **Component Code**     | ~180,000 (Rust) + ~40,000 (TypeScript/JavaScript)                         |
-| **Languages**          | Rust 2024, TypeScript, JavaScript                                         |
-| **Network Throughput** | 10+ Gbps (WRAITH), 10M+ pps (ProRT-IP)                                   |
-| **Data Operations**    | 463 via CyberChef MCP                                                     |
-| **Interface Modes**    | CLI (implemented), TUI (implemented), GUI, MCP Server                     |
-| **Platforms**          | Linux, Windows, macOS, Docker                                             |
+| **Combined Tests**     | 7,220 (SPECTRE: 1,017 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 689) |
+| **SPECTRE Codebase**   | ~36,000 lines Rust + TypeScript (135 Rust files + 8 frontend files)         |
+| **Component Code**     | ~180,000 (Rust) + ~40,000 (TypeScript/JavaScript)                           |
+| **Languages**          | Rust 2024, TypeScript, JavaScript                                           |
+| **Network Throughput** | 10+ Gbps (WRAITH), 10M+ pps (ProRT-IP)                                     |
+| **Data Operations**    | 463 via CyberChef MCP                                                       |
+| **Interface Modes**    | CLI (implemented), TUI (implemented), GUI (scaffold), MCP Server            |
+| **Platforms**          | Linux, Windows, macOS, Docker                                               |
 
 ---
 
@@ -331,7 +331,7 @@ SPECTRE follows a modular microservices architecture where each component operat
 | **Report Generation**   | HTML and Markdown reports, executive summaries     | Rust (templates)                 | **Implemented** |
 | **Export System**        | CSV, custom templates, incremental export         | Rust (serde)                     | **Implemented** |
 | **Performance Layer**   | LRU cache, connection pool, metrics collection    | Rust (tokio)                     | **Implemented** |
-| **GUI Application**     | Visual campaign planning                          | Tauri 2.0, React, TypeScript     | Planned         |
+| **GUI Application**     | Tauri 2.10 desktop app, 21 IPC commands (scaffold) | Tauri 2.10, React 19, TypeScript | **Scaffold**    |
 | **MCP Server**          | AI-assisted operations                            | Rust, MCP Protocol               | Planned         |
 
 ---
@@ -641,13 +641,20 @@ SPECTRE releases follow an operational codename convention:
 - [x] Advanced plugin system: registry with dependency resolution, event hooks (10 lifecycle events), template scaffolding (5 types)
 - [x] 45 integration tests across 6 test suites, 351 new unit tests
 
-### Phase 5: Visual Interface — Operation SHADOW
+### Phase 5: Visual Interface — Operation SHADOW (In Progress)
 
-- [ ] Tauri 2.0 GUI application
+- [x] Tauri 2.10 desktop application scaffold with React 19 + TypeScript + Vite 6 frontend
+- [x] 21 IPC command handlers (2 fully wired: `get_version`, `get_status`; 19 stubs)
+- [x] AppState with `RwLock<Config>`, managed by Tauri `.manage()`
+- [x] Event payload types for scan progress/results/completion/error streaming
+- [x] Tauri plugins: shell, window-state, store
+- [x] 37 tests (32 Rust unit + 5 frontend vitest)
+- [ ] React Router + Tailwind CSS + shadcn/ui + Zustand state management
 - [ ] Campaign planning workspace
-- [ ] Network topology visualization
-- [ ] Multi-operator collaboration
-- [ ] Visual workflow builder
+- [ ] Network topology visualization (D3.js)
+- [ ] Results dashboard with charts (Recharts)
+- [ ] Settings, Analysis & Comms pages
+- [ ] Cross-platform testing and installers
 
 ### Future Enhancements
 
@@ -794,8 +801,38 @@ SPECTRE/
 │   │       └── widgets/        # Shared widget components
 │   │           ├── help_overlay.rs # Help popup with keybinding groups
 │   │           └── status_bar.rs   # Header bar + status bar rendering
-│   ├── spectre-gui/        # GUI application (planned)
-│   └── spectre-mcp/        # MCP server (planned)
+│   ├── spectre-gui/        # GUI application — Tauri 2.10 + React 19 (13 Rust files, 32 tests)
+│   │   ├── Cargo.toml          # Binary+library crate (staticlib, cdylib, rlib)
+│   │   ├── build.rs            # tauri_build::build()
+│   │   ├── tauri.conf.json     # Tauri config (1280x800 window, CSP, bundle)
+│   │   ├── capabilities/       # IPC security permissions (default.json)
+│   │   ├── icons/              # App icons (32x32, 128x128, @2x, ico, icns)
+│   │   ├── src/
+│   │   │   ├── main.rs         # Desktop entry point
+│   │   │   ├── lib.rs          # Tauri Builder, plugins, 21 IPC handlers
+│   │   │   ├── state.rs        # AppState (RwLock<Config>)
+│   │   │   ├── events.rs       # Event payloads (scan progress/result/complete/error)
+│   │   │   └── commands/       # IPC command handlers
+│   │   │       ├── status.rs       # get_version, get_status (fully wired)
+│   │   │       ├── scan.rs         # start_scan, stop_scan, get_scan_results (stubs)
+│   │   │       ├── chef.rs         # execute_chef, list_chef_operations (stubs)
+│   │   │       ├── comms.rs        # get_identity, list_peers, send_data (stubs)
+│   │   │       ├── campaign.rs     # create/list/get/advance campaign (stubs)
+│   │   │       ├── config.rs       # get_config, set_config (stubs)
+│   │   │       ├── results.rs      # get_dashboard_stats, get_findings (stubs)
+│   │   │       ├── report.rs       # generate_report, export_data (stubs)
+│   │   │       └── target.rs       # parse_targets (stub)
+│   │   └── frontend/           # React 19 + Vite 6 + TypeScript (8 files, 5 tests)
+│   │       ├── package.json
+│   │       ├── vite.config.ts
+│   │       ├── tsconfig.json
+│   │       ├── index.html
+│   │       └── src/
+│   │           ├── main.tsx        # React root
+│   │           ├── App.tsx         # Version + status display via IPC
+│   │           ├── styles.css      # Dark theme with SPECTRE accent colors
+│   │           └── App.test.tsx    # 5 vitest tests
+│   └── spectre-mcp/        # MCP server (planned - Phase 6)
 │
 ├── configs/
 │   └── spectre.toml        # Default configuration
@@ -941,6 +978,6 @@ SPECTRE builds on the shoulders of giants:
 
 **SPECTRE** — _Unified Offensive Security_
 
-**Version:** 0.4.7 | **License:** Multi-license | **Language:** Rust + TypeScript | **Status:** Active Development
+**Version:** 0.5.0-alpha.1 | **License:** Multi-license | **Language:** Rust + TypeScript | **Status:** Active Development
 
 **Last Updated:** 2026-02-05

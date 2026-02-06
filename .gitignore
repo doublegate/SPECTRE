@@ -287,12 +287,17 @@ vgcore.*
 .cargo/
 
 # =============================================================================
-# Tauri (GUI)
+# Tauri (GUI) - crates/spectre-gui/
 # =============================================================================
-# Tauri build outputs
+# Frontend node_modules and build output
+crates/spectre-gui/frontend/node_modules/
+crates/spectre-gui/frontend/dist/
+# Tauri build artifacts and auto-generated schemas
+crates/spectre-gui/WixTools/
+crates/spectre-gui/gen/
+# Legacy src-tauri paths (unused)
 src-tauri/target/
 src-tauri/WixTools/
-src-tauri/icons/
 
 # =============================================================================
 # CyberChef-MCP specific

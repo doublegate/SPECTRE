@@ -13,7 +13,7 @@ exclude = [
 ]
 
 [workspace.package]
-version = "0.4.7"
+version = "0.5.0-alpha.1"
 edition = "2021"
 rust-version = "1.92"
 authors = ["doublegate"]
@@ -91,6 +91,13 @@ directories = "6"
 
 # Docker API (for CyberChef-MCP)
 bollard = "0.18"
+
+# GUI (Tauri 2.0)
+tauri = { version = "2", features = ["tray-icon"] }
+tauri-build = { version = "2", features = [] }
+tauri-plugin-shell = "2"
+tauri-plugin-window-state = "2"
+tauri-plugin-store = "2"
 
 # Output formatting
 colored = "3"

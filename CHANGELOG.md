@@ -33,8 +33,70 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Added `CARGO_HOME` env var**: Set to `${{ github.workspace }}/.cargo` for consistent cargo behavior across CI runners
 
 ### Planned
-- GUI application with Tauri 2.0 — Phase 5
 - MCP server implementation — Phase 6
+
+## [0.5.0-alpha.1] - 2026-02-05
+
+### Added
+
+#### Phase 5 Sprint 5.1: Tauri 2.0 GUI Application Scaffold — Operation SHADOW
+
+**spectre-gui crate** — Full Tauri 2.10 + React 19 desktop application scaffold:
+
+- **Rust backend** (13 source files, 32 unit tests):
+  - `src/main.rs` — Desktop entry point with `windows_subsystem = "windows"` for release builds
+  - `src/lib.rs` — Tauri Builder with 3 plugins (shell, window-state, store), managed `AppState`, and 21 IPC command handler registrations
+  - `src/state.rs` — `AppState` struct with `RwLock<Config>` behind `Arc`, `Default` impl, 3 tests
+  - `src/events.rs` — 5 event payload types for Tauri `app_handle.emit()` streaming: `ScanProgressEvent` (progress %, current target, rate), `ScanResultEvent` (host, port, state, service), `ScanCompleteEvent` (total hosts/ports/services, duration), `ScanErrorEvent` (message, target), `StatusEvent` (component, status, details); 5 tests
+  - `src/commands/status.rs` — **Fully wired**: `get_version()` returns `VersionInfo` struct with `CARGO_PKG_VERSION`; `get_status()` returns `SystemStatus` with 3 `ComponentStatus` entries (scanner, analysis, comms); 4 tests
+  - `src/commands/scan.rs` — **Stubs**: `start_scan()`, `stop_scan()`, `get_scan_results()` with `ScanRequest` and `ScanSummary` types; 3 tests
+  - `src/commands/chef.rs` — **Stubs**: `execute_chef()`, `list_chef_operations()` with `ChefRequest` and `ChefResult` types; 2 tests
+  - `src/commands/comms.rs` — **Stubs**: `get_identity()`, `list_peers()`, `send_data()` with `IdentityInfo`, `PeerInfo`, `SendRequest` types; 3 tests
+  - `src/commands/campaign.rs` — **Stubs**: `create_campaign()`, `list_campaigns()`, `get_campaign()`, `advance_campaign()` with `CampaignSummary`, `CreateCampaignRequest` types; 4 tests
+  - `src/commands/config.rs` — **Stubs**: `get_config()`, `set_config()` with `ConfigSummary` type; 2 tests
+  - `src/commands/results.rs` — **Stubs**: `get_dashboard_stats()`, `get_findings()` with `FindingSummary`, `DashboardStats`, `SeverityCounts` types; 2 tests
+  - `src/commands/report.rs` — **Stubs**: `generate_report()`, `export_data()` with `ReportRequest`, `ReportResult` types; 2 tests
+  - `src/commands/target.rs` — **Stub**: `parse_targets()` with `ParsedTarget`, `TargetInput` types; 1 test
+  - `build.rs` — `tauri_build::build()` for Tauri compile-time asset embedding
+
+- **Tauri configuration**:
+  - `tauri.conf.json` — productName "SPECTRE", identifier "com.spectre.gui", version "0.5.0-alpha.1", 1280x800 window (centered, decorations, resizable, min 800x600), CSP "default-src 'self'; img-src 'self' asset: https://asset.localhost; style-src 'self' 'unsafe-inline'", bundle identifiers for Linux (deb, rpm, AppImage), macOS (dmg), and Windows (msi, nsis)
+  - `capabilities/default.json` — IPC permissions: `core:default`, `shell:allow-open`, `store:default`, `window-state:default`
+  - `icons/` — RGBA PNG icons: 32x32, 128x128, 128x128@2x, icon.ico, icon.icns (generated with ImageMagick `png:color-type=6`)
+
+- **React 19 frontend** (8 source files, 5 vitest tests):
+  - `frontend/package.json` — React 19.2, @tauri-apps/api 2, Vite 6.4, vitest 3.2, @testing-library/react
+  - `frontend/vite.config.ts` — Tauri-specific Vite config with server port 1420, HMR, vitest jsdom environment
+  - `frontend/tsconfig.json` — Strict TypeScript, ES2020 target, react-jsx JSX transform
+  - `frontend/index.html` — Root document with `<div id="root">`
+  - `frontend/src/main.tsx` — React root with StrictMode
+  - `frontend/src/App.tsx` — Calls `invoke("get_version")` and `invoke("get_status")` IPC commands, renders version info and 3 component status cards with TypeScript interfaces (`VersionInfo`, `ComponentStatus`, `SystemStatus`)
+  - `frontend/src/styles.css` — Dark theme CSS with SPECTRE accent color (#e94560), component card grid layout
+  - `frontend/src/App.test.tsx` — 5 vitest tests with `@tauri-apps/api/core` mock: renders SPECTRE heading, displays version, renders 3 component cards, each card shows name and status
+
+### Changed
+
+- **Workspace `Cargo.toml`**: Version bumped to `0.5.0-alpha.1`; added 5 new workspace dependencies: `tauri` (v2, features: tray-icon), `tauri-build` (v2), `tauri-plugin-shell` (v2), `tauri-plugin-window-state` (v2), `tauri-plugin-store` (v2)
+- **`crates/spectre-gui/Cargo.toml`**: Transformed from placeholder to full Tauri binary+library crate with `[lib]` (staticlib, cdylib, rlib) and `[[bin]]` sections; added tauri, tauri-plugin-shell, tauri-plugin-window-state, tauri-plugin-store, spectre-core, serde, serde_json, tokio dependencies; added tauri-build as build dependency; added `custom-protocol` feature for production builds
+- **`crates/spectre-gui/src/lib.rs`**: Replaced placeholder `placeholder()` function with full Tauri Builder setup — 3 plugins, managed `AppState`, 21 IPC command handler registrations; `#[allow(clippy::disallowed_methods)]` on `run()` due to `tauri::generate_context!()` macro's internal `unwrap()` usage
+- **`.gitignore`**: Updated Tauri section for `crates/spectre-gui/` paths (node_modules, dist, WixTools, gen/schemas)
+
+### Technical Details
+- ~135 Rust source files + 8 frontend files, ~36,000 lines (Rust + TypeScript)
+- 1,017 tests total: 44 CLI + 618 core unit + 32 GUI + 268 TUI + 5 doc-tests + 45 integration + 5 frontend (vitest)
+- Combined ecosystem tests: 7,220 (SPECTRE 1,017 + ProRT-IP 2,557 + CyberChef 689 + WRAITH 2,957)
+- Zero clippy warnings (`cargo clippy --workspace -- -D warnings`)
+- Clean format (`cargo fmt --all --check`)
+- Frontend build: `pnpm build` (Vite 6.4.1, React 19.2.4, TypeScript 5.6)
+- Frontend tests: `pnpm test` (vitest 3.2.4, @testing-library/react, jsdom)
+- Key architectural decisions:
+  - **Binary + library crate**: `[lib]` for Rust unit tests without Tauri runtime, `[[bin]]` for desktop entry point
+  - **Tauri IPC over REST**: Direct `invoke()` / `listen()` — type-safe, no HTTP overhead; REST API deferred to Phase 6
+  - **Stub-first development**: 21 IPC commands defined (2 wired, 19 stubs); stubs return realistic mock data for frontend development
+  - **Event streaming design**: `events.rs` payload types mirror TUI's `ComponentEvent` pattern — `app_handle.emit()` replaces TUI's mpsc channels
+  - **Frontend build required before cargo build**: `tauri::generate_context!()` macro checks `frontendDist` at compile time
+  - **Icons must be RGBA PNG**: Tauri 2 validates PNG color-type; solved with `magick -alpha on -define png:color-type=6`
+  - **`tauri.conf.json` version**: Must be literal semver string, not a path reference to Cargo.toml
 
 ## [0.4.7] - 2026-02-05
 
@@ -836,7 +898,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/doublegate/SPECTRE/compare/v0.4.7...HEAD
+[Unreleased]: https://github.com/doublegate/SPECTRE/compare/v0.5.0-alpha.1...HEAD
+[0.5.0-alpha.1]: https://github.com/doublegate/SPECTRE/compare/v0.4.7...v0.5.0-alpha.1
 [0.4.7]: https://github.com/doublegate/SPECTRE/compare/v0.4.6...v0.4.7
 [0.4.6]: https://github.com/doublegate/SPECTRE/compare/v0.4.5...v0.4.6
 [0.4.5]: https://github.com/doublegate/SPECTRE/compare/v0.4.4...v0.4.5
