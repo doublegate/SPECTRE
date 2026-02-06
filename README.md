@@ -167,12 +167,30 @@ spectre scan --tui 192.168.1.0/24   # Scan with live visualization
 
 ### GUI — Graphical User Interface
 
-**Web-based visual interface for campaign planning and collaboration.**
+**Native desktop application for campaign planning and visual operations.**
 
 ```bash
-spectre --gui                    # Launch GUI server (default: localhost:8080)
-spectre --gui --bind 0.0.0.0:443 # Expose for team access (with TLS)
+# Development mode
+cd crates/spectre-gui
+./dev.sh                         # Auto-detects Wayland/X11, applies GPU workarounds
+
+# Production build
+cargo build --release -p spectre-gui
+./target/release/spectre-gui
+
+# Manual overrides (if auto-detection fails)
+./dev.sh --force-x11             # Force X11 backend
+./dev.sh --force-wayland         # Force Wayland backend
+./dev.sh --verbose               # Enable debug logging
 ```
+
+**Automatic Display Server Detection:**
+
+The GUI automatically detects your display server (Wayland vs X11) and GPU vendor, then applies appropriate workarounds for optimal WebKitGTK rendering:
+
+- **NVIDIA GPUs:** Automatically uses X11 backend with DMABUF renderer disabled (known Wayland compatibility issues)
+- **Intel/AMD GPUs:** Uses native Wayland when available, falls back to X11 if needed
+- **Manual Overrides:** Respected if you set `GDK_BACKEND` environment variable
 
 **Capabilities:**
 
@@ -184,10 +202,15 @@ spectre --gui --bind 0.0.0.0:443 # Expose for team access (with TLS)
 
 **Technology Stack:**
 
-- Tauri 2.0 framework (same as WRAITH clients)
-- React/TypeScript frontend
+- Tauri 2.10 framework (Rust backend)
+- React 19 + TypeScript frontend (Vite 6)
+- Tailwind CSS 4 for styling
+- Zustand state management
 - WebSocket real-time updates
-- Native system tray integration
+
+**Troubleshooting:**
+
+If you experience display issues (blank window, GBM buffer errors, etc.), see [GUI Display Issues Troubleshooting Guide](docs/troubleshooting/GUI-DISPLAY-ISSUES.md).
 
 ### MCP Server — AI-Assisted Operations
 

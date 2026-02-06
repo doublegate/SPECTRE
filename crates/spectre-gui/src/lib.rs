@@ -5,6 +5,7 @@
 //! state management, event streaming) and the binary entry point.
 
 pub mod commands;
+pub mod display;
 pub mod events;
 pub mod state;
 

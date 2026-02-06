@@ -4,9 +4,8 @@
   "version": "0.5.0-alpha.4",
   "identifier": "com.spectre.gui",
   "build": {
-    "beforeDevCommand": "cd frontend && pnpm dev",
     "devUrl": "http://localhost:1420",
-    "beforeBuildCommand": "cd frontend && pnpm build",
+    "beforeBuildCommand": "sh -c 'cd frontend && pnpm build'",
     "frontendDist": "frontend/dist"
   },
   "app": {

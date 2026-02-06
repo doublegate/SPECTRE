@@ -235,8 +235,7 @@ pub async fn export_campaign(
         .map_err(|e| format!("Failed to serialize campaign: {}", e))?;
 
     // Write to file
-    std::fs::write(&request.path, json)
-        .map_err(|e| format!("Failed to write file: {}", e))?;
+    std::fs::write(&request.path, json).map_err(|e| format!("Failed to write file: {}", e))?;
 
     tracing::info!("Campaign exported successfully");
     Ok(())
@@ -276,10 +275,7 @@ pub async fn import_campaign(
 
 /// Archive campaign (mark as archived).
 #[command]
-pub async fn archive_campaign(
-    state: State<'_, Arc<AppState>>,
-    id: String,
-) -> Result<(), String> {
+pub async fn archive_campaign(state: State<'_, Arc<AppState>>, id: String) -> Result<(), String> {
     tracing::info!(id = %id, "Archiving campaign");
 
     let store_arc = state.get_campaign_store().await?;

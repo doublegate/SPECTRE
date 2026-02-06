@@ -7,6 +7,68 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+#### Automatic Wayland/X11 Detection with Hardware Acceleration Fixes
+
+**Display Server Auto-Detection (`crates/spectre-gui/src/display.rs`, 450 lines):**
+- **Automatic display server detection**: Detects Wayland vs X11 from `XDG_SESSION_TYPE`, `WAYLAND_DISPLAY`, and `DISPLAY` environment variables
+- **GPU vendor detection**: Reads PCI vendor ID from `/sys/class/drm/card*/device/vendor` or `lspci` output to identify NVIDIA (0x10de), Intel (0x8086), or AMD (0x1002) GPUs
+- **Intelligent fallback strategy**:
+  - NVIDIA + Wayland → Automatically forces X11 backend (WebKitGTK DMABUF renderer has known compatibility issues)
+  - Unknown display server → Defaults to X11 (safest fallback)
+  - Intel/AMD + Wayland → Uses native Wayland (better performance)
+- **GPU-specific workarounds**:
+  - NVIDIA: Sets `WEBKIT_DISABLE_DMABUF_RENDERER=1` + `__NV_DISABLE_EXPLICIT_SYNC=1` + `GDK_BACKEND=x11`
+  - Intel/AMD on X11: Sets `WEBKIT_DISABLE_COMPOSITING_MODE=1` for stability
+  - Unknown GPU: Conservative settings with DMABUF renderer disabled
+- **User override support**: Respects manually set `GDK_BACKEND` environment variable (doesn't override user choice)
+- **Informative console output**: Prints detected display server, GPU vendor, applied workarounds, and fallback reasons
+- **6 unit tests**: Display server enum, GPU vendor enum, backend determination logic, NVIDIA+Wayland fallback, Intel+Wayland preservation, unknown display fallback
+
+**Enhanced Startup Sequence (`crates/spectre-gui/src/main.rs`):**
+- **Pre-Tauri initialization**: Calls `display::configure_display_server()` before Tauri builder runs
+- **Platform-specific**: Display detection only runs on Linux (`#[cfg(target_os = "linux")]`), macOS/Windows skip this step
+- **Logging initialization**: Added `init_logging()` function with `RUST_LOG` environment variable support (info/debug/trace levels)
+- **Visual startup feedback**: Calls `display::print_display_config()` to show user what backend and workarounds are active
+
+**Enhanced Development Script (`crates/spectre-gui/dev.sh`):**
+- **Removed hardcoded environment variables**: No longer sets `WEBKIT_DISABLE_DMABUF_RENDERER=1 GDK_BACKEND=x11` (now automatic)
+- **Added command-line flags**:
+  - `--verbose`: Enables debug logging (`RUST_LOG=debug`)
+  - `--trace`: Enables trace logging (`RUST_LOG=trace`)
+  - `--force-x11`: Manually forces X11 backend (overrides auto-detection)
+  - `--force-wayland`: Manually forces Wayland backend (overrides auto-detection)
+  - `--skip-frontend`: Skips frontend connectivity check
+  - `-h, --help`: Shows usage information with examples
+- **Environment diagnostics**: Shows current `XDG_SESSION_TYPE`, `DISPLAY`, `WAYLAND_DISPLAY`, `GDK_BACKEND`, and `RUST_LOG` when verbose mode enabled
+
+**Comprehensive Troubleshooting Documentation (`docs/troubleshooting/GUI-DISPLAY-ISSUES.md`, 580 lines):**
+- **Automatic detection system explanation**: How display server and GPU detection works, what workarounds are applied
+- **Common issues with solutions**:
+  - Wayland GBM buffer errors (automatic X11 fallback)
+  - Blank/white window (DMABUF renderer disabled for NVIDIA)
+  - Hardware acceleration disabled (GPU driver installation guides)
+  - NVIDIA-specific issues (explicit sync, EGL GBM library)
+- **Manual override instructions**: Environment variables for forcing specific backends or disabling rendering features
+- **Platform-specific notes**: Linux Wayland/X11/XWayland, macOS (no config needed), Windows (no config needed), hybrid graphics (NVIDIA Optimus)
+- **GPU driver installation guides**: NVIDIA (proprietary + nouveau), Intel (Mesa), AMD (Mesa + AMDGPU-PRO)
+- **Advanced debugging**: Display server checks, GPU info commands, strace analysis, Mesa driver testing
+- **External resources**: Links to WebKitGTK bugs, Tauri issues, Mesa docs, Arch Wiki graphics guides
+
+**Updated README (`README.md`):**
+- **GUI section rewritten**: Replaced placeholder commands with actual usage (`./dev.sh`, `cargo build --release -p spectre-gui`)
+- **Automatic detection documentation**: Explains NVIDIA X11 fallback, Intel/AMD Wayland support, manual overrides
+- **Command examples**: Shows `./dev.sh --verbose`, `--force-x11`, `--force-wayland` flags
+- **Troubleshooting link**: Points to `docs/troubleshooting/GUI-DISPLAY-ISSUES.md`
+
+### Fixed
+
+- **NVIDIA + Wayland GBM buffer errors**: Automatically forces X11 backend for NVIDIA GPUs to avoid "Failed to create GBM buffer of size 1280x800: Invalid argument" errors (see [Tauri#13493](https://github.com/tauri-apps/tauri/issues/13493))
+- **WebKitGTK DMABUF renderer crashes**: Disabled for NVIDIA GPUs to prevent blank windows and rendering failures (see [WebKit#261874](https://bugs.webkit.org/show_bug.cgi?id=261874))
+- **Manual environment variable requirement**: GUI now launches with `cargo tauri dev` or `./dev.sh` without needing `WEBKIT_DISABLE_DMABUF_RENDERER=1 GDK_BACKEND=x11` workaround
+- **NVIDIA explicit sync issues**: Automatically sets `__NV_DISABLE_EXPLICIT_SYNC=1` for NVIDIA GPUs (see [Tauri#9394](https://github.com/tauri-apps/tauri/issues/9394))
+
 ## [0.5.0-alpha.4] - 2026-02-06
 
 ### Added

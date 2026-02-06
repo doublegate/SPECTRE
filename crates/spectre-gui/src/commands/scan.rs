@@ -4,7 +4,9 @@ use std::time::Instant;
 use tauri::{command, AppHandle, Emitter, State};
 use tracing::{error, info};
 
-use spectre_core::scan::{create_scanner, parse_ports, parse_targets, ScanConfig, ScanType, TimingTemplate};
+use spectre_core::scan::{
+    create_scanner, parse_ports, parse_targets, ScanConfig, ScanType, TimingTemplate,
+};
 
 use crate::events::{ScanCompleteEvent, ScanErrorEvent, ScanProgressEvent, ScanResultEvent};
 use crate::state::AppState;
@@ -44,8 +46,8 @@ pub async fn start_scan(
 
     // Parse targets
     let target_strings: Vec<String> = request.targets.clone();
-    let targets = parse_targets(&target_strings)
-        .map_err(|e| format!("Failed to parse targets: {}", e))?;
+    let targets =
+        parse_targets(&target_strings).map_err(|e| format!("Failed to parse targets: {}", e))?;
 
     if targets.is_empty() {
         return Err("No valid targets provided".to_string());
@@ -53,7 +55,8 @@ pub async fn start_scan(
 
     // Parse ports (default: common ports)
     let ports = if let Some(ref port_spec) = request.ports {
-        parse_ports(Some(port_spec.as_str())).map_err(|e| format!("Failed to parse ports: {}", e))?
+        parse_ports(Some(port_spec.as_str()))
+            .map_err(|e| format!("Failed to parse ports: {}", e))?
     } else {
         vec![22, 80, 443, 8080, 8443, 3306, 5432, 6379, 27017]
     };
@@ -100,8 +103,8 @@ pub async fn start_scan(
 
     // Create scanner
     let config_guard = state.config.read().await;
-    let scanner = create_scanner(&config_guard)
-        .map_err(|e| format!("Failed to create scanner: {}", e))?;
+    let scanner =
+        create_scanner(&config_guard).map_err(|e| format!("Failed to create scanner: {}", e))?;
     drop(config_guard);
 
     let scan_id_clone = scan_id.clone();
@@ -144,11 +147,7 @@ pub async fn start_scan(
                     open_ports_total += ports_count;
 
                     // Count services
-                    services_found += result
-                        .ports
-                        .iter()
-                        .filter(|p| p.service.is_some())
-                        .count();
+                    services_found += result.ports.iter().filter(|p| p.service.is_some()).count();
 
                     let event = ScanResultEvent::from_scan_result(scan_id_clone.clone(), result);
                     let _ = app_handle_clone.emit("scan:result", event);
@@ -174,7 +173,7 @@ pub async fn start_scan(
                     duration_ms,
                     "Scan completed successfully"
                 );
-            }
+            },
             Err(e) => {
                 error!(scan_id = %scan_id_clone, error = %e, "Scan failed");
                 let _ = app_handle_clone.emit(
@@ -185,22 +184,23 @@ pub async fn start_scan(
                         target: None,
                     },
                 );
-            }
+            },
         }
     });
 
     // Store task handle
-    state.active_scans.lock().await.insert(scan_id.clone(), task_handle);
+    state
+        .active_scans
+        .lock()
+        .await
+        .insert(scan_id.clone(), task_handle);
 
     Ok(scan_id)
 }
 
 /// Stop a running scan.
 #[command]
-pub async fn stop_scan(
-    state: State<'_, Arc<AppState>>,
-    scan_id: String,
-) -> Result<String, String> {
+pub async fn stop_scan(state: State<'_, Arc<AppState>>, scan_id: String) -> Result<String, String> {
     info!(scan_id = %scan_id, "Stopping scan");
 
     let mut scans = state.active_scans.lock().await;
@@ -233,7 +233,8 @@ mod tests {
 
     #[test]
     fn test_scan_request_deserialize() {
-        let json = r#"{"targets":["10.0.0.1"],"ports":"22,80,443","scan_type":"connect","timing":3}"#;
+        let json =
+            r#"{"targets":["10.0.0.1"],"ports":"22,80,443","scan_type":"connect","timing":3}"#;
         let request: ScanRequest = serde_json::from_str(json).unwrap();
         assert_eq!(request.targets.len(), 1);
         assert_eq!(request.targets[0], "10.0.0.1");
@@ -244,7 +245,9 @@ mod tests {
 
     #[test]
     fn test_parse_scan_type_valid() {
-        let types = vec!["syn", "connect", "udp", "ack", "fin", "xmas", "null", "window"];
+        let types = vec![
+            "syn", "connect", "udp", "ack", "fin", "xmas", "null", "window",
+        ];
         for t in types {
             let request = ScanRequest {
                 targets: vec!["127.0.0.1".to_string()],
