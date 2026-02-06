@@ -32,7 +32,7 @@ describe('FindingDetail', () => {
       />
     );
 
-    expect(screen.getByText('Finding Details')).toBeInTheDocument();
+    expect(screen.getByText(/Finding Details:/)).toBeInTheDocument();
     expect(screen.getByText('192.168.1.1')).toBeInTheDocument();
     expect(screen.getByText('OpenSSH 7.4')).toBeInTheDocument();
     expect(screen.getByText('Outdated SSH version with known vulnerabilities')).toBeInTheDocument();
@@ -82,7 +82,7 @@ describe('FindingDetail', () => {
     // Dialog should have a close button (provided by Dialog component)
     // We can't easily test this without mocking the Dialog component
     // But we can verify the dialog is rendered
-    expect(screen.getByText('Finding Details')).toBeInTheDocument();
+    expect(screen.getByText(/Finding Details:/)).toBeInTheDocument();
   });
 
   it('handles export actions', () => {
