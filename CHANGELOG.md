@@ -7,17 +7,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Changed
-- **MSRV bump**: Minimum Supported Rust Version increased from 1.88 to 1.92
-  - Updated `Cargo.toml` workspace `rust-version` field
-  - Updated CI workflow MSRV job to test with 1.92.0
-  - Updated `clippy.toml` MSRV reference
-  - Updated README.md badge and documentation references
-- **codecov-action**: Upgraded from v4 to v5 in CI workflow coverage job
-- **time crate**: Security update from 0.3.46 to 0.3.47 (via `Cargo.lock`)
-  - Addresses stack exhaustion DoS vulnerability in RFC 2822 parsing
-  - Resolves Dependabot security alert
-
 ### Planned
 - GUI application with Tauri 2.0 — Phase 5
 - MCP server implementation — Phase 6
