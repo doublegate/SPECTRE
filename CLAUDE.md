@@ -18,9 +18,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Phase 2:** Operation NIGHTFALL (v0.2.x) - Core Orchestration **COMPLETE**
 **Phase 3:** Operation PHANTOM (v0.3.x) - TUI Dashboard **COMPLETE**
 **Phase 4:** Operation SPECTER (v0.4.x) - Advanced Features **COMPLETE**
-**Phase 5:** Operation SHADOW (v0.5.x) - GUI Application (Tauri 2.0) **IN PROGRESS** (Sprint 5.6 complete)
+**Phase 5:** Operation SHADOW (v0.5.x) - GUI Application (Tauri 2.0) **IN PROGRESS** (Sprint 5.7 complete - 87.5%)
 
 **SPECTRE Tests:** 1,175 (44 CLI + 618 core + 74 GUI Rust + 121 GUI frontend + 268 TUI + 5 doc-tests + 45 integration) | **Code:** ~45,000 lines Rust + TypeScript (136 Rust files + 60 frontend files)
+
+**Current Version:** v0.5.0-beta.1
 
 **Repository:** [github.com/doublegate/SPECTRE](https://github.com/doublegate/SPECTRE)
 
@@ -66,7 +68,61 @@ cargo tarpaulin --workspace --out Html
 # Lint and format
 cargo fmt --all --check
 cargo clippy --workspace -- -D warnings
+
+# Platform-specific test scripts (Sprint 5.7)
+./crates/spectre-gui/scripts/test-linux.sh     # Linux build + tests
+./crates/spectre-gui/scripts/test-macos.sh     # macOS build + tests (Intel/ARM64)
+./crates/spectre-gui/scripts/test-windows.ps1  # Windows build + tests (PowerShell)
 ```
+
+---
+
+## Continuous Integration & Delivery
+
+### GitHub Actions Workflows
+
+**`.github/workflows/ci.yml`** - Main CI workflow
+- Format, Frontend Type Check, Clippy, Documentation
+- Tests on ubuntu-22.04, macos-14, windows-2022
+- Security Audit, MSRV check (1.92.0)
+- Coverage reporting
+
+**`.github/workflows/gui.yml`** - GUI-specific CI (Sprint 5.7)
+- Frontend type check and tests (117 tests)
+- Multi-platform GUI builds (4 platforms)
+- Platform-specific system dependencies
+- Rust cache with prefix-key: "v2" (invalidation support)
+
+**`.github/workflows/release.yml`** - Release builds
+- Automated installer generation (6 formats)
+- Multi-format packaging (AppImage, deb, rpm, dmg, msi, nsis)
+- Asset upload to GitHub releases
+
+### Platform Support Matrix
+
+| Platform | Runner | Rust Target | Installers |
+|----------|--------|-------------|------------|
+| Linux x64 | ubuntu-22.04 | x86_64-unknown-linux-gnu | AppImage, deb, rpm |
+| macOS Intel | macos-15-intel | x86_64-apple-darwin | dmg |
+| macOS ARM64 | macos-14 | aarch64-apple-darwin | dmg |
+| Windows x64 | windows-2022 | x86_64-pc-windows-msvc | msi, exe |
+
+### CI/CD Fixes (Sprint 5.7)
+
+**Critical Issues Resolved (5 commits):**
+
+1. **0cc6d3e** - Tauri config + explicit runners (incomplete)
+2. **e132776** - Cache invalidation v1 + macOS runner revert
+3. **e8edb70** - macOS runner fix (macos-13 → macos-15-intel)
+   - macOS 13 deprecated December 4, 2025
+4. **1743c51** - Cache invalidation v2 (successful)
+   - Prefix-key: "v2" for Rust cache
+5. **2098779** - Tauri identifier location fix (CRITICAL)
+   - Moved identifier to ROOT level per Tauri 2.x schema
+
+**References:**
+- Tauri 2.x config: https://v2.tauri.app/reference/config/
+- macOS 13 deprecation: https://github.blog/changelog/2025-09-19-github-actions-macos-13-runner-image-is-closing-down/
 
 ---
 

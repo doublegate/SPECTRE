@@ -606,6 +606,34 @@ Download the latest release for your platform from [GitHub Releases](https://git
 
 See [Platform Requirements](crates/spectre-gui/PLATFORM-REQUIREMENTS.md) for detailed system dependencies.
 
+#### Continuous Integration & Delivery
+
+SPECTRE uses GitHub Actions for comprehensive cross-platform CI/CD:
+
+**Multi-Platform Builds:**
+- Linux x86_64 (ubuntu-22.04)
+- macOS Intel x86_64 (macos-15-intel)
+- macOS Apple Silicon ARM64 (macos-14)
+- Windows x86_64 (windows-2022)
+
+**Automated Installers:**
+- Linux: AppImage, .deb, .rpm
+- macOS: .dmg (Intel and Apple Silicon)
+- Windows: .msi, .exe (NSIS)
+
+**Testing:**
+- 1,175 tests across all platforms
+- Frontend type checking and tests (117 tests)
+- Rust workspace tests (1,058 tests)
+- Platform-specific test scripts for local validation
+
+**Workflows:**
+- `.github/workflows/ci.yml` - Main CI with format, lint, test, audit
+- `.github/workflows/gui.yml` - GUI-specific builds with 4-platform matrix
+- `.github/workflows/release.yml` - Automated installer generation
+
+See [CI/CD Documentation](.github/workflows/README.md) for workflow details.
+
 #### Building from Source
 
 **Clone SPECTRE and submodules:**

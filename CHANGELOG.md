@@ -13,19 +13,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 #### GitHub Actions Workflows
 
-**`.github/workflows/gui.yml` (135 lines):**
+**`.github/workflows/gui.yml` (145 lines):**
 - Dedicated GUI CI/CD workflow with path filtering (`crates/spectre-gui/**`)
 - **frontend-check** job: TypeScript type checking and frontend tests
 - **gui-build-matrix** job: Multi-platform builds
-  - Linux x86_64 (ubuntu-latest)
-  - macOS x86_64 (macos-13)
-  - macOS ARM64 (macos-latest)
-  - Windows x86_64 (windows-latest)
+  - Linux x86_64 (ubuntu-22.04) - explicit runner version
+  - macOS x86_64 (macos-15-intel) - updated from deprecated macos-13
+  - macOS ARM64 (macos-14) - explicit runner version
+  - Windows x86_64 (windows-2022) - explicit runner version
 - Platform-specific system dependencies:
   - Linux: webkit2gtk-4.1, GTK 3, libayatana-appindicator3, librsvg2, libpcap
   - macOS: libpcap via Homebrew
   - Windows: Npcap SDK for ProRT-IP
-- Rust and pnpm caching with Swatinem/rust-cache@v2 and pnpm/action-setup@v4
+- Rust and pnpm caching with Swatinem/rust-cache@v2 (prefix-key: "v2") and pnpm/action-setup@v4
 - Frontend build before Rust build (Tauri requirement)
 - Tests run on all platforms with verbose output
 
@@ -86,6 +86,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 **`crates/spectre-gui/tauri.conf.json`:**
 - Version updated: 0.5.0-alpha.4 → 0.5.0-beta.1
+- **CRITICAL FIX**: Moved `identifier` field to root level per Tauri 2.x config schema (commit 2098779)
+  - Previous location (bundle section) caused Tauri build failures
+  - Now correctly positioned at root level alongside version
 - Bundle identifier standardized: com.spectre.gui → com.doublegate.spectre
 - Bundle targets expanded: "all" → ["deb", "appimage", "rpm", "dmg", "msi", "nsis"]
 - Added comprehensive bundle metadata:
@@ -97,19 +100,61 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - macOS minimumSystemVersion: "10.15", hardenedRuntime: true
 - Windows WIX language: "en-US", digestAlgorithm: "sha256"
 
+**GitHub Runner Versions:**
+- **Ubuntu**: ubuntu-latest → ubuntu-22.04 (explicit version for reproducibility)
+- **macOS Intel**: macos-13 → macos-15-intel (macos-13 deprecated December 4, 2025)
+- **macOS ARM64**: macos-latest → macos-14 (explicit version)
+- **Windows**: windows-latest → windows-2022 (explicit version)
+
+**Rust Cache Strategy:**
+- Implemented prefix-key versioning (`prefix-key: "v2"`) for cache invalidation
+- Resolves stale cache issues causing sqlx compilation errors
+
 **Version Numbers:**
 - Workspace: 0.5.0-alpha.4 → 0.5.0-beta.1 (`Cargo.toml`)
 - GUI frontend: 0.5.0-alpha.4 → 0.5.0-beta.1 (`package.json`)
 - GUI config: 0.5.0-alpha.4 → 0.5.0-beta.1 (`tauri.conf.json`)
 
+### Fixed
+
+**CI/CD Build Failures (5 commits):**
+
+1. **0cc6d3e** - Initial Tauri config fixes and explicit runner versions
+   - Updated GitHub runner versions to explicit releases
+   - Initial Tauri configuration updates (incomplete identifier fix)
+
+2. **e132776** - Cache invalidation v1 + macOS runner revert
+   - Attempted Rust cache invalidation
+   - Reverted macos-14-large to macos-13 (temporary)
+
+3. **e8edb70** - macOS runner deprecation fix
+   - Migrated from macos-13 (deprecated Dec 4, 2025) to macos-15-intel
+   - Updated workflow to use Intel-specific runner for x86_64 builds
+
+4. **1743c51** - Cache invalidation v2 (successful)
+   - Incremented Rust cache prefix-key to "v2"
+   - Force complete cache invalidation to resolve stale sqlx dependencies
+
+5. **2098779** - Tauri identifier location fix (CRITICAL)
+   - Moved `identifier` field from bundle section to root level
+   - Required per Tauri 2.x config schema: https://v2.tauri.app/reference/config/
+   - Resolves all Tauri build failures (exit code 101)
+
+**Issues Resolved:**
+- **Tauri Configuration**: Identifier field must be at ROOT level in Tauri 2.x (not in bundle section)
+- **macOS Runner**: macos-13 fully deprecated December 4, 2025, migrated to macos-15-intel
+- **Rust Cache**: Stale cache causing sqlx compilation errors, resolved with prefix-key versioning
+- **CI Reproducibility**: All runners now use explicit versions (22.04, 15-intel/14, 2022)
+
 ### Technical Details
 
 **CI/CD Pipeline:**
 - 4 new workflow jobs: frontend-check, gui-build-matrix (4 platforms)
-- Caching strategy: Rust cargo cache + pnpm node_modules cache
+- Caching strategy: Rust cargo cache (prefix-key: "v2") + pnpm node_modules cache
 - Build matrix uses fail-fast: false (allow partial success)
 - Submodule initialization: shallow clone (depth 1) for speed
 - Frontend tests run in dedicated job for fast feedback
+- **Evolution**: 5 iterative commits to resolve Tauri config, runner deprecation, and cache issues
 
 **Installer Formats:**
 - Linux: AppImage (self-contained), deb (Debian/Ubuntu), rpm (Fedora/RHEL)
@@ -140,6 +185,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Automated notarization workflow for macOS
 - Windows Authenticode signing
 - Linux package repository publishing (apt/yum/AUR)
+
+**References:**
+- Tauri 2.x config schema: https://v2.tauri.app/reference/config/
+- macOS 13 deprecation: https://github.blog/changelog/2025-09-19-github-actions-macos-13-runner-image-is-closing-down/
 
 **Phase 5 Progress**: Sprint 5.7 complete (7 of 8 sprints, 87.5%)
 **Next Sprint**: 5.8 - Polish & Release (v0.5.0)

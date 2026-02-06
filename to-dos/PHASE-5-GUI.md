@@ -194,6 +194,19 @@ Develop a cross-platform desktop GUI application using Tauri 2.0 and React for v
 - README badge updated
 - CHANGELOG.md comprehensive entry (150+ lines)
 
+**CI/CD Fixes (5 commits):**
+1. **0cc6d3e** - Initial Tauri config fixes and explicit runner versions
+2. **e132776** - Cache invalidation v1 + macOS runner revert
+3. **e8edb70** - macOS runner deprecation fix (macos-13 → macos-15-intel)
+4. **1743c51** - Cache invalidation v2 with prefix-key: "v2"
+5. **2098779** - Tauri identifier location fix (ROOT level per Tauri 2.x) - CRITICAL
+
+**Issues Resolved:**
+- Tauri 2.x identifier field location (moved from bundle section to root level)
+- macOS 13 runner deprecated December 4, 2025 (migrated to macos-15-intel)
+- Stale Rust cache causing sqlx errors (invalidated with prefix-key versioning)
+- CI reproducibility with explicit runner versions (22.04, 15-intel/14, 2022)
+
 **Technical Debt:**
 - Code signing/notarization deferred (requires Apple Developer account)
 - Icon design deferred to Sprint 5.8 (placeholders in place)
