@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+
+#### CI Warning Suppression for GTK3/Tauri Dependencies
+
+- **Suppressed 20 cargo-audit warnings in `.cargo/audit.toml`**: All warnings are unmaintained GTK3 ecosystem crates and unmaintained Unicode libraries pulled in by Tauri 2.10's Linux rendering stack. No known security vulnerabilities, just lack of active maintenance. Risk assessed as LOW (GUI runs locally with trusted input). Tracking upstream GTK4 migration. See `CI-WARNING-ANALYSIS.md` for detailed risk assessment.
+  - GTK3 bindings (11 advisories): `atk`, `atk-sys`, `gdk`, `gdk-sys`, `gdkwayland-sys`, `gdkx11`, `gdkx11-sys`, `gtk`, `gtk-sys`, `gtk3-macros`, `proc-macro-error`
+  - UNIC Unicode crates (5 advisories): `unic-char-property`, `unic-char-range`, `unic-common`, `unic-ucd-ident`, `unic-ucd-version`
+  - Other unmaintained crates (4 advisories): `fxhash`, `number_prefix`, `bincode`, `glib` (unsound `VariantStrIter`, not used by SPECTRE)
+- **Documented 7 harmless git exit code 128 warnings in CI**: Warnings occur during `actions/checkout@v6` post-cleanup when recursively cleaning submodules. The `cyberchef-mcp` submodule has a nested submodule without a `.gitmodules` file, causing cleanup to fail after all build/test steps complete successfully. This is expected behavior and does not affect functionality. See `CI-WARNING-ANALYSIS.md` for full investigation.
+
 ### Security
 
 #### Known Limitation: glib Unsoundness (GHSA-wrw7-89jp-8q8g)

@@ -7,4 +7,39 @@
 # - No patched version available upstream
 # - Risk accepted: SPECTRE does not use RSA for network-exposed operations;
 #   the crate is pulled in by sqlx-mysql's TLS handshake support
-ignore = ["RUSTSEC-2023-0071"]
+ignore = [
+    "RUSTSEC-2023-0071",
+
+    # GTK3 ecosystem - no longer maintained (migrated to GTK4)
+    # Impact: Low - GUI runs locally with trusted input, Tauri actively maintained
+    # Tracking: Wait for Tauri migration to GTK4 bindings (gtk-rs 0.19+)
+    # References:
+    # - https://gtk-rs.org/gtk4-rs/ (GTK4 bindings are actively maintained)
+    # - https://github.com/tauri-apps/tauri/issues (Tauri tracking GTK4 migration)
+    "RUSTSEC-2024-0413",  # atk - GTK3 bindings unmaintained
+    "RUSTSEC-2024-0416",  # atk-sys - GTK3 bindings unmaintained
+    "RUSTSEC-2024-0412",  # gdk - GTK3 bindings unmaintained
+    "RUSTSEC-2024-0418",  # gdk-sys - GTK3 bindings unmaintained
+    "RUSTSEC-2024-0411",  # gdkwayland-sys - GTK3 bindings unmaintained
+    "RUSTSEC-2024-0417",  # gdkx11 - GTK3 bindings unmaintained
+    "RUSTSEC-2024-0414",  # gdkx11-sys - GTK3 bindings unmaintained
+    "RUSTSEC-2024-0415",  # gtk - GTK3 bindings unmaintained
+    "RUSTSEC-2024-0420",  # gtk-sys - GTK3 bindings unmaintained
+    "RUSTSEC-2024-0419",  # gtk3-macros - GTK3 bindings unmaintained
+    "RUSTSEC-2024-0370",  # proc-macro-error - used by gtk3-macros, unmaintained
+    "RUSTSEC-2024-0429",  # glib - unsound VariantStrIter (not used by SPECTRE)
+
+    # Tauri utilities - unmaintained Unicode crates
+    # Impact: Low - no known vulnerabilities, used for URL pattern matching
+    # Note: Used by urlpattern -> tauri-utils for URL validation
+    "RUSTSEC-2025-0081",  # unic-char-property
+    "RUSTSEC-2025-0075",  # unic-char-range
+    "RUSTSEC-2025-0080",  # unic-common
+    "RUSTSEC-2025-0100",  # unic-ucd-ident
+    "RUSTSEC-2025-0098",  # unic-ucd-version
+
+    # Other unmaintained crates with low risk
+    "RUSTSEC-2025-0057",   # fxhash - used by HTML parsing (selectors), no known vulns
+    "RUSTSEC-2025-0119",   # number_prefix - used by indicatif progress bars, cosmetic
+    "RUSTSEC-2025-0141",   # bincode - used by WRAITH discovery (internal comms only)
+]
