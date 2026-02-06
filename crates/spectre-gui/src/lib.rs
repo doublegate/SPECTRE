@@ -44,6 +44,9 @@ pub fn run() {
             commands::campaign::list_campaigns,
             commands::campaign::get_campaign,
             commands::campaign::advance_campaign,
+            commands::campaign::export_campaign,
+            commands::campaign::import_campaign,
+            commands::campaign::archive_campaign,
             // Config
             commands::config::get_config,
             commands::config::set_config,

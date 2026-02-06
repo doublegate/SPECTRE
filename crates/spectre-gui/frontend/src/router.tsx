@@ -6,6 +6,7 @@ import { Recon } from "@/pages/Recon";
 import { Analysis } from "@/pages/Analysis";
 import { Comms } from "@/pages/Comms";
 import { Campaigns } from "@/pages/Campaigns";
+import { CampaignDetail } from "@/pages/CampaignDetail";
 import { Reports } from "@/pages/Reports";
 import { Settings } from "@/pages/Settings";
 
@@ -20,6 +21,7 @@ export const router = createBrowserRouter([
       { path: "analysis", element: <Analysis /> },
       { path: "comms", element: <Comms /> },
       { path: "campaigns", element: <Campaigns /> },
+      { path: "campaigns/:id", element: <CampaignDetail /> },
       { path: "reports", element: <Reports /> },
       { path: "settings", element: <Settings /> },
     ],

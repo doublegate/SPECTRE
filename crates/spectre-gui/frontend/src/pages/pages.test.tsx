@@ -130,9 +130,9 @@ describe("Campaigns", () => {
     expect(screen.getByText("New Campaign")).toBeInTheDocument();
   });
 
-  it("shows empty state message", () => {
+  it("shows loading state initially", () => {
     renderWithRouter(<Campaigns />);
-    expect(screen.getByText("No campaigns")).toBeInTheDocument();
+    expect(screen.getByText("Loading campaigns...")).toBeInTheDocument();
   });
 });
 

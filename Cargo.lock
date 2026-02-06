@@ -6210,6 +6210,7 @@ version = "0.5.0-alpha.2"
 dependencies = [
  "anyhow",
  "chrono",
+ "dirs 6.0.0",
  "serde",
  "serde_json",
  "spectre-core",

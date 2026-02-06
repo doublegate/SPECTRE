@@ -1,7 +1,7 @@
 {
   "name": "spectre-gui-frontend",
   "private": true,
-  "version": "0.5.0-alpha.2",
+  "version": "0.5.0-alpha.3",
   "type": "module",
   "scripts": {
     "dev": "vite",

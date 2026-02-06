@@ -48,18 +48,20 @@ Develop a cross-platform desktop GUI application using Tauri 2.0 and React for v
 
 ## Sprint 5.3: Campaign Planning UI
 
-**Status:** Planned | **Duration:** 2 weeks
+**Status:** ✅ Complete (2026-02-05) | **Duration:** 2 weeks
 
 ### Tasks
 
-- [ ] Design campaign creation flow
-- [ ] Implement target input UI
-- [ ] Create scope visualization
-- [ ] Add phase planning interface
-- [ ] Implement workflow builder
-- [ ] Create timeline view
-- [ ] Add collaboration features (future)
-- [ ] Write campaign UI tests
+- [x] Design campaign creation flow (4-step wizard: Name → Objectives → Targets → Review)
+- [x] Implement target input UI (TargetInput.tsx - CIDR parsing with IPC validation)
+- [x] Add phase planning interface (PhaseTimeline.tsx - 6-phase visual timeline)
+- [x] Create timeline view (PhaseTimeline component with advance button + prerequisites)
+- [x] Campaign CRUD operations (create, list, get, advance, export, import, archive)
+- [x] Backend IPC wiring (7 campaign commands + target parsing)
+- [x] Write campaign UI tests (3 frontend + 7 Rust tests = 10 new tests, all passing)
+- [ ] Create scope visualization (deferred)
+- [ ] Implement workflow builder (deferred)
+- [ ] Add collaboration features (deferred to future sprint)
 
 ---
 

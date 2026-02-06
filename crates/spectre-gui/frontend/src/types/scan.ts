@@ -44,3 +44,15 @@ export interface ScanErrorEvent {
   error: string;
   target?: string;
 }
+
+/** Mirrors Rust: crates/spectre-gui/src/commands/target.rs */
+
+export interface ParsedTarget {
+  original: string;
+  expanded: string[];
+  count: number;
+}
+
+export interface TargetInput {
+  targets: string[];
+}

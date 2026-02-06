@@ -7,6 +7,91 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.5.0-alpha.3] - 2026-02-05
+
+### Added
+
+#### Sprint 5.3: Campaign Planning UI with Full CRUD Operations
+
+**Backend Implementation (Rust):**
+- **Wired all campaign IPC commands to spectre-core**: Replaced 8 stubbed command handlers in `crates/spectre-gui/src/commands/campaign.rs` with real implementations calling `CampaignStore` SQLite persistence layer
+  - `create_campaign`: Creates campaigns with objectives and targets, saves to SQLite
+  - `list_campaigns`: Returns all campaigns ordered by updated_at
+  - `get_campaign`: Loads campaign by ID, returns None if not found
+  - `advance_campaign`: Advances to next phase (Planning → Recon → Analysis → Exploitation → Reporting → Complete)
+  - `export_campaign`: Exports campaign to JSON file
+  - `import_campaign`: Imports campaign from JSON file
+  - `archive_campaign`: Marks campaign as archived
+- **Updated AppState with CampaignStore integration**: Added `campaign_store: Arc<Mutex<Option<CampaignStore>>>` to `AppState` struct with lazy initialization, database path defaulting to `~/.spectre/campaigns.db`
+- **Wired target parsing command**: Implemented `parse_targets` in `crates/spectre-gui/src/commands/target.rs` using `spectre_core::target::expand_cidr()` for CIDR notation (e.g., 192.168.1.0/24), supports individual IPs and hostnames
+- **Added 7 new Rust tests** for campaign operations (create, list, get, advance, export/import, archive) and target parsing (CIDR, IPs, hostnames, validation)
+
+**Frontend Components (React):**
+- **CampaignCard** (`frontend/src/components/campaign/CampaignCard.tsx`, 106 lines): Displays campaign summary with name, description, phase badge, status badge, target/objective counts, created date. Click to navigate to detail page, hover to reveal archive/export buttons. Phase-specific color coding (planning=blue, recon=yellow, analysis=orange, exploitation=red, reporting=purple, complete=green, archived=gray)
+- **ObjectiveList** (`frontend/src/components/campaign/ObjectiveList.tsx`, 79 lines): Shows campaign objectives as checklist. Editable mode allows adding/removing objectives with Enter key support. Empty state message when no objectives defined
+- **PhaseTimeline** (`frontend/src/components/campaign/PhaseTimeline.tsx`, 128 lines): Visual 6-phase timeline (Planning → Recon → Analysis → Exploitation → Reporting → Complete) with checkmarks for completed phases, pulsing indicator for current phase, progress bar. "Advance Phase" button with prerequisite validation (Planning requires ≥1 objective and ≥1 target)
+- **TargetInput** (`frontend/src/components/campaign/TargetInput.tsx`, 106 lines): Multi-line textarea for target specification (one per line). "Parse Targets" button validates and expands CIDR ranges using IPC. Displays parsed target summary (original input → expanded count). Supports IPs (192.168.1.1), CIDR (192.168.1.0/24), hostnames (example.com). Error display for invalid input
+- **CampaignCreateWizard** (`frontend/src/components/campaign/CampaignCreateWizard.tsx`, 206 lines): 4-step modal wizard for campaign creation:
+  1. **Name & Description**: Required campaign name, optional description
+  2. **Objectives**: ObjectiveList component for defining campaign goals
+  3. **Targets**: TargetInput component for network/host specification
+  4. **Review**: Summary of all configured details before creation
+  - Progress bar shows current step, navigation buttons (Back/Next/Create), validation prevents advancing without required data
+
+**Pages & Routing:**
+- **Updated Campaigns page** (`frontend/src/pages/Campaigns.tsx`, 120 lines): Replaced shell with full implementation:
+  - Loads campaigns on mount using `useCampaign` hook
+  - "New Campaign" button opens wizard
+  - Grid layout (2 columns on desktop) of CampaignCard components
+  - Empty state with call-to-action when no campaigns exist
+  - Loading state during initial load
+  - Error display for failed operations
+  - Archive button with confirmation dialog
+  - Export button (exports to `/tmp/campaign-{id}.json`)
+- **New CampaignDetail page** (`frontend/src/pages/CampaignDetail.tsx`, 148 lines): Detail view for individual campaign:
+  - URL parameter `/:id` for campaign ID
+  - PhaseTimeline component with advance functionality
+  - 3-column stat cards (status, target count, created date)
+  - 2-column layout: Left=PhaseTimeline, Right=ObjectiveList + targets + artifacts
+  - Header with back button, campaign name/description, export/archive actions
+  - Redirects to /campaigns if campaign not found
+- **Added campaign detail route** to `frontend/src/router.tsx`: `{ path: "campaigns/:id", element: <CampaignDetail /> }`
+
+**State Management & Hooks:**
+- **Updated useCampaignStore** (`frontend/src/stores/campaignStore.ts`): Changed `updateCampaign` to use campaign ID instead of name, added `removeCampaign` action, updates both campaigns list and activeCampaign when applicable
+- **Enhanced useCampaign hook** (`frontend/src/hooks/useCampaign.ts`): Added `exportCampaign`, `importCampaign`, `archiveCampaign` IPC commands, aggregated loading/error states across all operations
+- **New useTargetParser hook** (`frontend/src/hooks/useTargetParser.ts`, 58 lines): Async hook for target parsing via IPC. Returns `{ targets, loading, error, parseTargets, parseFile, clear }`. Calls `invoke("parse_targets")` with target input array, returns parsed results with expansion details
+
+**TypeScript Types:**
+- **Updated CampaignSummary** (`frontend/src/types/campaign.ts`): Added `id`, `description`, `objectives` fields, changed `phase` to union type
+- **New CampaignDetail interface**: Extends CampaignSummary with `targets`, `artifacts`, `notes`, `started_at`, `completed_at`
+- **New ExportRequest/ImportRequest interfaces**: For file-based export/import operations
+- **New Objective interface**: `{ id, description, completed, created }`
+- **New CampaignArtifact interface**: `{ id, type, name, description, size, created }`
+- **New ArtifactType union**: `scan_result | analysis_output | finding_report | screenshot | log_file | config_snapshot | custom`
+- **Updated CampaignPhase union**: Added `archived` phase
+- **Added target parsing types** to `frontend/src/types/scan.ts`: `ParsedTarget`, `TargetInput`
+
+**Tests:**
+- **3 new frontend tests** (93 total, all passing):
+  - `CampaignCard.test.tsx`: Renders campaign name, description, target count, objectives count
+  - `ObjectiveList.test.tsx`: Renders objectives, shows empty state, allows adding objectives when editable
+  - `useTargetParser.test.ts`: Tests initial state, parseTargets IPC call, clear functionality
+- **Updated campaignStore.test.ts**: Tests for ID-based updates, removeCampaign, activeCampaign updates
+- **Fixed pages.test.tsx**: Updated Campaigns page test to expect "Loading campaigns..." instead of "No campaigns" (accounts for async loading)
+- **7 new Rust tests in spectre-gui** (39 total, all passing): Campaign create/list/get/advance/export/import/archive, target parsing CIDR/IP/hostname/validation
+- **Total test count**: 1,019 Rust tests + 93 frontend tests = **1,112 tests passing**
+
+**Dependencies:**
+- Added `dirs = "6.0"` to `crates/spectre-gui/Cargo.toml` for home directory path resolution
+
+**Files Changed:**
+- **Backend**: 4 modified (state.rs, campaign.rs, target.rs, lib.rs), 1 dependency update (Cargo.toml) = ~535 Rust lines added
+- **Frontend**: 10 files created (5 components + 1 page + 1 hook + 1 index + 2 test files), 5 files modified (types, stores, hooks, router, pages.test) = ~850 TypeScript lines added
+- **Total new code**: ~1,385 lines (including tests)
+
+## [Unreleased]
+
 ### Fixed
 
 #### CI Warning Suppression for GTK3/Tauri Dependencies

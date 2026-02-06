@@ -32,6 +32,7 @@ tauri = { workspace = true }
 tauri-plugin-shell = { workspace = true }
 tauri-plugin-window-state = { workspace = true }
 tauri-plugin-store = { workspace = true }
+dirs = "6.0"
 
 [build-dependencies]
 tauri-build = { workspace = true }
