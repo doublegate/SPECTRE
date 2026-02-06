@@ -1,71 +1,117 @@
-import { useStatus } from "@/hooks/useStatus";
-import { cn } from "@/lib/utils";
+import { AlertTriangle, Server, Wifi, Box } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { StatCard } from "@/components/dashboard/StatCard";
+import { SeverityChart } from "@/components/dashboard/SeverityChart";
+import { ServicesChart } from "@/components/dashboard/ServicesChart";
+import { ActivityTimeline } from "@/components/dashboard/ActivityTimeline";
+import { useDashboard } from "@/hooks/useDashboard";
+import { useNavigate } from "react-router-dom";
 
 export function Dashboard() {
-  const { version, status, loading } = useStatus();
+  const { stats, isLoading, error } = useDashboard();
+  const navigate = useNavigate();
 
-  return (
-    <div className="space-y-6">
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard title="Hosts Scanned" value="0" />
-        <StatCard title="Open Ports" value="0" />
-        <StatCard title="Services" value="0" />
-        <StatCard title="Findings" value="0" />
-      </div>
-
-      <div className="grid gap-4 lg:grid-cols-3">
-        {/* Component status */}
-        <div className="rounded-lg border border-border bg-card p-4 lg:col-span-2">
-          <h2 className="mb-3 text-sm font-medium text-muted-foreground">
-            Component Status
-          </h2>
-          {loading && <p className="text-sm text-muted-foreground">Loading...</p>}
-          {status?.components.map((c) => (
-            <div
-              key={c.name}
-              className="flex items-center justify-between border-b border-border py-2 last:border-0"
-            >
-              <span className="text-sm text-foreground">{c.name}</span>
-              <span
-                className={cn(
-                  "rounded-full px-2 py-0.5 text-xs font-medium",
-                  c.status === "available"
-                    ? "bg-success/20 text-success"
-                    : "bg-warning/20 text-warning",
-                )}
-              >
-                {c.status}
-              </span>
-            </div>
-          ))}
-        </div>
-
-        {/* Version info */}
-        <div className="rounded-lg border border-border bg-card p-4">
-          <h2 className="mb-3 text-sm font-medium text-muted-foreground">
-            Platform Info
-          </h2>
-          <dl className="space-y-2 text-sm">
-            <div className="flex justify-between">
-              <dt className="text-muted-foreground">Version</dt>
-              <dd className="text-foreground">{version?.version ?? "..."}</dd>
-            </div>
-            <div className="flex justify-between">
-              <dt className="text-muted-foreground">Name</dt>
-              <dd className="text-foreground">{version?.name ?? "..."}</dd>
-            </div>
-          </dl>
+  if (error) {
+    return (
+      <div className="flex items-center justify-center h-[50vh]">
+        <div className="text-center space-y-2">
+          <AlertTriangle className="h-12 w-12 text-destructive mx-auto" />
+          <h2 className="text-xl font-semibold">Failed to load dashboard</h2>
+          <p className="text-sm text-muted-foreground">{error}</p>
         </div>
       </div>
-    </div>
-  );
-}
+    );
+  }
 
-function StatCard({ title, value }: { title: string; value: string }) {
+  if (!stats) {
+    return (
+      <div className="flex items-center justify-center h-[50vh]">
+        <div className="text-center space-y-2">
+          <Server className="h-12 w-12 text-muted-foreground mx-auto" />
+          <h2 className="text-xl font-semibold">No data available</h2>
+          <p className="text-sm text-muted-foreground">Start a scan to populate the dashboard</p>
+        </div>
+      </div>
+    );
+  }
+
+  const handleActivityClick = (activity: any) => {
+    // Navigate to recon page with scan ID
+    navigate(`/recon?scan=${activity.id}`);
+  };
+
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
-      <p className="text-xs font-medium text-muted-foreground">{title}</p>
-      <p className="mt-1 text-2xl font-bold text-foreground">{value}</p>
+    <div className="space-y-6 p-6">
+      {/* Stat Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard
+          title="Total Hosts"
+          value={stats.total_hosts}
+          icon={<Server />}
+          loading={isLoading}
+        />
+        <StatCard
+          title="Open Ports"
+          value={stats.open_ports}
+          icon={<Wifi />}
+          loading={isLoading}
+        />
+        <StatCard
+          title="Services"
+          value={stats.services_found}
+          icon={<Box />}
+          loading={isLoading}
+        />
+        <StatCard
+          title="Findings"
+          value={Object.values(stats.severity_counts).reduce((a, b) => a + b, 0)}
+          icon={<AlertTriangle />}
+          variant={Object.values(stats.severity_counts).reduce((a, b) => a + b, 0) > 0 ? 'critical' : 'default'}
+          loading={isLoading}
+        />
+      </div>
+
+      {/* Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Severity Distribution</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <SeverityChart data={stats.severity_counts} />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Top Services</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ServicesChart data={stats.top_services} />
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Activity Timeline */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Recent Activity</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <ActivityTimeline
+            activities={stats.recent_activity.map(a => ({
+              id: a.scan_id,
+              type: a.status === 'completed' ? 'scan_completed' : a.status === 'failed' ? 'scan_failed' : 'scan_started',
+              timestamp: a.timestamp,
+              details: {
+                targetCount: a.target_count,
+                duration: a.duration_ms ? a.duration_ms / 1000 : undefined,
+              },
+            }))}
+            onActivityClick={handleActivityClick}
+          />
+        </CardContent>
+      </Card>
     </div>
   );
 }
