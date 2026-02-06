@@ -18,9 +18,9 @@
 //!
 //! ## References
 //!
-//! - WebKitGTK DMABUF issues: https://bugs.webkit.org/show_bug.cgi?id=261874
-//! - Tauri Wayland support: https://github.com/tauri-apps/tauri/issues/13493
-//! - NVIDIA workarounds: https://github.com/tauri-apps/tauri/issues/9394
+//! - WebKitGTK DMABUF issues: <https://bugs.webkit.org/show_bug.cgi?id=261874>
+//! - Tauri Wayland support: <https://github.com/tauri-apps/tauri/issues/13493>
+//! - NVIDIA workarounds: <https://github.com/tauri-apps/tauri/issues/9394>
 
 use std::env;
 use std::fs;

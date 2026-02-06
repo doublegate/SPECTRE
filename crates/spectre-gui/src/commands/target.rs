@@ -92,7 +92,7 @@ mod tests {
         };
         let result = parse_targets(input).await;
         assert!(result.is_ok());
-        let parsed = result.unwrap();
+        let parsed = result.expect("Failed to parse targets");
         assert_eq!(parsed.len(), 1);
         assert_eq!(parsed[0].original, "10.0.0.1");
         assert_eq!(parsed[0].count, 1);
@@ -105,7 +105,7 @@ mod tests {
         };
         let result = parse_targets(input).await;
         assert!(result.is_ok());
-        let parsed = result.unwrap();
+        let parsed = result.expect("Failed to parse targets");
         assert_eq!(parsed.len(), 1);
         assert_eq!(parsed[0].original, "192.168.1.0/30");
         assert_eq!(parsed[0].count, 4);
@@ -119,7 +119,7 @@ mod tests {
         };
         let result = parse_targets(input).await;
         assert!(result.is_ok());
-        let parsed = result.unwrap();
+        let parsed = result.expect("Failed to parse targets");
         assert_eq!(parsed.len(), 1);
         assert_eq!(parsed[0].original, "example.com");
         assert_eq!(parsed[0].count, 1);
@@ -132,7 +132,9 @@ mod tests {
         };
         let result = parse_targets(input).await;
         assert!(result.is_err());
-        assert!(result.unwrap_err().contains("Invalid CIDR"));
+        assert!(result
+            .expect_err("Should have failed")
+            .contains("Invalid CIDR"));
     }
 
     #[tokio::test]
@@ -146,7 +148,7 @@ mod tests {
         };
         let result = parse_targets(input).await;
         assert!(result.is_ok());
-        let parsed = result.unwrap();
+        let parsed = result.expect("Failed to parse targets");
         assert_eq!(parsed.len(), 3);
 
         // First should be single IP
@@ -167,7 +169,7 @@ mod tests {
         };
         let result = parse_targets(input).await;
         assert!(result.is_ok());
-        let parsed = result.unwrap();
+        let parsed = result.expect("Failed to parse targets");
         assert_eq!(parsed.len(), 1); // Empty strings should be skipped
     }
 }

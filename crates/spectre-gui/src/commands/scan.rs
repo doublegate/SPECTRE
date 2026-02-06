@@ -235,7 +235,8 @@ mod tests {
     fn test_scan_request_deserialize() {
         let json =
             r#"{"targets":["10.0.0.1"],"ports":"22,80,443","scan_type":"connect","timing":3}"#;
-        let request: ScanRequest = serde_json::from_str(json).unwrap();
+        let request: ScanRequest =
+            serde_json::from_str(json).expect("Failed to deserialize ScanRequest");
         assert_eq!(request.targets.len(), 1);
         assert_eq!(request.targets[0], "10.0.0.1");
         assert_eq!(request.ports.as_deref(), Some("22,80,443"));

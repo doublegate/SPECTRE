@@ -303,21 +303,24 @@ pub async fn archive_campaign(state: State<'_, Arc<AppState>>, id: String) -> Re
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use spectre_core::campaign::{Campaign, CampaignStore};
     use tempfile::TempDir;
 
     #[tokio::test]
     async fn test_create_campaign_success() {
-        let store = CampaignStore::open_in_memory().unwrap();
+        let store = CampaignStore::open_in_memory().expect("Failed to create in-memory store");
 
         let mut campaign = Campaign::new("TestOp", "Test campaign");
         campaign.add_objective("Find vulns");
         campaign.add_target("10.0.0.0/24");
 
-        store.save_campaign(&campaign).unwrap();
+        store
+            .save_campaign(&campaign)
+            .expect("Failed to save campaign");
 
-        let loaded = store.load_campaign(&campaign.id).unwrap();
+        let loaded = store
+            .load_campaign(&campaign.id)
+            .expect("Failed to load campaign");
         assert_eq!(loaded.name, "TestOp");
         assert_eq!(loaded.objectives.len(), 1);
         assert_eq!(loaded.targets.len(), 1);
@@ -325,40 +328,48 @@ mod tests {
 
     #[tokio::test]
     async fn test_list_campaigns() {
-        let store = CampaignStore::open_in_memory().unwrap();
+        let store = CampaignStore::open_in_memory().expect("Failed to create in-memory store");
 
         let campaign = Campaign::new("TestOp1", "First");
-        store.save_campaign(&campaign).unwrap();
+        store
+            .save_campaign(&campaign)
+            .expect("Failed to save campaign");
 
-        let campaigns = store.list_campaigns().unwrap();
+        let campaigns = store.list_campaigns().expect("Failed to list campaigns");
         assert_eq!(campaigns.len(), 1);
         assert_eq!(campaigns[0].name, "TestOp1");
     }
 
     #[tokio::test]
     async fn test_get_campaign_not_found() {
-        let store = CampaignStore::open_in_memory().unwrap();
+        let store = CampaignStore::open_in_memory().expect("Failed to create in-memory store");
         let result = store.load_campaign("nonexistent");
         assert!(result.is_err());
     }
 
     #[tokio::test]
     async fn test_advance_campaign() {
-        let store = CampaignStore::open_in_memory().unwrap();
+        let store = CampaignStore::open_in_memory().expect("Failed to create in-memory store");
 
         let mut campaign = Campaign::new("TestOp", "Test");
-        store.save_campaign(&campaign).unwrap();
+        store
+            .save_campaign(&campaign)
+            .expect("Failed to save campaign");
 
-        campaign.advance_phase().unwrap();
-        store.save_campaign(&campaign).unwrap();
+        campaign.advance_phase().expect("Failed to advance phase");
+        store
+            .save_campaign(&campaign)
+            .expect("Failed to save campaign");
 
-        let loaded = store.load_campaign(&campaign.id).unwrap();
+        let loaded = store
+            .load_campaign(&campaign.id)
+            .expect("Failed to load campaign");
         assert_eq!(loaded.phase.to_string(), "recon");
     }
 
     #[tokio::test]
     async fn test_export_import_campaign() {
-        let temp_dir = TempDir::new().unwrap();
+        let temp_dir = TempDir::new().expect("Failed to create temp dir");
         let export_path = temp_dir.path().join("campaign.json");
 
         let mut campaign = Campaign::new("ExportTest", "Export test");
@@ -366,30 +377,36 @@ mod tests {
         campaign.add_target("192.168.1.0/24");
 
         // Export
-        let json = campaign.to_json().unwrap();
-        std::fs::write(&export_path, json).unwrap();
+        let json = campaign.to_json().expect("Failed to serialize campaign");
+        std::fs::write(&export_path, json).expect("Failed to write export file");
 
         // Verify file exists
         assert!(export_path.exists());
 
         // Import
-        let json = std::fs::read_to_string(&export_path).unwrap();
-        let imported = Campaign::from_json(&json).unwrap();
+        let json = std::fs::read_to_string(&export_path).expect("Failed to read export file");
+        let imported = Campaign::from_json(&json).expect("Failed to deserialize campaign");
         assert_eq!(imported.id, campaign.id);
         assert_eq!(imported.name, campaign.name);
     }
 
     #[tokio::test]
     async fn test_archive_campaign() {
-        let store = CampaignStore::open_in_memory().unwrap();
+        let store = CampaignStore::open_in_memory().expect("Failed to create in-memory store");
 
         let mut campaign = Campaign::new("ArchiveTest", "Archive test");
-        store.save_campaign(&campaign).unwrap();
+        store
+            .save_campaign(&campaign)
+            .expect("Failed to save campaign");
 
         campaign.set_phase(spectre_core::campaign::CampaignPhase::Archived);
-        store.save_campaign(&campaign).unwrap();
+        store
+            .save_campaign(&campaign)
+            .expect("Failed to save campaign");
 
-        let loaded = store.load_campaign(&campaign.id).unwrap();
+        let loaded = store
+            .load_campaign(&campaign.id)
+            .expect("Failed to load campaign");
         assert_eq!(loaded.phase.to_string(), "archived");
     }
 }
