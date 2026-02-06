@@ -119,3 +119,6 @@ export function Reports() {
     </div>
   );
 }
+
+// Default export for lazy loading
+export default Reports;

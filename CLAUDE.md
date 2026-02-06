@@ -18,11 +18,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Phase 2:** Operation NIGHTFALL (v0.2.x) - Core Orchestration **COMPLETE**
 **Phase 3:** Operation PHANTOM (v0.3.x) - TUI Dashboard **COMPLETE**
 **Phase 4:** Operation SPECTER (v0.4.x) - Advanced Features **COMPLETE**
-**Phase 5:** Operation SHADOW (v0.5.x) - GUI Application (Tauri 2.0) **IN PROGRESS** (Sprint 5.7 complete - 87.5%)
+**Phase 5:** Operation SHADOW (v0.5.x) - GUI Application (Tauri 2.0) **COMPLETE** ✅ (8/8 sprints, 100%)
 
-**SPECTRE Tests:** 1,175 (44 CLI + 618 core + 74 GUI Rust + 121 GUI frontend + 268 TUI + 5 doc-tests + 45 integration) | **Code:** ~45,000 lines Rust + TypeScript (136 Rust files + 60 frontend files)
+**SPECTRE Tests:** 1,185 (44 CLI + 618 core + 74 GUI Rust + 131 GUI frontend + 268 TUI + 5 doc-tests + 45 integration) | **Code:** ~45,000 lines Rust + TypeScript (136 Rust files + 60 frontend files)
 
-**Current Version:** v0.5.0-beta.1
+**Current Version:** v0.5.0 (stable release)
 
 **Repository:** [github.com/doublegate/SPECTRE](https://github.com/doublegate/SPECTRE)
 

@@ -159,3 +159,6 @@ export function Analysis() {
     </div>
   );
 }
+
+// Default export for lazy loading
+export default Analysis;

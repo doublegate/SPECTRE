@@ -13,7 +13,7 @@ A unified offensive security toolkit combining wire-speed secure communications,
   <a href="https://github.com/doublegate/SPECTRE"><img src="https://img.shields.io/github/stars/doublegate/SPECTRE?style=flat-square" alt="GitHub Stars"></a>
   <a href="https://github.com/doublegate/SPECTRE/fork"><img src="https://img.shields.io/github/forks/doublegate/SPECTRE?style=flat-square" alt="GitHub Forks"></a>
   <a href="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml"><img src="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
-  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.5.0--beta.1-blue.svg" alt="Version"></a>
+  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.5.0-blue.svg" alt="Version"></a>
   <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.92%2B-orange.svg" alt="Rust"></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-22%2B-green.svg" alt="Node.js"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT%2FGPLv3%2FApache--2.0-green.svg" alt="License"></a>
@@ -192,7 +192,7 @@ The GUI automatically detects your display server (Wayland vs X11) and GPU vendo
 - **Intel/AMD GPUs:** Uses native Wayland when available, falls back to X11 if needed
 - **Manual Overrides:** Respected if you set `GDK_BACKEND` environment variable
 
-**Implemented Features (v0.5.0-alpha.6):**
+**Implemented Features (v0.5.0 - Stable Release):**
 
 **Dashboard & Real-Time Monitoring:**
 - Real-time statistics with severity charts and service distribution
@@ -244,6 +244,9 @@ The GUI automatically detects your display server (Wayland vs X11) and GPU vendo
 - Secure iframe sandboxing for rendered content
 - 30-second auto-refresh for dashboard statistics
 - Multi-scan support with Zustand state management
+- WCAG 2.1 AA accessibility compliance (ARIA labels, keyboard navigation, focus management)
+- Optimized bundle size: < 300KB gzipped (React.lazy code splitting)
+- D3.js force simulation optimization (< 2s convergence)
 
 **Technology Stack:**
 

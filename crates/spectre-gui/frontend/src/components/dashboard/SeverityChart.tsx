@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import { SEVERITY_COLORS } from '@/types/dashboard';
 
@@ -17,7 +18,7 @@ interface ChartDataPoint {
   color: string;
 }
 
-export function SeverityChart({ data }: SeverityChartProps) {
+export const SeverityChart = memo(function SeverityChart({ data }: SeverityChartProps) {
   const chartData: ChartDataPoint[] = [
     { name: 'Critical', value: data.critical, color: SEVERITY_COLORS.critical },
     { name: 'High', value: data.high, color: SEVERITY_COLORS.high },
@@ -79,4 +80,13 @@ export function SeverityChart({ data }: SeverityChartProps) {
       </PieChart>
     </ResponsiveContainer>
   );
-}
+}, (prevProps, nextProps) => {
+  // Re-render only if data values change
+  return (
+    prevProps.data.critical === nextProps.data.critical &&
+    prevProps.data.high === nextProps.data.high &&
+    prevProps.data.medium === nextProps.data.medium &&
+    prevProps.data.low === nextProps.data.low &&
+    prevProps.data.info === nextProps.data.info
+  );
+});

@@ -64,3 +64,6 @@ export function Settings() {
     </div>
   );
 }
+
+// Default export for lazy loading
+export default Settings;

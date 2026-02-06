@@ -192,3 +192,6 @@ export function Comms() {
     </div>
   );
 }
+
+// Default export for lazy loading
+export default Comms;

@@ -115,3 +115,6 @@ export function Dashboard() {
     </div>
   );
 }
+
+// Default export for lazy loading
+export default Dashboard;

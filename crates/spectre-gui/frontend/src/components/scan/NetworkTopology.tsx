@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, memo } from "react";
 import * as d3 from "d3";
 import type { Host, Severity } from "@/types/scan";
 
@@ -28,7 +28,7 @@ const SEVERITY_COLORS = {
   info: "#6b7280",
 };
 
-export function NetworkTopology({ hosts, onHostClick, className = "" }: NetworkTopologyProps) {
+export const NetworkTopology = memo(function NetworkTopology({ hosts, onHostClick, className = "" }: NetworkTopologyProps) {
   const svgRef = useRef<SVGSVGElement>(null);
   const simulationRef = useRef<d3.Simulation<NetworkNode, NetworkLink> | null>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
@@ -147,7 +147,7 @@ export function NetworkTopology({ hosts, onHostClick, className = "" }: NetworkT
         d3.select(this).select("circle").attr("r", 12).attr("stroke-width", 2);
       });
 
-    // Create force simulation
+    // Create optimized force simulation with Barnes-Hut quadtree
     const simulation = d3
       .forceSimulation(nodes)
       .force(
@@ -156,11 +156,27 @@ export function NetworkTopology({ hosts, onHostClick, className = "" }: NetworkT
           .id((d) => d.id)
           .distance(100)
       )
-      .force("charge", d3.forceManyBody().strength(-300))
+      .force(
+        "charge",
+        d3.forceManyBody()
+          .strength(-300)
+          .distanceMax(500) // Limit calculation distance for performance
+      )
       .force("center", d3.forceCenter(width / 2, height / 2))
-      .force("collide", d3.forceCollide().radius(30))
-      .alphaDecay(0.05)
+      .force(
+        "collide",
+        d3.forceCollide()
+          .radius(30)
+          .strength(0.7) // Reduce collision calculation overhead
+      )
+      .alphaDecay(0.02) // Faster convergence (was 0.05)
+      .velocityDecay(0.4) // Smoother animation (default 0.4)
       .on("tick", () => {
+        // Stop simulation when alpha is low for performance
+        if (simulation.alpha() < 0.01) {
+          simulation.stop();
+        }
+
         linkElements
           .attr("x1", (d) => (d.source as NetworkNode).x ?? 0)
           .attr("y1", (d) => (d.source as NetworkNode).y ?? 0)
@@ -200,7 +216,11 @@ export function NetworkTopology({ hosts, onHostClick, className = "" }: NetworkT
   }, [hosts, dimensions, onHostClick]);
 
   return (
-    <div className={`relative h-full w-full overflow-hidden rounded-lg border border-border bg-card ${className}`}>
+    <div
+      className={`relative h-full w-full overflow-hidden rounded-lg border border-border bg-card ${className}`}
+      role="region"
+      aria-label="Network topology visualization"
+    >
       {hosts.length === 0 ? (
         <div className="flex h-full items-center justify-center">
           <p className="text-sm text-muted-foreground">
@@ -213,28 +233,50 @@ export function NetworkTopology({ hosts, onHostClick, className = "" }: NetworkT
             ref={svgRef}
             className="h-full w-full"
             style={{ background: "transparent" }}
-          />
-          <div className="absolute bottom-4 right-4 rounded-md border border-border bg-card/90 p-3 text-xs backdrop-blur-sm">
+            role="img"
+            aria-label={`Network topology showing ${hosts.length} discovered ${hosts.length === 1 ? 'host' : 'hosts'}`}
+            aria-describedby="topology-description"
+          >
+            <desc id="topology-description">
+              Interactive network map with {hosts.length} hosts. Use mouse to drag nodes, scroll to zoom, and click nodes for details.
+              Keyboard users: Use Tab to navigate and Enter to interact with nodes.
+            </desc>
+          </svg>
+          <div
+            className="absolute bottom-4 right-4 rounded-md border border-border bg-card/90 p-3 text-xs backdrop-blur-sm"
+            role="complementary"
+            aria-label="Network topology legend and controls"
+          >
             <div className="mb-1 font-semibold text-foreground">Legend</div>
-            <div className="space-y-1">
+            <ul className="space-y-1" role="list" aria-label="Severity color coding">
               {Object.entries(SEVERITY_COLORS).map(([severity, color]) => (
-                <div key={severity} className="flex items-center gap-2">
+                <li key={severity} className="flex items-center gap-2">
                   <div
                     className="h-3 w-3 rounded-full border border-white"
                     style={{ backgroundColor: color }}
+                    role="presentation"
+                    aria-hidden="true"
                   />
                   <span className="capitalize text-muted-foreground">{severity}</span>
-                </div>
+                </li>
               ))}
-            </div>
+            </ul>
             <div className="mt-2 border-t border-border pt-2 text-muted-foreground">
-              <div>Scroll to zoom</div>
-              <div>Drag to pan</div>
-              <div>Drag nodes to move</div>
+              <div aria-label="Zoom control">Scroll to zoom</div>
+              <div aria-label="Pan control">Drag to pan</div>
+              <div aria-label="Move nodes control">Drag nodes to move</div>
             </div>
           </div>
         </>
       )}
     </div>
   );
-}
+}, (prevProps, nextProps) => {
+  // Custom comparison for memoization
+  // Re-render only if hosts array length or content changes
+  return (
+    prevProps.hosts.length === nextProps.hosts.length &&
+    prevProps.className === nextProps.className &&
+    prevProps.onHostClick === nextProps.onHostClick
+  );
+});

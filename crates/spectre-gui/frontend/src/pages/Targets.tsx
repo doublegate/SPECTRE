@@ -25,3 +25,6 @@ export function Targets() {
     </div>
   );
 }
+
+// Default export for lazy loading
+export default Targets;

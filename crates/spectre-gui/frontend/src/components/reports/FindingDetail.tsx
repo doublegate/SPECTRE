@@ -35,23 +35,27 @@ export function FindingDetail({ finding, isOpen, onClose }: FindingDetailProps) 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto" aria-describedby="finding-description">
         <DialogHeader>
           <div className="flex items-center justify-between">
-            <DialogTitle>Finding Details</DialogTitle>
+            <DialogTitle>
+              Finding Details: {finding.service} on {finding.host}:{finding.port}
+            </DialogTitle>
             <Badge
               variant="outline"
               style={{
                 borderColor: SEVERITY_COLORS[finding.severity as keyof typeof SEVERITY_COLORS],
                 color: SEVERITY_COLORS[finding.severity as keyof typeof SEVERITY_COLORS],
               }}
+              role="status"
+              aria-label={`Severity level: ${finding.severity}`}
             >
               {finding.severity.toUpperCase()}
             </Badge>
           </div>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-6" id="finding-description">
           {/* Host Information */}
           <div>
             <h3 className="text-sm font-semibold mb-2">Host Information</h3>
@@ -134,13 +138,23 @@ export function FindingDetail({ finding, isOpen, onClose }: FindingDetailProps) 
           )}
 
           {/* Actions */}
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => handleExport('json')}>
-              <Download className="h-4 w-4 mr-2" />
+          <div className="flex gap-2" role="group" aria-label="Export actions">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleExport('json')}
+              aria-label="Export finding as JSON file"
+            >
+              <Download className="h-4 w-4 mr-2" aria-hidden="true" />
               Export JSON
             </Button>
-            <Button variant="outline" size="sm" onClick={() => handleExport('pdf')}>
-              <Download className="h-4 w-4 mr-2" />
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleExport('pdf')}
+              aria-label="Export finding as PDF file"
+            >
+              <Download className="h-4 w-4 mr-2" aria-hidden="true" />
               Export PDF
             </Button>
           </div>

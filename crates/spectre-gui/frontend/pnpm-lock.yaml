@@ -38,6 +38,9 @@ importers:
       dompurify:
         specifier: ^3.3.1
         version: 3.3.1
+      focus-trap-react:
+        specifier: ^10.3.1
+        version: 10.3.1(prop-types@15.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
       lucide-react:
         specifier: ^0.563.0
         version: 0.563.0(react@19.2.4)
@@ -1985,6 +1988,16 @@ packages:
       picomatch:
         optional: true
 
+  focus-trap-react@10.3.1:
+    resolution: {integrity: sha512-PN4Ya9xf9nyj/Nd9VxBNMuD7IrlRbmaG6POAQ8VLqgtc6IY/Ln1tYakow+UIq4fihYYYFM70/2oyidE6bbiPgw==}
+    peerDependencies:
+      prop-types: ^15.8.1
+      react: '>=16.3.0'
+      react-dom: '>=16.3.0'
+
+  focus-trap@7.8.0:
+    resolution: {integrity: sha512-/yNdlIkpWbM0ptxno3ONTuf+2g318kh2ez3KSeZN5dZ8YC6AAmgeWz+GasYYiBJPFaYcSAPeu4GfhUaChzIJXA==}
+
   form-data@4.0.5:
     resolution: {integrity: sha512-8RipRLol37bNs2bhoV67fiTEvdTrbMUYcFTiy3+wuuOnUog2QBHCZWXDRijWQfAkhBj2Uf5UnVaiWwA5vdd82w==}
     engines: {node: '>= 6'}
@@ -2603,6 +2616,9 @@ packages:
 
   symbol-tree@3.2.4:
     resolution: {integrity: sha512-9QNk5KwDF+Bvz+PyObkmSYjI5ksVUYtjW7AU22r2NKcfLJcXp96hkDWU3+XndOsUb+AQ9QhfzfCT2O+CNWT5Tw==}
+
+  tabbable@6.4.0:
+    resolution: {integrity: sha512-05PUHKSNE8ou2dwIxTngl4EzcnsCDZGJ/iCLtDflR/SHB/ny14rXc+qU5P4mG9JkusiV7EivzY9Mhm55AzAvCg==}
 
   tailwind-merge@3.4.0:
     resolution: {integrity: sha512-uSaO4gnW+b3Y2aWoWfFpX62vn2sR3skfhbjsEnaBI81WD1wBLlHZe5sWf0AqjksNdYTbGBEd0UasQMT3SNV15g==}
@@ -4719,6 +4735,18 @@ snapshots:
     optionalDependencies:
       picomatch: 4.0.3
 
+  focus-trap-react@10.3.1(prop-types@15.8.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4):
+    dependencies:
+      focus-trap: 7.8.0
+      prop-types: 15.8.1
+      react: 19.2.4
+      react-dom: 19.2.4(react@19.2.4)
+      tabbable: 6.4.0
+
+  focus-trap@7.8.0:
+    dependencies:
+      tabbable: 6.4.0
+
   form-data@4.0.5:
     dependencies:
       asynckit: 0.4.0
@@ -5557,6 +5585,8 @@ snapshots:
       inline-style-parser: 0.2.7
 
   symbol-tree@3.2.4: {}
+
+  tabbable@6.4.0: {}
 
   tailwind-merge@3.4.0: {}
 

@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 export interface ServicesChartProps {
@@ -5,7 +6,7 @@ export interface ServicesChartProps {
   limit?: number;
 }
 
-export function ServicesChart({ data, limit = 10 }: ServicesChartProps) {
+export const ServicesChart = memo(function ServicesChart({ data, limit = 10 }: ServicesChartProps) {
   const chartData = [...data]
     .sort((a, b) => b.count - a.count)
     .slice(0, limit);
@@ -53,4 +54,14 @@ export function ServicesChart({ data, limit = 10 }: ServicesChartProps) {
       </BarChart>
     </ResponsiveContainer>
   );
-}
+}, (prevProps, nextProps) => {
+  // Re-render only if data array changes (shallow comparison)
+  return (
+    prevProps.data.length === nextProps.data.length &&
+    prevProps.limit === nextProps.limit &&
+    prevProps.data.every((item, index) =>
+      item.name === nextProps.data[index]?.name &&
+      item.count === nextProps.data[index]?.count
+    )
+  );
+});

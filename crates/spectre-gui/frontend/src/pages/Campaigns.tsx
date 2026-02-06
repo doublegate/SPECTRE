@@ -146,3 +146,6 @@ export function Campaigns() {
     </div>
   );
 }
+
+// Default export for lazy loading
+export default Campaigns;

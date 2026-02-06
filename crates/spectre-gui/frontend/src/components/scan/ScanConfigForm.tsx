@@ -98,49 +98,60 @@ export function ScanConfigForm({ onScanStart, loading = false }: ScanConfigFormP
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-4" aria-label="Scan configuration form">
       <div>
-        <label className="mb-1.5 block text-sm font-medium text-foreground">
+        <label htmlFor="scan-targets" className="mb-1.5 block text-sm font-medium text-foreground">
           Targets
+          <span aria-hidden="true"> *</span>
+          <span className="sr-only">required</span>
         </label>
         <textarea
+          id="scan-targets"
           value={targets}
           onChange={(e) => setTargets(e.target.value)}
           placeholder="10.0.0.1&#10;192.168.1.0/24&#10;example.com"
           className="h-24 w-full resize-none rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           disabled={loading}
+          aria-required="true"
+          aria-describedby="targets-help"
+          aria-invalid={!!error && error.includes("target")}
         />
-        <p className="mt-1 text-xs text-muted-foreground">
+        <p id="targets-help" className="mt-1 text-xs text-muted-foreground">
           Comma or newline separated. Supports IP, CIDR, hostname.
         </p>
       </div>
 
       <div>
-        <label className="mb-1.5 block text-sm font-medium text-foreground">
+        <label htmlFor="scan-ports" className="mb-1.5 block text-sm font-medium text-foreground">
           Ports
         </label>
         <input
+          id="scan-ports"
           type="text"
           value={ports}
           onChange={(e) => setPorts(e.target.value)}
           placeholder="22,80,443,8080 or 1-1000"
           className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           disabled={loading}
+          aria-describedby="ports-help"
+          aria-invalid={!!error && error.includes("Ports")}
         />
-        <p className="mt-1 text-xs text-muted-foreground">
+        <p id="ports-help" className="mt-1 text-xs text-muted-foreground">
           Comma separated or ranges. Leave empty for common ports.
         </p>
       </div>
 
       <div>
-        <label className="mb-1.5 block text-sm font-medium text-foreground">
+        <label htmlFor="scan-type" className="mb-1.5 block text-sm font-medium text-foreground">
           Scan Type
         </label>
         <select
+          id="scan-type"
           value={scanType}
           onChange={(e) => setScanType(e.target.value)}
           className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           disabled={loading}
+          aria-label="Select scan type"
         >
           {SCAN_TYPES.map((type) => (
             <option key={type.value} value={type.value}>
@@ -151,14 +162,16 @@ export function ScanConfigForm({ onScanStart, loading = false }: ScanConfigFormP
       </div>
 
       <div>
-        <label className="mb-1.5 block text-sm font-medium text-foreground">
+        <label htmlFor="scan-timing" className="mb-1.5 block text-sm font-medium text-foreground">
           Timing Template
         </label>
         <select
+          id="scan-timing"
           value={timing}
           onChange={(e) => setTiming(Number(e.target.value))}
           className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
           disabled={loading}
+          aria-label="Select timing template"
         >
           {TIMING_TEMPLATES.map((template) => (
             <option key={template.value} value={template.value}>
@@ -168,34 +181,43 @@ export function ScanConfigForm({ onScanStart, loading = false }: ScanConfigFormP
         </select>
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-2" role="group" aria-labelledby="detection-options-label">
+        <div id="detection-options-label" className="sr-only">Detection options</div>
         <label className="flex items-center gap-2 text-sm">
           <input
+            id="service-detection"
             type="checkbox"
             checked={serviceDetection}
             onChange={(e) => setServiceDetection(e.target.checked)}
             className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
             disabled={loading}
+            aria-describedby="service-detection-desc"
           />
           <span className="text-foreground">Service Detection</span>
-          <span className="text-muted-foreground">(identify services/versions)</span>
+          <span id="service-detection-desc" className="text-muted-foreground">(identify services/versions)</span>
         </label>
         <label className="flex items-center gap-2 text-sm">
           <input
+            id="os-detection"
             type="checkbox"
             checked={osDetection}
             onChange={(e) => setOsDetection(e.target.checked)}
             className="h-4 w-4 rounded border-border text-primary focus:ring-primary"
             disabled={loading}
+            aria-describedby="os-detection-desc"
           />
           <span className="text-foreground">OS Detection</span>
-          <span className="text-muted-foreground">(fingerprint operating system)</span>
+          <span id="os-detection-desc" className="text-muted-foreground">(fingerprint operating system)</span>
         </label>
       </div>
 
       {error && (
-        <div className="flex items-center gap-2 rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive">
-          <AlertCircle className="h-4 w-4" />
+        <div
+          role="alert"
+          aria-live="assertive"
+          className="flex items-center gap-2 rounded-md border border-destructive/50 bg-destructive/10 p-3 text-sm text-destructive"
+        >
+          <AlertCircle className="h-4 w-4" aria-hidden="true" />
           <span>{error}</span>
         </div>
       )}
@@ -204,8 +226,9 @@ export function ScanConfigForm({ onScanStart, loading = false }: ScanConfigFormP
         type="submit"
         disabled={loading}
         className="flex w-full items-center justify-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+        aria-label={loading ? "Scan in progress" : "Start network scan"}
       >
-        <Play className="h-4 w-4" />
+        <Play className="h-4 w-4" aria-hidden="true" />
         {loading ? "Starting Scan..." : "Start Scan"}
       </button>
     </form>
