@@ -35,6 +35,101 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Planned
 - MCP server implementation — Phase 6
 
+## [0.5.0-alpha.2] - 2026-02-05
+
+### Added
+
+#### Phase 5 Sprint 5.2: React Frontend Foundation — Operation SHADOW
+
+**Frontend architecture** — Full React + Tailwind CSS 4 + shadcn/ui + routing + state management + IPC hooks (41 new source files, ~2,044 lines TypeScript/CSS):
+
+- **Tailwind CSS 4 theming** (5 SPECTRE themes):
+  - `styles/globals.css` — 5 themes (dark, light, tactical, matrix, hacker) using oklch color space CSS custom properties with `[data-theme="name"]` selectors
+  - `@tailwindcss/vite` plugin integration (no PostCSS config needed)
+  - `@theme inline` block mapping CSS variables to Tailwind utility classes (background, foreground, card, primary, secondary, accent, muted, destructive, success, warning, border, input, ring, sidebar-*)
+  - Colors mapped from TUI `theme.rs` exact RGB values to oklch for visual parity across interface modes
+
+- **shadcn/ui initialization**:
+  - `components.json` — shadcn/ui configuration (style: new-york, RSC: false, path aliases)
+  - `lib/utils.ts` — `cn()` utility function (clsx + tailwind-merge)
+  - Base dependencies: class-variance-authority, clsx, tailwind-merge, tw-animate-css, lucide-react
+
+- **React Router 7 with 8 routes**:
+  - `router.tsx` — `createBrowserRouter()` with `MainLayout` wrapper and index redirect to `/dashboard`
+  - Routes: dashboard, targets, recon, analysis, comms, campaigns, reports, settings
+
+- **Layout system** (4 components):
+  - `layouts/MainLayout.tsx` — Sidebar + Header + `<Outlet />` content + StatusBar with sidebar collapse transition
+  - `layouts/Sidebar.tsx` — Fixed sidebar with 8 nav items (lucide-react icons), active state highlighting, collapsible with toggle button, SPECTRE branding
+  - `layouts/Header.tsx` — Dynamic page title from route, theme picker dropdown (5 themes)
+  - `layouts/StatusBar.tsx` — Footer bar showing SPECTRE version, component availability count, config status via `useStatus` hook
+
+- **8 page shells**:
+  - `Dashboard` — 4 stat cards (Hosts Scanned, Open Ports, Services, Findings), component status list with availability badges, platform info card
+  - `Targets` — CIDR/hostname input textarea with placeholder examples
+  - `Recon` — Scan status/progress bar from scanStore, results table (host, port, state, service) with empty state
+  - `Analysis` — Input/output textarea grid, CyberChef operations description
+  - `Comms` — Identity/Peers/Transfer History cards with empty states
+  - `Campaigns` — Campaign list with "New Campaign" button, empty state with description
+  - `Reports` — Findings section, export format buttons (HTML, Markdown, CSV, JSON)
+  - `Settings` — Theme selector grid with descriptions, general settings placeholder
+
+- **5 Zustand stores**:
+  - `stores/uiStore.ts` — Theme (ThemeName union type), sidebar collapsed state, active modal; `setTheme()` applies `data-theme` attribute to `document.documentElement`
+  - `stores/scanStore.ts` — scanning, progress, results[], summary, error with mutations (startScanning, setProgress, addResult, setComplete, setError, reset)
+  - `stores/campaignStore.ts` — campaigns[], activeCampaign with CRUD mutations
+  - `stores/chefStore.ts` — operations[], lastResult, processing state
+  - `stores/commsStore.ts` — identity, peers[] with add/remove mutations
+
+- **6 IPC hooks**:
+  - `hooks/useIpc.ts` — Base hook wrapping `invoke()` with data/loading/error state and execute/reset methods
+  - `hooks/useStatus.ts` — Calls `get_version` and `get_status` on mount, provides refresh method
+  - `hooks/useScan.ts` — Wraps scan IPC commands + sets up event listeners (scan:progress, scan:result, scan:complete, scan:error) that update scanStore
+  - `hooks/useCampaign.ts` — Wraps campaign CRUD IPC commands
+  - `hooks/useChef.ts` — Wraps chef execute and list operations commands
+  - `hooks/useComms.ts` — Wraps identity, peers, send commands
+
+- **TypeScript types** (5 type files mirroring Rust structs):
+  - `types/scan.ts` — ScanRequest, ScanSummary, ScanProgressEvent, ScanResultEvent, ScanCompleteEvent, ScanErrorEvent
+  - `types/campaign.ts` — CampaignSummary, CreateCampaignRequest, CampaignPhase
+  - `types/chef.ts` — ChefRequest, ChefResult
+  - `types/comms.ts` — IdentityInfo, PeerInfo, SendRequest
+  - `types/config.ts` — ConfigSummary, VersionInfo, ComponentStatus, SystemStatus, FindingSummary, SeverityCounts, DashboardStats, ReportRequest, ReportResult, ParsedTarget, TargetInput, StatusEvent
+
+- **Utility modules**:
+  - `utils/format.ts` — formatBytes, formatDuration, formatNumber, formatDate, formatRate helpers
+  - `utils/debounce.ts` — Generic debounce function
+  - `components/ErrorBoundary.tsx` — React class component error boundary with fallback UI and "Try Again" button
+
+- **81 frontend tests** (vitest, 11 test files):
+  - 7 store tests: uiStore (7), scanStore (7), campaignStore (6), chefStore (5), commsStore (6)
+  - Utility tests: format (12), debounce (3), cn (4)
+  - Component tests: ErrorBoundary (4), pages (20), layout integration (7)
+
+### Changed
+
+- **Workspace `Cargo.toml`**: Version bumped to `0.5.0-alpha.2`
+- **`crates/spectre-gui/tauri.conf.json`**: Version bumped to `0.5.0-alpha.2`
+- **`crates/spectre-gui/frontend/package.json`**: Version bumped to `0.5.0-alpha.2`; added 8 runtime dependencies (react-router, zustand, lucide-react, class-variance-authority, clsx, tailwind-merge, tw-animate-css, recharts) and 3 dev dependencies (tailwindcss 4, @tailwindcss/vite, @types/node)
+- **`crates/spectre-gui/frontend/vite.config.ts`**: Added `@tailwindcss/vite` plugin and `@/` path alias (`resolve.alias`)
+- **`crates/spectre-gui/frontend/tsconfig.json`**: Added `baseUrl` and `paths` for `@/*` alias
+- **`crates/spectre-gui/frontend/src/App.tsx`**: Replaced direct IPC calls with `RouterProvider` + `ErrorBoundary` wrapper
+- **`crates/spectre-gui/frontend/src/main.tsx`**: Updated CSS import from `./styles.css` to `./styles/globals.css`
+
+### Removed
+
+- **`crates/spectre-gui/frontend/src/styles.css`**: Replaced by `styles/globals.css` with Tailwind CSS 4 theme system
+
+### Technical Details
+- ~136 Rust source files + 49 frontend files, ~38,000 lines (Rust + TypeScript)
+- 1,081 tests total: 44 CLI + 618 core unit + 32 GUI Rust + 81 GUI frontend + 268 TUI + 5 doc-tests + 45 integration - (was 1,017)
+- Combined ecosystem tests: 7,284 (SPECTRE 1,081 + ProRT-IP 2,557 + CyberChef 689 + WRAITH 2,957)
+- Zero clippy warnings (`cargo clippy --workspace -- -D warnings`)
+- Clean format (`cargo fmt --all --check`)
+- Frontend build: `pnpm build` (tsc + Vite 6.4.1) — 335 KB gzipped bundle
+- Frontend tests: `pnpm test` — 81 tests, 11 files, 1.5s
+- Key dependencies added: Tailwind CSS 4.1.18, React Router 7.13.0, Zustand 5.0.11, Recharts 3.7.0, lucide-react 0.563.0
+
 ## [0.5.0-alpha.1] - 2026-02-05
 
 ### Added
@@ -898,7 +993,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-[Unreleased]: https://github.com/doublegate/SPECTRE/compare/v0.5.0-alpha.1...HEAD
+[Unreleased]: https://github.com/doublegate/SPECTRE/compare/v0.5.0-alpha.2...HEAD
+[0.5.0-alpha.2]: https://github.com/doublegate/SPECTRE/compare/v0.5.0-alpha.1...v0.5.0-alpha.2
 [0.5.0-alpha.1]: https://github.com/doublegate/SPECTRE/compare/v0.4.7...v0.5.0-alpha.1
 [0.4.7]: https://github.com/doublegate/SPECTRE/compare/v0.4.6...v0.4.7
 [0.4.6]: https://github.com/doublegate/SPECTRE/compare/v0.4.5...v0.4.6

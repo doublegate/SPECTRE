@@ -20,7 +20,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Phase 4:** Operation SPECTER (v0.4.x) - Advanced Features **COMPLETE**
 **Phase 5:** Operation SHADOW (v0.5.x) - GUI Application (Tauri 2.0) **IN PROGRESS** (Sprint 5.1 complete)
 
-**SPECTRE Tests:** 1,017 (44 CLI + 618 core + 32 GUI + 268 TUI + 5 doc-tests + 45 integration + 5 frontend) | **Code:** ~36,000 lines Rust + TypeScript (135 Rust files + 8 frontend files)
+**SPECTRE Tests:** 1,081 (44 CLI + 618 core + 32 GUI Rust + 81 GUI frontend + 268 TUI + 5 doc-tests + 45 integration) | **Code:** ~38,000 lines Rust + TypeScript (136 Rust files + 49 frontend files)
 
 **Repository:** [github.com/doublegate/SPECTRE](https://github.com/doublegate/SPECTRE)
 
@@ -141,7 +141,7 @@ crates/
 │       ├── scan_state.rs   # Scan progress tracking, ETA, filtering, sorting
 │       ├── panels/         # Recon, Analysis, Comms, Campaign panel renderers
 │       └── widgets/        # HelpOverlay, StatusBar shared widgets
-├── spectre-gui/        # GUI application — Tauri 2.10 + React 19 (13 Rust files, 32 tests + 8 frontend files, 5 tests)
+├── spectre-gui/        # GUI application — Tauri 2.10 + React 19 + Tailwind CSS 4 + Zustand (13 Rust files, 32 tests + 49 frontend files, 81 tests)
 │   ├── Cargo.toml          # Binary+library crate (staticlib, cdylib, rlib)
 │   ├── build.rs            # tauri_build::build()
 │   ├── tauri.conf.json     # Tauri config (1280x800 window, CSP, bundle)

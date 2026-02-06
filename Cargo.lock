@@ -6138,7 +6138,7 @@ dependencies = [
 
 [[package]]
 name = "spectre-cli"
-version = "0.5.0-alpha.1"
+version = "0.5.0-alpha.2"
 dependencies = [
  "anyhow",
  "assert_cmd",
@@ -6166,7 +6166,7 @@ dependencies = [
 
 [[package]]
 name = "spectre-core"
-version = "0.5.0-alpha.1"
+version = "0.5.0-alpha.2"
 dependencies = [
  "anyhow",
  "async-trait",
@@ -6206,7 +6206,7 @@ dependencies = [
 
 [[package]]
 name = "spectre-gui"
-version = "0.5.0-alpha.1"
+version = "0.5.0-alpha.2"
 dependencies = [
  "anyhow",
  "chrono",
@@ -6226,7 +6226,7 @@ dependencies = [
 
 [[package]]
 name = "spectre-mcp"
-version = "0.5.0-alpha.1"
+version = "0.5.0-alpha.2"
 dependencies = [
  "anyhow",
  "serde",
@@ -6238,7 +6238,7 @@ dependencies = [
 
 [[package]]
 name = "spectre-tui"
-version = "0.5.0-alpha.1"
+version = "0.5.0-alpha.2"
 dependencies = [
  "anyhow",
  "chrono",

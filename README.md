@@ -13,7 +13,7 @@ A unified offensive security toolkit combining wire-speed secure communications,
   <a href="https://github.com/doublegate/SPECTRE"><img src="https://img.shields.io/github/stars/doublegate/SPECTRE?style=flat-square" alt="GitHub Stars"></a>
   <a href="https://github.com/doublegate/SPECTRE/fork"><img src="https://img.shields.io/github/forks/doublegate/SPECTRE?style=flat-square" alt="GitHub Forks"></a>
   <a href="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml"><img src="https://github.com/doublegate/SPECTRE/actions/workflows/ci.yml/badge.svg" alt="CI Status"></a>
-  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.5.0--alpha.1-blue.svg" alt="Version"></a>
+  <a href="https://github.com/doublegate/SPECTRE/releases"><img src="https://img.shields.io/badge/version-0.5.0--alpha.2-blue.svg" alt="Version"></a>
   <a href="https://www.rust-lang.org/"><img src="https://img.shields.io/badge/rust-1.92%2B-orange.svg" alt="Rust"></a>
   <a href="https://nodejs.org/"><img src="https://img.shields.io/badge/node-22%2B-green.svg" alt="Node.js"></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT%2FGPLv3%2FApache--2.0-green.svg" alt="License"></a>
@@ -48,13 +48,13 @@ Modern offensive security requires seamless tool integration. SPECTRE eliminates
 
 | Metric                 | Value                                                                   |
 | ---------------------- | ----------------------------------------------------------------------- |
-| **Combined Tests**     | 7,220 (SPECTRE: 1,017 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 689) |
-| **SPECTRE Codebase**   | ~36,000 lines Rust + TypeScript (135 Rust files + 8 frontend files)         |
+| **Combined Tests**     | 7,284 (SPECTRE: 1,081 + WRAITH: 2,957 + ProRT-IP: 2,557 + CyberChef: 689) |
+| **SPECTRE Codebase**   | ~38,000 lines Rust + TypeScript (136 Rust files + 49 frontend files)        |
 | **Component Code**     | ~180,000 (Rust) + ~40,000 (TypeScript/JavaScript)                           |
 | **Languages**          | Rust 2024, TypeScript, JavaScript                                           |
 | **Network Throughput** | 10+ Gbps (WRAITH), 10M+ pps (ProRT-IP)                                     |
 | **Data Operations**    | 463 via CyberChef MCP                                                       |
-| **Interface Modes**    | CLI (implemented), TUI (implemented), GUI (scaffold), MCP Server            |
+| **Interface Modes**    | CLI (implemented), TUI (implemented), GUI (frontend foundation), MCP Server |
 | **Platforms**          | Linux, Windows, macOS, Docker                                               |
 
 ---
