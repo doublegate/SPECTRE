@@ -76,11 +76,11 @@ jobs:
 
       - name: Build (native)
         if: '!matrix.cross'
-        run: cargo build --release --target ${{ matrix.target }} ${{ matrix.features && format('--features {0}', matrix.features) || '' }}
+        run: cargo build --release --target ${{ matrix.target }} -p spectre-cli ${{ matrix.features && format('--features {0}', matrix.features) || '' }}
 
       - name: Build (cross)
         if: matrix.cross
-        run: cross build --release --target ${{ matrix.target }} ${{ matrix.features && format('--features {0}', matrix.features) || '' }}
+        run: cross build --release --target ${{ matrix.target }} -p spectre-cli ${{ matrix.features && format('--features {0}', matrix.features) || '' }}
 
       - name: Package (Unix)
         if: runner.os != 'Windows'
@@ -193,15 +193,17 @@ jobs:
           cache: 'pnpm'
           cache-dependency-path: crates/spectre-gui/frontend/pnpm-lock.yaml
 
+      - name: Install GUI dependencies
+        working-directory: crates/spectre-gui
+        run: pnpm install --ignore-workspace
+
       - name: Install frontend dependencies
-        run: |
-          cd crates/spectre-gui/frontend
-          pnpm install --frozen-lockfile
+        working-directory: crates/spectre-gui/frontend
+        run: pnpm install --frozen-lockfile
 
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           projectPath: crates/spectre-gui
-          tauriScript: pnpm tauri
           args: --target ${{ matrix.platform.target }}

@@ -23,6 +23,7 @@
 //! - NVIDIA workarounds: <https://github.com/tauri-apps/tauri/issues/9394>
 
 use std::env;
+#[cfg(target_os = "linux")]
 use std::fs;
 use tracing::{debug, info, warn};
 

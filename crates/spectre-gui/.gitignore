@@ -1,0 +1,6 @@
+# Node.js dependencies (root level only - frontend has its own)
+node_modules/
+pnpm-lock.yaml
+
+# Tauri build artifacts
+target/
