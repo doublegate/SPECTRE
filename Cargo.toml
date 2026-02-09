@@ -74,7 +74,7 @@ wraith-crypto = { path = "components/wraith-protocol/crates/wraith-crypto" }
 # Utilities
 uuid = { version = "1.0", features = ["v4"] }
 tokio-util = "0.7"
-quick-xml = "0.37"
+quick-xml = "0.38"
 
 # Crypto (for WRAITH integration)
 sha2 = "0.10"
