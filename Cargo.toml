@@ -105,7 +105,7 @@ comfy-table = "7"
 indicatif = "0.18"
 
 # Testing
-proptest = "1.5"
+proptest = "1.10"
 criterion = "0.5"
 tempfile = "3.14"
 
