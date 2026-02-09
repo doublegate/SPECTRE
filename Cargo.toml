@@ -90,7 +90,7 @@ chrono = { version = "0.4", features = ["serde"] }
 directories = "6"
 
 # Docker API (for CyberChef-MCP)
-bollard = "0.18"
+bollard = "0.20"
 
 # GUI (Tauri 2.0)
 tauri = { version = "2", features = ["tray-icon"] }
