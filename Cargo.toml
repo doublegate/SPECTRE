@@ -55,7 +55,7 @@ tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
 tracing-appender = "0.2"
 
 # Networking
-ipnetwork = "0.20"
+ipnetwork = "0.21"
 
 # Database
 rusqlite = { version = "0.32", features = ["bundled"] }

@@ -2896,6 +2896,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "ipnetwork"
+version = "0.21.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cf370abdafd54d13e54a620e8c3e1145f28e46cc9d704bc6d94414559df41763"
+
+[[package]]
 name = "iri-string"
 version = "0.7.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4414,7 +4420,7 @@ version = "0.35.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "682396b533413cc2e009fbb48aadf93619a149d3e57defba19ff50ce0201bd0d"
 dependencies = [
- "ipnetwork",
+ "ipnetwork 0.20.0",
  "pnet_base",
  "pnet_datalink",
  "pnet_packet",
@@ -4437,7 +4443,7 @@ version = "0.35.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e79e70ec0be163102a332e1d2d5586d362ad76b01cec86f830241f2b6452a7b7"
 dependencies = [
- "ipnetwork",
+ "ipnetwork 0.20.0",
  "libc",
  "pnet_base",
  "pnet_sys",
@@ -4696,7 +4702,7 @@ dependencies = [
  "dirs 5.0.1",
  "flate2",
  "indicatif 0.17.11",
- "ipnetwork",
+ "ipnetwork 0.20.0",
  "parking_lot",
  "rand 0.8.5",
  "regex",
@@ -4746,7 +4752,7 @@ dependencies = [
  "futures",
  "governor",
  "indicatif 0.17.11",
- "ipnetwork",
+ "ipnetwork 0.20.0",
  "memmap2",
  "mlua",
  "native-tls",
@@ -6176,7 +6182,7 @@ dependencies = [
  "directories",
  "futures",
  "hex",
- "ipnetwork",
+ "ipnetwork 0.21.1",
  "mlua",
  "proptest",
  "prtip-core",
