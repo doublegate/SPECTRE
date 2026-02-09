@@ -78,7 +78,7 @@ quick-xml = "0.37"
 
 # Crypto (for WRAITH integration)
 sha2 = "0.10"
-rand = "0.8"
+rand = "0.9"
 base64 = "0.22"
 hex = "0.4"
 urlencoding = "2.1"
