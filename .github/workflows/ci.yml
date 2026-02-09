@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '22'
       - uses: pnpm/action-setup@v2
@@ -74,7 +74,7 @@ jobs:
             libpcap-dev
 
       # Setup Node.js and pnpm for frontend
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '22'
       - uses: pnpm/action-setup@v2
@@ -146,7 +146,7 @@ jobs:
           echo "LIB=${{ github.workspace }}\npcap-sdk\Lib\x64" >> $env:GITHUB_ENV
 
       # Setup Node.js and pnpm for frontend (all platforms)
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '22'
       - uses: pnpm/action-setup@v2
@@ -200,7 +200,7 @@ jobs:
             libpcap-dev
 
       # Setup Node.js and pnpm for frontend
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '22'
       - uses: pnpm/action-setup@v2
@@ -263,7 +263,7 @@ jobs:
             libpcap-dev
 
       # Setup Node.js and pnpm for frontend
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '22'
       - uses: pnpm/action-setup@v2
@@ -312,7 +312,7 @@ jobs:
             libpcap-dev
 
       # Setup Node.js and pnpm for frontend
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '22'
       - uses: pnpm/action-setup@v2
