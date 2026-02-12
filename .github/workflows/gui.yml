@@ -57,14 +57,15 @@ jobs:
             os: ubuntu-22.04
             rust: stable
             target: x86_64-unknown-linux-gnu
-          - name: macOS x86_64
-            os: macos-15-intel
-            rust: stable
-            target: x86_64-apple-darwin
-          - name: macOS ARM64
-            os: macos-14
-            rust: stable
-            target: aarch64-apple-darwin
+          # DISABLED: macOS builds removed
+          # - name: macOS x86_64
+          #   os: macos-15-intel
+          #   rust: stable
+          #   target: x86_64-apple-darwin
+          # - name: macOS ARM64
+          #   os: macos-14
+          #   rust: stable
+          #   target: aarch64-apple-darwin
           - name: Windows x86_64
             os: windows-2022
             rust: stable

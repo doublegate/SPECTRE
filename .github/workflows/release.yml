@@ -33,12 +33,13 @@ jobs:
             artifact: spectre-linux-aarch64
             cross: true
             features: vendored-openssl
-          - target: x86_64-apple-darwin
-            os: macos-15-intel
-            artifact: spectre-macos-x86_64
-          - target: aarch64-apple-darwin
-            os: macos-14
-            artifact: spectre-macos-aarch64
+          # DISABLED: macOS builds removed
+          # - target: x86_64-apple-darwin
+          #   os: macos-15-intel
+          #   artifact: spectre-macos-x86_64
+          # - target: aarch64-apple-darwin
+          #   os: macos-14
+          #   artifact: spectre-macos-aarch64
           - target: x86_64-pc-windows-msvc
             os: windows-2022
             artifact: spectre-windows-x86_64
