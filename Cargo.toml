@@ -72,7 +72,7 @@ wraith-core = { path = "components/wraith-protocol/crates/wraith-core" }
 wraith-crypto = { path = "components/wraith-protocol/crates/wraith-crypto" }
 
 # Utilities
-uuid = { version = "1.0", features = ["v4"] }
+uuid = { version = "1.21", features = ["v4"] }
 tokio-util = "0.7"
 quick-xml = "0.37"
 
@@ -105,9 +105,9 @@ comfy-table = "7"
 indicatif = "0.18"
 
 # Testing
-proptest = "1.5"
+proptest = "1.10"
 criterion = "0.5"
-tempfile = "3.14"
+tempfile = "3.26"
 
 [profile.release]
 lto = true
