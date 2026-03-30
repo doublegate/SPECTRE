@@ -26,13 +26,13 @@ categories = ["command-line-utilities", "network-programming"]
 
 [workspace.dependencies]
 # Async runtime
-tokio = { version = "1.43", features = ["full"] }
+tokio = { version = "1.50", features = ["full"] }
 async-trait = "0.1"
 futures = "0.3"
 
 # CLI
-clap = { version = "4.5", features = ["derive", "env", "wrap_help", "color", "suggestions"] }
-clap_complete = "4.5"
+clap = { version = "4.6", features = ["derive", "env", "wrap_help", "color", "suggestions"] }
+clap_complete = "4.6"
 
 # TUI
 ratatui = "0.30"
@@ -72,7 +72,7 @@ wraith-core = { path = "components/wraith-protocol/crates/wraith-core" }
 wraith-crypto = { path = "components/wraith-protocol/crates/wraith-crypto" }
 
 # Utilities
-uuid = { version = "1.0", features = ["v4"] }
+uuid = { version = "1.23", features = ["v4"] }
 tokio-util = "0.7"
 quick-xml = "0.37"
 
@@ -105,9 +105,9 @@ comfy-table = "7"
 indicatif = "0.18"
 
 # Testing
-proptest = "1.5"
+proptest = "1.11"
 criterion = "0.5"
-tempfile = "3.14"
+tempfile = "3.27"
 
 [profile.release]
 lto = true
