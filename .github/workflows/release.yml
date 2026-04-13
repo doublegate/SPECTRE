@@ -103,7 +103,7 @@ jobs:
           Compress-Archive -Path dist/* -DestinationPath "${{ matrix.artifact }}.zip"
 
       - name: Upload Release Asset
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           files: |
             ${{ matrix.artifact }}.tar.gz
