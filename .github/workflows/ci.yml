@@ -29,12 +29,12 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v6
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '22'
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v6
         with:
-          version: 9
+          version: 11
       - name: Install dependencies
         run: |
           cd crates/spectre-gui/frontend
@@ -74,12 +74,12 @@ jobs:
             libpcap-dev
 
       # Setup Node.js and pnpm for frontend
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '22'
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v6
         with:
-          version: 9
+          version: 11
 
       # Build frontend (required before Rust build for Tauri)
       - name: Build frontend
@@ -146,12 +146,12 @@ jobs:
           echo "LIB=${{ github.workspace }}\npcap-sdk\Lib\x64" >> $env:GITHUB_ENV
 
       # Setup Node.js and pnpm for frontend (all platforms)
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '22'
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v6
         with:
-          version: 9
+          version: 11
 
       # Build frontend (required before Rust build for Tauri)
       - name: Build frontend
@@ -200,12 +200,12 @@ jobs:
             libpcap-dev
 
       # Setup Node.js and pnpm for frontend
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '22'
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v6
         with:
-          version: 9
+          version: 11
 
       # Build frontend (required before Rust build for Tauri)
       - name: Build frontend
@@ -263,12 +263,12 @@ jobs:
             libpcap-dev
 
       # Setup Node.js and pnpm for frontend
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '22'
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v6
         with:
-          version: 9
+          version: 11
 
       # Build frontend (required before Rust build for Tauri)
       - name: Build frontend
@@ -312,12 +312,12 @@ jobs:
             libpcap-dev
 
       # Setup Node.js and pnpm for frontend
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '22'
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v6
         with:
-          version: 9
+          version: 11
 
       # Build frontend (required before Rust build for Tauri)
       - name: Build frontend
@@ -334,7 +334,7 @@ jobs:
       - name: Generate coverage
         run: cargo tarpaulin --workspace --out Xml
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./cobertura.xml

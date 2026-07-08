@@ -1,10 +1,10 @@
 //! Docker container management for CyberChef-MCP
 
-use bollard::container::{
-    Config as ContainerConfig, CreateContainerOptions, ListContainersOptions,
-    StartContainerOptions, StopContainerOptions,
+use bollard::models::{ContainerCreateBody, ContainerSummaryStateEnum};
+use bollard::query_parameters::{
+    CreateContainerOptions, CreateImageOptions, ListContainersOptions, StartContainerOptions,
+    StopContainerOptions,
 };
-use bollard::image::CreateImageOptions;
 use bollard::Docker;
 use futures::StreamExt;
 use tracing::{debug, info, instrument, warn};
@@ -55,7 +55,7 @@ impl DockerManager {
         info!(image = %self.image, "Pulling image");
 
         let options = Some(CreateImageOptions {
-            from_image: self.image.clone(),
+            from_image: Some(self.image.clone()),
             ..Default::default()
         });
 
@@ -91,7 +91,7 @@ impl DockerManager {
         let existing = self.find_container().await?;
 
         if let Some(container) = existing {
-            if container.state == Some("running".to_string()) {
+            if container.state == Some(ContainerSummaryStateEnum::RUNNING) {
                 info!("Container already running");
                 return Ok(());
             }
@@ -99,7 +99,7 @@ impl DockerManager {
             // Start existing container
             debug!("Starting existing container");
             self.docker
-                .start_container(&self.container_name, None::<StartContainerOptions<String>>)
+                .start_container(&self.container_name, None::<StartContainerOptions>)
                 .await
                 .map_err(|e| {
                     crate::SpectreError::Chef(ChefError::DockerError(format!(
@@ -117,7 +117,7 @@ impl DockerManager {
             // via stdin/stdout, but this container config is used for
             // `spectre chef setup --start` which creates a named
             // persistent container.
-            let config = ContainerConfig {
+            let config = ContainerCreateBody {
                 image: Some(self.image.clone()),
                 open_stdin: Some(true),
                 attach_stdin: Some(true),
@@ -126,8 +126,8 @@ impl DockerManager {
             };
 
             let options = Some(CreateContainerOptions {
-                name: &self.container_name,
-                platform: None,
+                name: Some(self.container_name.clone()),
+                ..Default::default()
             });
 
             self.docker
@@ -141,7 +141,7 @@ impl DockerManager {
                 })?;
 
             self.docker
-                .start_container(&self.container_name, None::<StartContainerOptions<String>>)
+                .start_container(&self.container_name, None::<StartContainerOptions>)
                 .await
                 .map_err(|e| {
                     crate::SpectreError::Chef(ChefError::DockerError(format!(
@@ -161,7 +161,13 @@ impl DockerManager {
         info!("Stopping CyberChef-MCP container");
 
         self.docker
-            .stop_container(&self.container_name, Some(StopContainerOptions { t: 10 }))
+            .stop_container(
+                &self.container_name,
+                Some(StopContainerOptions {
+                    t: Some(10),
+                    ..Default::default()
+                }),
+            )
             .await
             .map_err(|e| {
                 // Ignore "container not running" errors
@@ -207,7 +213,10 @@ impl DockerManager {
     #[instrument(skip(self))]
     pub async fn container_status(&self) -> crate::Result<String> {
         if let Some(container) = self.find_container().await? {
-            Ok(container.state.unwrap_or_else(|| "unknown".to_string()))
+            Ok(container
+                .state
+                .map(|s| s.to_string())
+                .unwrap_or_else(|| "unknown".to_string()))
         } else {
             Ok("not found".to_string())
         }
@@ -215,7 +224,7 @@ impl DockerManager {
 
     /// Find the CyberChef-MCP container
     async fn find_container(&self) -> crate::Result<Option<bollard::models::ContainerSummary>> {
-        let options = Some(ListContainersOptions::<String> {
+        let options = Some(ListContainersOptions {
             all: true,
             ..Default::default()
         });

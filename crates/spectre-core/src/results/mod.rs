@@ -99,7 +99,7 @@ pub fn sort_results(results: &mut [ScanResult], criterion: SortCriterion) {
             });
         },
         SortCriterion::ScanTime => {
-            results.sort_by(|a, b| a.scan_time.cmp(&b.scan_time));
+            results.sort_by_key(|r| r.scan_time);
         },
     }
 }

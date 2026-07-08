@@ -73,7 +73,7 @@ impl ExecutiveSummary {
 
         // Top affected hosts
         let mut top_affected: Vec<(String, usize)> = host_finding_count.into_iter().collect();
-        top_affected.sort_by(|a, b| b.1.cmp(&a.1));
+        top_affected.sort_by_key(|(_, count)| std::cmp::Reverse(*count));
         top_affected.truncate(10);
 
         // Risk score calculation

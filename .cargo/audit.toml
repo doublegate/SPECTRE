@@ -42,4 +42,13 @@ ignore = [
     "RUSTSEC-2025-0057",   # fxhash - used by HTML parsing (selectors), no known vulns
     "RUSTSEC-2025-0119",   # number_prefix - used by indicatif progress bars, cosmetic
     "RUSTSEC-2025-0141",   # bincode - used by WRAITH discovery (internal comms only)
+
+    # RUSTSEC-2026-0194/0195: quick-xml 0.38.4 quadratic runtime / memory exhaustion
+    # - Transitive: tauri 2.11.5 (latest) -> plist 1.8.0 -> quick-xml 0.38.4
+    # - Only used for macOS Info.plist bundle-metadata parsing at build/packaging time,
+    #   not attacker-reachable network input
+    # - No fix available: tauri's own `plist` dependency hasn't moved to quick-xml >=0.41.0
+    #   yet; re-check on the next tauri/plist release and remove this entry once resolved
+    "RUSTSEC-2026-0194",
+    "RUSTSEC-2026-0195",
 ]
