@@ -104,7 +104,7 @@ impl ResultStats {
     /// Get the most common open ports
     pub fn top_ports(&self, limit: usize) -> Vec<(u16, usize)> {
         let mut ports: Vec<(u16, usize)> = self.port_distribution.clone().into_iter().collect();
-        ports.sort_by(|a, b| b.1.cmp(&a.1));
+        ports.sort_by_key(|(_, count)| std::cmp::Reverse(*count));
         ports.truncate(limit);
         ports
     }
@@ -113,7 +113,7 @@ impl ResultStats {
     pub fn top_services(&self, limit: usize) -> Vec<(String, usize)> {
         let mut services: Vec<(String, usize)> =
             self.service_distribution.clone().into_iter().collect();
-        services.sort_by(|a, b| b.1.cmp(&a.1));
+        services.sort_by_key(|(_, count)| std::cmp::Reverse(*count));
         services.truncate(limit);
         services
     }
