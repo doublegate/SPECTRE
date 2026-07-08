@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- Consolidated 18 open dependabot PRs (#7-#32) into a single dependency-update sweep, plus a
+  broader pass to bring every other Cargo, npm, GitHub Actions, and submodule dependency to its
+  latest compatible version.
+  - GitHub Actions: `softprops/action-gh-release` v2->v3, `pnpm/action-setup` v2/v4->v6
+    (standardized across all workflows, including pinned pnpm 9->11), `codecov/codecov-action`
+    v5->v7, `actions/setup-node` v4->v6.
+  - Cargo: `sha2` 0.10->0.11, `ipnetwork` 0.20->0.21, `toml` 0.8->1.1, `toml_edit` 0.22->0.25,
+    `quick-xml` 0.37->0.41, `rand` 0.8->0.10, `bollard` 0.18->0.21 (migrated
+    `crates/spectre-core/src/chef/docker.rs` to bollard's relocated `query_parameters`/`models`
+    API), plus transitive bumps to openssl, quinn-proto, and keccak. `rusqlite` and `mlua` remain
+    pinned (0.32, 0.11) due to a shared native-library (`sqlite3`, `lua`) version constraint with
+    the `prtip` submodule's own dependencies.
+  - npm (GUI frontend): `rollup` (transitive via vite) and other packages within existing semver
+    ranges.
+  - Submodules: `components/prtip` and `components/wraith-protocol` synced to their latest pushed
+    commits; `components/cyberchef-mcp` fast-forwarded to latest upstream master.
+- Fixed 5 pre-existing `clippy::unnecessary_sort_by` failures (`sort_by` -> `sort_by_key`) that
+  were already failing CI on the current toolchain independent of this dependency sweep.
+
 ## [0.5.0] - 2026-02-06
 
 ### Added - Sprint 5.8: Polish & Release (v0.5.0 Stable)
