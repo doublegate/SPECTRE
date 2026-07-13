@@ -2426,7 +2426,7 @@ dependencies = [
  "parking_lot",
  "portable-atomic",
  "quanta",
- "rand 0.8.5",
+ "rand 0.8.7",
  "smallvec",
  "spinning_top",
 ]
@@ -3908,7 +3908,7 @@ dependencies = [
  "num-integer",
  "num-iter",
  "num-traits",
- "rand 0.8.5",
+ "rand 0.8.7",
  "smallvec",
  "zeroize",
 ]
@@ -4576,7 +4576,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "5d5285893bb5eb82e6aaf5d59ee909a06a16737a8970984dd7746ba9283498d6"
 dependencies = [
  "phf_shared 0.10.0",
- "rand 0.8.5",
+ "rand 0.8.7",
 ]
 
 [[package]]
@@ -4586,7 +4586,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3c80231409c20246a13fddb31776fb942c38553c51e871f8cbd687a4cfb5843d"
 dependencies = [
  "phf_shared 0.11.3",
- "rand 0.8.5",
+ "rand 0.8.7",
 ]
 
 [[package]]
@@ -5041,7 +5041,7 @@ dependencies = [
  "indicatif 0.17.11",
  "ipnetwork 0.20.0",
  "parking_lot",
- "rand 0.8.5",
+ "rand 0.8.7",
  "regex",
  "rkyv",
  "rlimit",
@@ -5069,7 +5069,7 @@ dependencies = [
  "pnet_datalink",
  "pnet_packet",
  "prtip-core",
- "rand 0.8.5",
+ "rand 0.8.7",
  "socket2 0.5.10",
  "thiserror 1.0.69",
  "tokio",
@@ -5100,7 +5100,7 @@ dependencies = [
  "pnet_packet",
  "prtip-core",
  "prtip-network",
- "rand 0.8.5",
+ "rand 0.8.7",
  "regex",
  "rkyv",
  "rustls",
@@ -5281,9 +5281,9 @@ dependencies = [
 
 [[package]]
 name = "rand"
-version = "0.8.5"
+version = "0.8.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "34af8d1a0e25924bc5b7c43c079c942339d8f0a8b57c39049bef581b46327404"
+checksum = "22f6172bdec972074665ed81ed53b71da00bfc44b65a753cfde883ec4c702a1a"
 dependencies = [
  "libc",
  "rand_chacha 0.3.1",
@@ -5381,7 +5381,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "32cb0b9bc82b0a0876c2dd994a7e7a2683d3e7390ca40e6886785ef0c7e3ee31"
 dependencies = [
  "num-traits",
- "rand 0.8.5",
+ "rand 0.8.7",
 ]
 
 [[package]]
@@ -6607,7 +6607,7 @@ dependencies = [
  "chrono",
  "dirs 6.0.0",
  "hex",
- "rand 0.8.5",
+ "rand 0.10.2",
  "serde",
  "serde_json",
  "spectre-core",
@@ -6793,7 +6793,7 @@ dependencies = [
  "memchr",
  "once_cell",
  "percent-encoding",
- "rand 0.8.5",
+ "rand 0.8.7",
  "rsa",
  "serde",
  "sha1",
@@ -6832,7 +6832,7 @@ dependencies = [
  "md-5",
  "memchr",
  "once_cell",
- "rand 0.8.5",
+ "rand 0.8.7",
  "serde",
  "serde_json",
  "sha2 0.10.9",
@@ -8072,7 +8072,7 @@ dependencies = [
  "http",
  "httparse",
  "log",
- "rand 0.8.5",
+ "rand 0.8.7",
  "sha1",
  "thiserror 1.0.69",
  "utf-8",
@@ -9287,7 +9287,7 @@ dependencies = [
  "dashmap 6.1.0",
  "getrandom 0.2.17",
  "hex",
- "rand 0.8.5",
+ "rand 0.8.7",
  "rand_core 0.6.4",
  "rand_distr",
  "serde",
@@ -9334,7 +9334,7 @@ dependencies = [
  "hickory-resolver",
  "hmac",
  "md-5",
- "rand 0.8.5",
+ "rand 0.8.7",
  "serde",
  "sha1",
  "thiserror 2.0.18",
@@ -9364,7 +9364,7 @@ version = "2.3.7"
 dependencies = [
  "base64 0.22.1",
  "getrandom 0.2.17",
- "rand 0.8.5",
+ "rand 0.8.7",
  "rand_distr",
  "thiserror 2.0.18",
  "tracing",
