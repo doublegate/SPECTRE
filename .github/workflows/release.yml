@@ -46,7 +46,7 @@ jobs:
             ext: .exe
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
       - name: Initialize submodules
         run: git submodule update --init --depth 1 components/prtip components/wraith-protocol components/cyberchef-mcp
       - uses: dtolnay/rust-toolchain@stable
@@ -137,7 +137,7 @@ jobs:
             target: x86_64-pc-windows-msvc
     runs-on: ${{ matrix.platform.os }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: false
 
