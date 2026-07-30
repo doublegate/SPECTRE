@@ -64,9 +64,10 @@ export const SeverityChart = memo(function SeverityChart({ data }: SeverityChart
           ))}
         </Pie>
         <Tooltip
-          formatter={(value: number, name: string) => {
-            const percent = ((value / total) * 100).toFixed(1);
-            return [`${value} (${percent}%)`, name];
+          formatter={(value, name) => {
+            const numValue = typeof value === 'number' ? value : Number(value);
+            const percent = ((numValue / total) * 100).toFixed(1);
+            return [`${numValue} (${percent}%)`, name];
           }}
         />
         <Legend
