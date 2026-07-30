@@ -33,10 +33,10 @@ tauri-plugin-shell = { workspace = true }
 tauri-plugin-window-state = { workspace = true }
 tauri-plugin-store = { workspace = true }
 dirs = "6.0"
-base64 = "0.22"
-hex = "0.4"
-urlencoding = "2.1"
-rand = "0.8"
+base64 = { workspace = true }
+hex = { workspace = true }
+urlencoding = { workspace = true }
+rand = { workspace = true }
 
 [build-dependencies]
 tauri-build = { workspace = true }
