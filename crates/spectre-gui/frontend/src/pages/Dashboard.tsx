@@ -5,7 +5,7 @@ import { SeverityChart } from "@/components/dashboard/SeverityChart";
 import { ServicesChart } from "@/components/dashboard/ServicesChart";
 import { ActivityTimeline } from "@/components/dashboard/ActivityTimeline";
 import { useDashboard } from "@/hooks/useDashboard";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 export function Dashboard() {
   const { stats, isLoading, error } = useDashboard();
