@@ -20,13 +20,13 @@ jobs:
     name: Frontend Type Check & Tests
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - uses: pnpm/action-setup@v6
         with:
           version: 11
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: 'pnpm'
@@ -72,7 +72,7 @@ jobs:
             target: x86_64-pc-windows-msvc
     runs-on: ${{ matrix.platform.os }}
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           submodules: false
 
@@ -124,7 +124,7 @@ jobs:
         with:
           version: 11
 
-      - uses: actions/setup-node@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: 'pnpm'
