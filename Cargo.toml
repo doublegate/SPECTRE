@@ -109,7 +109,7 @@ tauri-plugin-store = "2"
 
 # Output formatting
 colored = "3"
-comfy-table = "7"
+comfy-table = "8"
 indicatif = "0.18"
 
 # Testing
