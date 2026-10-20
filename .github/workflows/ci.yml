@@ -332,10 +332,11 @@ jobs:
       - name: Install cargo-tarpaulin
         run: cargo install cargo-tarpaulin
       - name: Generate coverage
-        run: cargo tarpaulin --workspace --out Xml
+        run: cargo tarpaulin --workspace --exclude-files 'components/*' --out Xml
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v7
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./cobertura.xml
+          disable_search: true
           fail_ci_if_error: false
