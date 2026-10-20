@@ -81,7 +81,7 @@ Examples:
 ### Prerequisites
 
 **Required**:
-- **Rust**: 1.92+ (`rustup toolchain install 1.92`)
+- **Rust**: 1.99+ (`rustup toolchain install 1.99`)
 - **Node.js**: 22+ (`nvm install 22`)
 - **pnpm**: 9+ (`npm install -g pnpm`)
 

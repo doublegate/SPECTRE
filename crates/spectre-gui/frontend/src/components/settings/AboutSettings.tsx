@@ -37,7 +37,7 @@ export function AboutSettings() {
             <li>React 19 - UI library</li>
             <li>TypeScript - Type-safe JavaScript</li>
             <li>Tailwind CSS 4 - Styling</li>
-            <li>Rust 1.92+ - Backend logic</li>
+            <li>Rust 1.99+ - Backend logic</li>
           </ul>
         </div>
 
