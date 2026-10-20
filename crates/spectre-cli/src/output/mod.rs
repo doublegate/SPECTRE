@@ -73,7 +73,7 @@ impl OutputWriter {
     fn write_scan_table(&mut self, results: &[spectre_core::scan::ScanResult]) -> Result<()> {
         let mut table = Table::new();
         table
-            .load_preset(UTF8_FULL)
+            .load_style(UTF8_FULL)
             .set_content_arrangement(ContentArrangement::Dynamic)
             .set_header(vec![
                 Cell::new("Host").fg(Color::Cyan),
@@ -112,7 +112,7 @@ impl OutputWriter {
     ) -> Result<()> {
         let mut table = Table::new();
         table
-            .load_preset(UTF8_FULL)
+            .load_style(UTF8_FULL)
             .set_content_arrangement(ContentArrangement::Dynamic)
             .set_header(vec![
                 Cell::new("Operation").fg(Color::Cyan),
