@@ -220,4 +220,19 @@ mod tests {
         let writer = OutputWriter::new(OutputFormat::Json, None);
         assert!(writer.is_ok());
     }
+
+    #[test]
+    fn test_write_scan_and_operations_table() {
+        let mut scan_writer = OutputWriter {
+            format: OutputFormat::Table,
+            output: Box::new(Vec::new()),
+        };
+        assert!(scan_writer.write_scan_results(&[]).is_ok());
+
+        let mut ops_writer = OutputWriter {
+            format: OutputFormat::Table,
+            output: Box::new(Vec::new()),
+        };
+        assert!(ops_writer.write_operations(&[]).is_ok());
+    }
 }
