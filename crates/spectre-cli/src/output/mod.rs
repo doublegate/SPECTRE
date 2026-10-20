@@ -73,7 +73,7 @@ impl OutputWriter {
     fn write_scan_table(&mut self, results: &[spectre_core::scan::ScanResult]) -> Result<()> {
         let mut table = Table::new();
         table
-            .load_preset(UTF8_FULL)
+            .load_style(UTF8_FULL)
             .set_content_arrangement(ContentArrangement::Dynamic)
             .set_header(vec![
                 Cell::new("Host").fg(Color::Cyan),
@@ -112,7 +112,7 @@ impl OutputWriter {
     ) -> Result<()> {
         let mut table = Table::new();
         table
-            .load_preset(UTF8_FULL)
+            .load_style(UTF8_FULL)
             .set_content_arrangement(ContentArrangement::Dynamic)
             .set_header(vec![
                 Cell::new("Operation").fg(Color::Cyan),
@@ -219,5 +219,20 @@ mod tests {
     fn test_output_writer_creation() {
         let writer = OutputWriter::new(OutputFormat::Json, None);
         assert!(writer.is_ok());
+    }
+
+    #[test]
+    fn test_write_scan_and_operations_table() {
+        let mut scan_writer = OutputWriter {
+            format: OutputFormat::Table,
+            output: Box::new(Vec::new()),
+        };
+        assert!(scan_writer.write_scan_results(&[]).is_ok());
+
+        let mut ops_writer = OutputWriter {
+            format: OutputFormat::Table,
+            output: Box::new(Vec::new()),
+        };
+        assert!(ops_writer.write_operations(&[]).is_ok());
     }
 }

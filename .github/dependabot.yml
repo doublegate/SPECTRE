@@ -40,21 +40,31 @@ updates:
       - "ci"
     reviewers:
       - "doublegate"
+    ignore:
+      # dtolnay/rust-toolchain uses ref tags for Rust compiler versions (e.g. @1.99.0, @stable),
+      # which Dependabot misparses into non-existent tags like 1.120.0.
+      - dependency-name: "dtolnay/rust-toolchain"
 
-  # npm dependencies (for GUI if using Node.js)
-  # Uncomment when GUI is implemented
-  # - package-ecosystem: "npm"
-  #   directory: "/crates/spectre-gui"
-  #   schedule:
-  #     interval: "weekly"
-  #     day: "monday"
-  #     time: "09:00"
-  #     timezone: "America/New_York"
-  #   open-pull-requests-limit: 10
-  #   commit-message:
-  #     prefix: "build(deps)"
-  #   labels:
-  #     - "dependencies"
-  #     - "javascript"
-  #   reviewers:
-  #     - "doublegate"
+  # npm dependencies (GUI frontend)
+  - package-ecosystem: "npm"
+    directory: "/crates/spectre-gui/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "09:00"
+      timezone: "America/New_York"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "build(deps)"
+    labels:
+      - "dependencies"
+      - "javascript"
+    reviewers:
+      - "doublegate"
+    groups:
+      frontend-minor:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
