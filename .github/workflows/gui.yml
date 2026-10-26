@@ -10,6 +10,7 @@ on:
     branches: [main, develop]
     paths:
       - 'crates/spectre-gui/**'
+      - '.github/workflows/gui.yml'
 
 env:
   CARGO_TERM_COLOR: always
