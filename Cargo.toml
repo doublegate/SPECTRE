@@ -80,7 +80,7 @@ wraith-core = { path = "components/wraith-protocol/crates/wraith-core" }
 wraith-crypto = { path = "components/wraith-protocol/crates/wraith-crypto" }
 
 # Utilities
-uuid = { version = "1.0", features = ["v4"] }
+uuid = { version = "1.29", features = ["v4"] }
 tokio-util = "0.7"
 quick-xml = "0.42"
 
